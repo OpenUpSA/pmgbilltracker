@@ -3,7 +3,7 @@ from pmg_backend import app
 import requests
 import simplejson
 import logging
-from models import Bill, Agent, Version
+from models import Bill, Agent, Version, Event, SupportingContent
 
 @app.route('/')
 def hello_world():
@@ -11,18 +11,14 @@ def hello_world():
     out = "<h1>Current models</h1>"
 
     bills = Bill.query.all()
-    out += "<h2>BILL</h2>"
-    for bill in bills:
-        out += bill.name + "<br>"
-
     agents = Agent.query.all()
-    out += "<h2>AGENT</h2>"
-    for agent in agents:
-        out += agent.name + "<br>"
-
     versions = Version.query.all()
-    out += "<h2>VERSION</h2>"
-    for version in versions:
-        out += version.code + "<br>"
+    events = Event.query.all()
+    supporting_content = SupportingContent.query.all()
+
+    for queryset in [bills, agents, versions, events, supporting_content]:
+        out += "<h2>" + str(queryset[0])[1:-1].split(":")[0] + "</h2>"
+        for obj in queryset:
+            out += str(obj)[1:-1] + "<br>"
 
     return out
