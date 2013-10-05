@@ -3,6 +3,7 @@ from datetime import datetime
 
 
 class Bill(db.Model):
+
     bill_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True)
     type = db.Column(db.String(100))
@@ -13,22 +14,41 @@ class Bill(db.Model):
         self.type = type
         self.objective = objective
 
+    def to_dict(self):
+        # convert table row to dictionary
+        bill_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        # add related event objects
+        event_list = []
+        if self.events:
+            for event in self.events:
+                event_list.append(event.to_dict())
+        bill_dict['events'] = event_list
+        return bill_dict
+
+    def __str__(self):
+        return self.name
+
     def __repr__(self):
-        return '<Bill: %r>' % self.name
+        return '<Bill: %r>' % str(self)
 
 
 class Agent(db.Model):
+
     agent_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True)
 
     def __init__(self, name):
         self.name = name
 
+    def __str__(self):
+        return self.name
+
     def __repr__(self):
-        return '<Agent: %r>' % self.name
+        return '<Agent: %r>' % str(self)
 
 
 class Version(db.Model):
+
     version_id = db.Column(db.Integer, primary_key=True)
 
     bill_id = db.Column(db.Integer, db.ForeignKey('bill.bill_id'))
@@ -44,11 +64,15 @@ class Version(db.Model):
         self.url = url
         self.date_released = date_released
 
+    def __str__(self):
+        return self.code
+
     def __repr__(self):
-        return '<Version: %r>' % self.code
+        return '<Version: %r>' % str(self)
 
 
 class Event(db.Model):
+
     event_id = db.Column(db.Integer, primary_key=True)
 
     bill_id = db.Column(db.Integer, db.ForeignKey('bill.bill_id'))
@@ -82,11 +106,23 @@ class Event(db.Model):
         else:
             self.date_end = datetime.now()
 
+    def to_dict(self):
+        # convert table row to dictionary
+        event_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        # add related fields
+        event_dict['agent'] = self.agent
+        event_dict['version'] = self.new_version
+        return event_dict
+
+    def __str__(self):
+        return self.event_type + " - " + self.new_status
+
     def __repr__(self):
-        return '<Event: %r - %r>' % (self.event_type, self.new_status)
+        return '<Event: %r>' % str(self)
 
 
 class SupportingContent(db.Model):
+
     supporting_content_id = db.Column(db.Integer, primary_key=True)
 
     event_id = db.Column(db.Integer, db.ForeignKey('event.event_id'))
@@ -102,5 +138,8 @@ class SupportingContent(db.Model):
         self.description = description
         self.url = url
 
+    def __str__(self):
+        return self.title
+
     def __repr__(self):
-        return '<Supporting Content: %r>' % self.title
+        return '<Supporting Content: %r>' % str(self)
