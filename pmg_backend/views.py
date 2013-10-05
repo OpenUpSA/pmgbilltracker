@@ -4,7 +4,7 @@ import requests
 import simplejson
 from datetime import datetime, date
 import logging
-from models import Bill, Agent, Version, Event, SupportingContent
+from models import *
 from pmg_backend import db
 
 
@@ -29,6 +29,9 @@ def autodiscover():
     out = "<h1>API Endpoints</h1>"
     out += '<a href="/bill/">bill/</a><br>'
     out += '<a href="/bill/1/">bill/1/</a><br>'
+
+    out += "<h1>Admin interface</h1>"
+    out += '<a href="/admin/">admin/</a><br>'
 
     out += "<h1>Current models</h1>"
 

@@ -28,4 +28,5 @@ file_handler.setLevel(LOG_LEVEL)
 file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 
+import pmg_backend.admin
 import pmg_backend.views

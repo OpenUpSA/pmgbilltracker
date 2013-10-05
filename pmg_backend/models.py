@@ -1,18 +1,12 @@
 from pmg_backend import db
-from datetime import datetime
 
 
 class Bill(db.Model):
 
     bill_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True)
-    type = db.Column(db.String(100))
+    bill_type = db.Column(db.String(100))
     objective = db.Column(db.String(1000))
-
-    def __init__(self, name, type, objective):
-        self.name = name
-        self.type = type
-        self.objective = objective
 
     def to_dict(self):
         # convert table row to dictionary
@@ -37,9 +31,6 @@ class Agent(db.Model):
     agent_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True)
 
-    def __init__(self, name):
-        self.name = name
-
     def __str__(self):
         return self.name
 
@@ -57,12 +48,6 @@ class Version(db.Model):
     code = db.Column(db.String(100), unique=True)
     date_released = db.Column(db.Date)
     url = db.Column(db.String(500))
-
-    def __init__(self, bill, code, url, date_released=None):
-        self.bill = bill
-        self.code = code
-        self.url = url
-        self.date_released = date_released
 
     def __str__(self):
         return self.code
@@ -89,23 +74,6 @@ class Event(db.Model):
     date_start = db.Column(db.Date)
     date_end = db.Column(db.Date)
 
-    def __init__(self, bill, agent, event_type, new_status=None, new_version=None, date_start=None, date_end=None):
-        self.bill = bill
-        self.agent = agent
-        self.event_type = event_type
-        if new_status:
-            self.new_status = new_status
-        if new_version:
-            self.new_version = new_version
-        if date_start:
-            self.date_start = date_start
-        else:
-            self.date_start = datetime.now()
-        if date_end:
-            self.date_end = date_end
-        else:
-            self.date_end = datetime.now()
-
     def to_dict(self):
         # convert table row to dictionary
         event_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -131,12 +99,6 @@ class SupportingContent(db.Model):
     title = db.Column(db.String(100))
     description = db.Column(db.String(1000))
     url = db.Column(db.String(500))
-
-    def __init__(self, event, title, description, url):
-        self.event = event
-        self.title = title
-        self.description = description
-        self.url = url
 
     def __str__(self):
         return self.title
