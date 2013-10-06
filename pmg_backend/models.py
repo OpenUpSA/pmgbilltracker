@@ -8,19 +8,21 @@ class Bill(db.Model):
     bill_type = db.Column(db.String(100))
     objective = db.Column(db.String(1000))
 
-    def to_dict(self):
+    def to_dict(self, include_related=True):
         # convert table row to dictionary
         bill_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
-        # add related event objects
-        event_list = []
-        if self.events:
-            for event in self.events:
-                event_list.append(event.to_dict())
-        bill_dict['events'] = event_list
+
+        if include_related:
+            # add related event objects
+            event_list = []
+            if self.events:
+                for event in self.events:
+                    event_list.append(event.to_dict())
+            bill_dict['events'] = event_list
         return bill_dict
 
     def __str__(self):
-        return self.name
+        return str(self.bill_id) + " - " + self.name
 
     def __repr__(self):
         return '<Bill: %r>' % str(self)
@@ -31,8 +33,13 @@ class Agent(db.Model):
     agent_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True)
 
+    def to_dict(self):
+        # convert table row to dictionary
+        agent_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        return agent_dict
+
     def __str__(self):
-        return self.name
+        return str(self.agent_id) + " - " + self.name
 
     def __repr__(self):
         return '<Agent: %r>' % str(self)
@@ -49,8 +56,13 @@ class Version(db.Model):
     date_released = db.Column(db.Date)
     url = db.Column(db.String(500))
 
+    def to_dict(self):
+        # convert table row to dictionary
+        version_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        return version_dict
+
     def __str__(self):
-        return self.code
+        return str(self.version_id) + " - " + str(self.bill.name) + " " + self.code
 
     def __repr__(self):
         return '<Version: %r>' % str(self)
@@ -77,13 +89,24 @@ class Event(db.Model):
     def to_dict(self):
         # convert table row to dictionary
         event_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
-        # add related fields
-        event_dict['agent'] = self.agent
-        event_dict['version'] = self.new_version
+        # nest related fields
+        event_dict.pop('agent_id')
+        event_dict['agent'] = self.agent.to_dict()
+        event_dict.pop('version_id')
+        event_dict['version'] = self.new_version.to_dict()
+
+        supporting_content = []
+        for content in self.supporting_content.all():
+            tmp = content.to_dict()
+            tmp.pop('event_id')
+            supporting_content.append(tmp)
+        event_dict['supporting_content'] = supporting_content
+
+        event_dict.pop('bill_id')
         return event_dict
 
     def __str__(self):
-        return self.event_type + " - " + self.new_status
+        return str(self.event_id) + " - (" + self.event_type + ") " + self.new_status
 
     def __repr__(self):
         return '<Event: %r>' % str(self)
@@ -100,8 +123,13 @@ class SupportingContent(db.Model):
     description = db.Column(db.String(1000))
     url = db.Column(db.String(500))
 
+    def to_dict(self):
+        # convert table row to dictionary
+        content_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        return content_dict
+
     def __str__(self):
-        return self.title
+        return str(self.supporting_content_id) + " - " + self.title
 
     def __repr__(self):
         return '<Supporting Content: %r>' % str(self)

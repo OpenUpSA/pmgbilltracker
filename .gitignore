@@ -35,3 +35,4 @@ nosetests.xml
 .pydevproject
 .idea
 debug.log
+*.DS_Store

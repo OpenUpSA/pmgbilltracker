@@ -3,9 +3,12 @@ from pmg_backend import app
 import requests
 import simplejson
 from datetime import datetime, date
-import logging
+from logging import getLogger
 from models import *
 from pmg_backend import db
+
+# initialize logger
+logger = getLogger(app.config['LOGGER_NAME'])
 
 
 class CustomEncoder(simplejson.JSONEncoder):
@@ -14,10 +17,17 @@ class CustomEncoder(simplejson.JSONEncoder):
     """
 
     def default(self, obj):
+        # turn dates into strings
         if isinstance(obj, (datetime, date)):
             encoded_obj = obj.strftime("%B %d, %Y")
+        # serialize nested objects
         elif isinstance(obj, db.Model):
-            encoded_obj = str(obj)
+            try:
+                encoded_obj = simplejson.dumps(obj.to_dict(), cls=CustomEncoder)
+                logger.debug(encoded_obj)
+            except Exception:
+                encoded_obj = str(obj)
+        # everything else is handled by the simplejson serializer
         else:
             encoded_obj = simplejson.JSONEncoder.default(self, obj)
         return encoded_obj
@@ -25,13 +35,20 @@ class CustomEncoder(simplejson.JSONEncoder):
 
 @app.route('/')
 def autodiscover():
+    """
+    Provide a landing page that documents the API endpoints that are available, provides a link
+    to the admin interface and gives a high-level overview of the content in the database.
+    """
+
+    # collect all objects currently in the database
     bills = Bill.query.all()
     agents = Agent.query.all()
     versions = Version.query.all()
     events = Event.query.all()
     supporting_content = SupportingContent.query.all()
+    querysets = [bills, agents, versions, events, supporting_content]
 
-    return render_template('index.html', models=[bills, agents, versions, events, supporting_content])
+    return render_template('index.html', querysets=querysets)
 
 
 @app.route('/bill/')
@@ -46,6 +63,6 @@ def bill(bill_id=None):
         out = []
         bill_set = Bill.query.all()
         for bill_obj in bill_set:
-            out.append(bill_obj.to_dict())
+            out.append(bill_obj.to_dict(include_related=False))
 
     return simplejson.dumps(out, cls=CustomEncoder)
