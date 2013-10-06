@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PMG Bill Tracker - API</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
+
+</head>
+<body>
+<div class="container">
+    <h1>API Endpoints</h1>
+    <ul class="list-unstyled">
+        <li><a href="/bill/">bill/</a></li>
+        <li><a href="/bill/1/">bill/1/</a></li>
+    </ul>
+    <hr>
+
+    <h1>Admin interface</h1>
+    <a href="/admin/">admin/</a>
+    <hr>
+
+    <h1>Current models</h1>
+    {% for queryset in models %}
+        <h2> {{ queryset[0].__class__.__name__  }} </h2>
+        <ul class="list-unstyled">
+        {% for obj in queryset %}
+            <li>{{ obj | string }}</li>
+        {% endfor %}
+        </ul>
+    {% endfor %}
+</div>
+</body>
+</html>

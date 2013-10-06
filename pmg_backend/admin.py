@@ -13,5 +13,5 @@ admin.add_view(ModelView(Event, db.session))
 
 # manage static files from admin view
 path = op.join(op.dirname(__file__), 'static')
-admin.add_view(FileAdmin(path, '/static/', name='Static Files'))
+admin.add_view(FileAdmin(path, '/uploads/', name='Uploaded Files'))
 

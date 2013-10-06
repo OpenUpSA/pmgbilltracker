@@ -1,4 +1,4 @@
-from flask import request, url_for, session
+from flask import request, url_for, session, render_template
 from pmg_backend import app
 import requests
 import simplejson
@@ -25,28 +25,14 @@ class CustomEncoder(simplejson.JSONEncoder):
 
 @app.route('/')
 def autodiscover():
-
-    out = "<h1>API Endpoints</h1>"
-    out += '<a href="/bill/">bill/</a><br>'
-    out += '<a href="/bill/1/">bill/1/</a><br>'
-
-    out += "<h1>Admin interface</h1>"
-    out += '<a href="/admin/">admin/</a><br>'
-
-    out += "<h1>Current models</h1>"
-
     bills = Bill.query.all()
     agents = Agent.query.all()
     versions = Version.query.all()
     events = Event.query.all()
     supporting_content = SupportingContent.query.all()
 
-    for queryset in [bills, agents, versions, events, supporting_content]:
-        out += "<h2>" + queryset[0].__class__.__name__ + "</h2>"
-        for obj in queryset:
-            out += str(obj) + "<br>"
+    return render_template('index.html', models=[bills, agents, versions, events, supporting_content])
 
-    return out
 
 @app.route('/bill/')
 @app.route('/bill/<bill_id>/')
