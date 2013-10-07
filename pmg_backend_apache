@@ -1,0 +1,30 @@
+<VirtualHost *:80>
+    ServerName api.pmg.org.za
+    DocumentRoot /var/www/pmgbilltracker
+
+    Alias /static/ /var/www/pmgbilltracker/pmg_backend/static/
+    Alias /uploads/ /var/www/pmgbilltracker/pmg_backend/uploads/
+
+    <Directory /var/www/pmgbilltracker/pmg_backend/static>
+        Order deny,allow
+        Allow from all
+    </Directory>
+
+    <Directory /var/www/pmgbilltracker/pmg_backend/uploads>
+        Order deny,allow
+        Allow from all
+    </Directory>
+
+    <Directory /var/www/pmgbilltracker>
+        WSGIProcessGroup pmg_backend
+        WSGIApplicationGroup %{GLOBAL}
+        WSGIScriptReloading On
+        Order deny,allow
+        Allow from all
+    </Directory>
+
+    WSGIPassAuthorization On
+    WSGIDaemonProcess pmg_backend user=www-data group=www-data threads=5
+    WSGIScriptAlias / /var/www/pmgbilltracker/wsgi.py
+
+</VirtualHost>

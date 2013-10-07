@@ -40,6 +40,7 @@ def autodiscover():
     to the admin interface and gives a high-level overview of the content in the database.
     """
 
+    logger.debug("landing page called")
     # collect all objects currently in the database
     bills = Bill.query.all()
     agents = Agent.query.all()
@@ -55,6 +56,7 @@ def autodiscover():
 @app.route('/bill/<bill_id>/')
 def bill(bill_id=None):
 
+    logger.debug("Bill endpoint called")
     if bill_id:
         bill_obj = Bill.query.get_or_404(bill_id)
         out = bill_obj.to_dict()
