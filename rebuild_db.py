@@ -7,7 +7,7 @@ def rebuild_db():
     db.drop_all()
     db.create_all()
 
-    from pmg_backend.models import Bill, Agent, Version, Event, SupportingContent
+    from pmg_backend.models import *
 
     b1 = Bill()
     b1.name = 'Test Bill'

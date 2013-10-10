@@ -11,14 +11,19 @@ To run this application in your local environment, using the builtin Flask dev-s
 1. Install the required packages:
 
     `sudo pip install Flask`
+
     `sudo pip install Flask-SQLAlchemy`
+
     `sudo pip install Flask-WTF==0.8.4`
+
     `sudo pip install Flask-Admin`
+
     `sudo pip install simplejson`
 
 2. Navigate to the application folder in your terminal and run the dev server:
 
     `cd pmgbilltracker`
+
     `python runserver.py`
 
 The application should now be running at `http://localhost:5000/`
@@ -39,7 +44,9 @@ To deploy this application to an Ubuntu 13.04 instance on AWS EC2:
 4. Navigate into the application folder and run the server setup and deploy scripts:
 
     `cd pmgbilltracker`
+
     `fab staging setup`
+
     `fab staging deploy`
 
 More details about setup and deployment can be found in fabfile.py, the script that fabric runs when it deploys the site.
