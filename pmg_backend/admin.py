@@ -10,6 +10,7 @@ admin = Admin(app, name='PMG Bill Tracker')
 # views for CRUD admin
 admin.add_view(ModelView(Bill, db.session))
 admin.add_view(ModelView(Event, db.session))
+admin.add_view(ModelView(Content, db.session))
 
 # manage static files from admin view
 path = op.join(op.dirname(__file__), 'uploads')

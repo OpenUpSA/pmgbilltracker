@@ -98,9 +98,9 @@ def rebuild_db():
         db.session.add(revision)
 
     sessions = [
-        (datetime.date(2012, 5, 3), ),
-        (datetime.date(2012, 5, 6), ),
         (datetime.date(2011, 6, 20), ),
+        (datetime.date(2012, 5, 6), ),
+        (datetime.date(2013, 5, 3), ),
         (datetime.date(2013, 8, 20), ),
     ]
 

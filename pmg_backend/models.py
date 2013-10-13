@@ -7,11 +7,14 @@ class Bill(db.Model):
     name = db.Column(db.String(500), unique=True)
     bill_type = db.Column(db.String(100))
     objective = db.Column(db.String(1000))
+    stage_id = db.Column(db.Integer, db.ForeignKey('stage.stage_id'))
+    stage = db.relationship('Stage', backref=db.backref('bills', lazy='dynamic'))
 
     def to_dict(self, include_related=True):
         # convert table row to dictionary
         bill_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
+        bill_dict['stage'] = self.stage.name
+        
         if include_related:
             # add related event objects
             event_list = []
@@ -82,6 +85,8 @@ class Event(db.Model):
     event_id = db.Column(db.Integer, primary_key=True)
     bill_id = db.Column(db.Integer, db.ForeignKey('bill.bill_id'))
     bill = db.relationship('Bill', backref=db.backref('events', lazy='dynamic'))
+    location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'))
+    location = db.relationship('Location', backref=db.backref('events', lazy='dynamic'))
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'))
     agent = db.relationship('Agent', backref=db.backref('events', lazy='dynamic'))
     resolution_id = db.Column(db.Integer, db.ForeignKey('resolution.resolution_id'))
@@ -111,7 +116,7 @@ class Event(db.Model):
         return event_dict
 
     def __str__(self):
-        return str(self.event_id) + " - (" + self.location + ") " + self.agent
+        return str(self.event_id) + " - (" + str(self.location) + ") " + str(self.agent)
 
     def __repr__(self):
         return '<Event: %r>' % str(self)
@@ -141,15 +146,13 @@ class Session(db.Model):
 
     session_id = db.Column(db.Integer, primary_key=True)
     date_end = db.Column(db.Date)
-    minutes = db.Column(db.String(500))
-    report = db.Column(db.String(500))
 
     def to_dict(self):
         # convert table row to dictionary
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
     def __str__(self):
-        return str(self.session_id) + " - " + self.date
+        return str(self.session_id) + " - " + str(self.date_end)
 
     def __repr__(self):
         return '<Session: %r>' % str(self)

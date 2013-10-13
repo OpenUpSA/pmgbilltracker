@@ -20,15 +20,6 @@
     <a href="/admin/">admin/</a>
     <hr>
 
-    <h1>Current models</h1>
-    {% for queryset in querysets %}
-        <h2> {{ queryset[0].__class__.__name__  }} </h2>
-        <ul class="list-unstyled">
-        {% for obj in queryset %}
-            <li>{{ obj | string }}</li>
-        {% endfor %}
-        </ul>
-    {% endfor %}
 </div>
 </body>
 </html>

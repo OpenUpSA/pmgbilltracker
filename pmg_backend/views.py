@@ -41,15 +41,8 @@ def autodiscover():
     """
 
     logger.debug("landing page called")
-    # collect all objects currently in the database
-    bills = Bill.query.all()
-    agents = Agent.query.all()
-    versions = Version.query.all()
-    events = Event.query.all()
-    supporting_content = SupportingContent.query.all()
-    querysets = [bills, agents, versions, events, supporting_content]
 
-    return render_template('index.html', querysets=querysets)
+    return render_template('index.html')
 
 
 @app.route('/bill/')
