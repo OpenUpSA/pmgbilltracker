@@ -17,7 +17,7 @@ class Bill(db.Model):
             # add related event objects
             event_list = []
             if self.events:
-                for event in self.events:
+                for event in self.events.order_by(Event.date.desc()):
                     event_list.append(event.to_dict())
             bill_dict['events'] = event_list
         return bill_dict
