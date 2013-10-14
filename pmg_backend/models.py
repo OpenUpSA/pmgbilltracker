@@ -7,11 +7,11 @@ class Bill(db.Model):
     name = db.Column(db.String(500), unique=True)
     bill_type = db.Column(db.String(100))
     objective = db.Column(db.String(1000))
+    gazette = db.Column(db.String(500))
 
     def to_dict(self, include_related=True):
         # convert table row to dictionary
         bill_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
-        bill_dict['stage'] = self.stage.name
         
         if include_related:
             # add related event objects
@@ -63,6 +63,7 @@ class Stage(db.Model):
 class Agent(db.Model):
 
     agent_id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String(500))
     name = db.Column(db.String(500))
     url = db.Column(db.String(500))
 
@@ -71,7 +72,7 @@ class Agent(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
     def __str__(self):
-        return str(self.agent_id) + " - " + self.name
+        return str(self.agent_id) + " - (" + self.type + ") " + self.name
 
     def __repr__(self):
         return '<Agent: %r>' % str(self)
