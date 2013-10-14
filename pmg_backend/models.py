@@ -7,8 +7,6 @@ class Bill(db.Model):
     name = db.Column(db.String(500), unique=True)
     bill_type = db.Column(db.String(100))
     objective = db.Column(db.String(1000))
-    stage_id = db.Column(db.Integer, db.ForeignKey('stage.stage_id'))
-    stage = db.relationship('Stage', backref=db.backref('bills', lazy='dynamic'))
 
     def to_dict(self, include_related=True):
         # convert table row to dictionary
@@ -30,6 +28,21 @@ class Bill(db.Model):
     def __repr__(self):
         return '<Bill: %r>' % str(self)
 
+
+class Location(db.Model):
+
+    location_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(500), unique=True)
+
+    def to_dict(self):
+        # convert table row to dictionary
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __str__(self):
+        return str(self.location_id) + " - " + self.name
+
+    def __repr__(self):
+        return '<Location: %r>' % str(self)
 
 class Stage(db.Model):
 
@@ -64,22 +77,6 @@ class Agent(db.Model):
         return '<Agent: %r>' % str(self)
 
 
-class Location(db.Model):
-
-    location_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(500), unique=True)
-
-    def to_dict(self):
-        # convert table row to dictionary
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-    def __str__(self):
-        return str(self.location_id) + " - " + self.name
-
-    def __repr__(self):
-        return '<Location: %r>' % str(self)
-
-
 class Event(db.Model):
 
     event_id = db.Column(db.Integer, primary_key=True)
@@ -87,14 +84,12 @@ class Event(db.Model):
     bill = db.relationship('Bill', backref=db.backref('events', lazy='dynamic'))
     location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'))
     location = db.relationship('Location', backref=db.backref('events', lazy='dynamic'))
+    stage_id = db.Column(db.Integer, db.ForeignKey('stage.stage_id'))
+    stage = db.relationship('Stage', backref=db.backref('bills', lazy='dynamic'))
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'))
     agent = db.relationship('Agent', backref=db.backref('events', lazy='dynamic'))
     resolution_id = db.Column(db.Integer, db.ForeignKey('resolution.resolution_id'))
     resolution = db.relationship('Resolution', backref=db.backref('event', uselist=False))
-    session_id = db.Column(db.Integer, db.ForeignKey('session.session_id'))
-    session = db.relationship('Session', backref=db.backref('event', uselist=False))
-    revision_id = db.Column(db.Integer, db.ForeignKey('revision.revision_id'))
-    revision = db.relationship('Revision', backref=db.backref('event', uselist=False))
 
     date = db.Column(db.Date)
 
@@ -140,39 +135,6 @@ class Resolution(db.Model):
 
     def __repr__(self):
         return '<Resolution: %r>' % str(self)
-
-
-class Session(db.Model):
-
-    session_id = db.Column(db.Integer, primary_key=True)
-    date_end = db.Column(db.Date)
-
-    def to_dict(self):
-        # convert table row to dictionary
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-    def __str__(self):
-        return str(self.session_id) + " - " + str(self.date_end)
-
-    def __repr__(self):
-        return '<Session: %r>' % str(self)
-
-
-class Revision(db.Model):
-
-    revision_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(500))
-    url = db.Column(db.String(500))
-
-    def to_dict(self):
-        # convert table row to dictionary
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-    def __str__(self):
-        return str(self.revision_id) + " - " + self.name
-
-    def __repr__(self):
-        return '<Revision: %r>' % str(self)
 
 
 class Content(db.Model):

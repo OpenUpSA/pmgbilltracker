@@ -66,6 +66,10 @@ def rebuild_db():
         db.session.add(stage)
 
     content = [
+        ("revision", "B6 2010", "uploads/revision-1.pdf"),
+        ("revision", "B6B 2010", "uploads/revision-2.pdf"),
+        ("revision", "B6C 2010", "uploads/revision-3.pdf"),
+        ("revision", "B6D 2010", "uploads/revision-4.pdf"),
         ("memorandum", "Explanatory Memorandum", "uploads/memo-1.html"),
         ("greenpaper", "Green Paper", "uploads/greenpaper.pdf"),
         ("whitepaper", "White Paper", "uploads/whitepaper.pdf"),
@@ -85,10 +89,7 @@ def rebuild_db():
         db.session.add(item)
 
     revisions = [
-        ('B6 2010', 'uploads/revision-1.pdf'),
-        ('B6B 2010', 'uploads/revision-2.pdf'),
-        ('B6C 2010', 'uploads/revision-3.pdf'),
-        ('B6D 2010', 'uploads/revision-4.pdf'),
+
     ]
 
     for tmp in revisions:
@@ -96,18 +97,6 @@ def rebuild_db():
         revision.name = tmp[0]
         revision.url = tmp[1]
         db.session.add(revision)
-
-    sessions = [
-        (datetime.date(2011, 6, 20), ),
-        (datetime.date(2012, 5, 6), ),
-        (datetime.date(2013, 5, 3), ),
-        (datetime.date(2013, 8, 20), ),
-    ]
-
-    for tmp in sessions:
-        item = Session()
-        item.date_end= tmp[0]
-        db.session.add(item)
 
     resolutions = [
         ("vote", "pass", 235, 85, 2),
