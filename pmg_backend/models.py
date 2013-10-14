@@ -100,6 +100,13 @@ class Event(db.Model):
         # nest related fields
         event_dict.pop('agent_id')
         event_dict['agent'] = self.agent.to_dict()
+        event_dict.pop('location_id')
+        event_dict['location'] = self.location.to_dict()
+        event_dict.pop('stage_id')
+        event_dict['stage'] = self.stage.to_dict()
+        event_dict.pop('resolution_id')
+        if self.resolution:
+            event_dict['resolution'] = self.resolution.to_dict()
 
         content = []
         for item in self.content.all():
