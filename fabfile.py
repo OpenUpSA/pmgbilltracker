@@ -17,7 +17,7 @@ def staging():
     env.user = 'ubuntu'
     env.group = 'ubuntu'
     env.key_filename = '~/.ssh/aws_code4sa.pem'
-    env['config'] = 'instance/config.py' # TODO: create separate config for this environment
+    env['config'] = 'instance/config.py'  # TODO: create separate config for this environment
     env['virtualhost'] = 'pmg_backend_apache'
     print("STAGING ENVIRONMENT\n")
 

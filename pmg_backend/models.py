@@ -5,9 +5,9 @@ class Bill(db.Model):
 
     bill_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(500), unique=True)
+    status = db.Column(db.String(500))
     bill_type = db.Column(db.String(100))
     objective = db.Column(db.String(1000))
-    gazette = db.Column(db.String(500))
 
     def to_dict(self, include_related=True):
         # convert table row to dictionary
@@ -33,6 +33,7 @@ class Location(db.Model):
 
     location_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(500), unique=True)
+    short_name = db.Column(db.String(100))
 
     def to_dict(self):
         # convert table row to dictionary
@@ -44,14 +45,21 @@ class Location(db.Model):
     def __repr__(self):
         return '<Location: %r>' % str(self)
 
+
 class Stage(db.Model):
 
     stage_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(500))
+    default_status = db.Column(db.String(500))
+
+    location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'))
+    location = db.relationship('Location', backref=db.backref('events', lazy='dynamic'))
 
     def to_dict(self):
         # convert table row to dictionary
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        stage_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        stage_dict.pop('location_id')
+        stage_dict['location'] = self.location.to_dict()
 
     def __str__(self):
         return str(self.stage_id) + " - " + self.name
@@ -65,6 +73,7 @@ class Agent(db.Model):
     agent_id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(500))
     name = db.Column(db.String(500))
+    short_name = db.Column(db.String(100))
     url = db.Column(db.String(500))
 
     def to_dict(self):
@@ -72,7 +81,10 @@ class Agent(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
     def __str__(self):
-        return str(self.agent_id) + " - (" + self.type + ") " + self.name
+        tmp = str(self.agent_id) + " - (" + self.type + ")"
+        if self.name:
+            tmp += " " + self.name
+        return tmp
 
     def __repr__(self):
         return '<Agent: %r>' % str(self)
@@ -81,10 +93,11 @@ class Agent(db.Model):
 class Event(db.Model):
 
     event_id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date)
+    new_status = db.Column(db.String(500))
+
     bill_id = db.Column(db.Integer, db.ForeignKey('bill.bill_id'))
     bill = db.relationship('Bill', backref=db.backref('events', lazy='dynamic'))
-    location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'))
-    location = db.relationship('Location', backref=db.backref('events', lazy='dynamic'))
     stage_id = db.Column(db.Integer, db.ForeignKey('stage.stage_id'))
     stage = db.relationship('Stage', backref=db.backref('bills', lazy='dynamic'))
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'))
@@ -92,16 +105,12 @@ class Event(db.Model):
     resolution_id = db.Column(db.Integer, db.ForeignKey('resolution.resolution_id'))
     resolution = db.relationship('Resolution', backref=db.backref('event', uselist=False))
 
-    date = db.Column(db.Date)
-
     def to_dict(self):
         # convert table row to dictionary
         event_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
         # nest related fields
         event_dict.pop('agent_id')
         event_dict['agent'] = self.agent.to_dict()
-        event_dict.pop('location_id')
-        event_dict['location'] = self.location.to_dict()
         event_dict.pop('stage_id')
         event_dict['stage'] = self.stage.to_dict()
         event_dict.pop('resolution_id')
@@ -119,7 +128,7 @@ class Event(db.Model):
         return event_dict
 
     def __str__(self):
-        return str(self.event_id) + " - (" + str(self.location) + ") " + str(self.agent)
+        return str(self.event_id) + " - (" + str(self.stage) + ") " + str(self.agent)
 
     def __repr__(self):
         return '<Event: %r>' % str(self)
@@ -148,13 +157,13 @@ class Resolution(db.Model):
 class Content(db.Model):
 
     content_id = db.Column(db.Integer, primary_key=True)
-    event_id = db.Column(db.Integer, db.ForeignKey('event.event_id'))
-    event = db.relationship('Event', backref=db.backref('content', lazy='dynamic'))
-
     type = db.Column(db.String(100))
     title = db.Column(db.String(500))
     description = db.Column(db.String(1000))
     url = db.Column(db.String(500))
+
+    event_id = db.Column(db.Integer, db.ForeignKey('event.event_id'))
+    event = db.relationship('Event', backref=db.backref('content', lazy='dynamic'))
 
     def to_dict(self):
         # convert table row to dictionary
