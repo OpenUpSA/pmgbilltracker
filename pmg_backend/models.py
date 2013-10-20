@@ -74,13 +74,14 @@ class Stage(db.Model):
     default_status = db.Column(db.String(500))
 
     location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'))
-    location = db.relationship('Location', backref=db.backref('events', lazy='dynamic'))
+    location = db.relationship('Location', backref=db.backref('stages', lazy='dynamic'))
 
     def to_dict(self):
         # convert table row to dictionary
         stage_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
         stage_dict.pop('location_id')
         stage_dict['location'] = self.location.to_dict()
+        return stage_dict
 
     def __str__(self):
         return str(self.stage_id) + " - " + self.name
@@ -120,7 +121,7 @@ class Event(db.Model):
     bill_id = db.Column(db.Integer, db.ForeignKey('bill.bill_id'))
     bill = db.relationship('Bill', backref=db.backref('events', lazy='dynamic'))
     stage_id = db.Column(db.Integer, db.ForeignKey('stage.stage_id'))
-    stage = db.relationship('Stage', backref=db.backref('bills', lazy='dynamic'))
+    stage = db.relationship('Stage', backref=db.backref('events', lazy='dynamic'))
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'))
     agent = db.relationship('Agent', backref=db.backref('events', lazy='dynamic'))
     resolution_id = db.Column(db.Integer, db.ForeignKey('resolution.resolution_id'))
