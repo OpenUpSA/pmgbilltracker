@@ -1,5 +1,5 @@
-{% extends 'admin/master.html' %}
-{% block body %}
+{% extends 'admin/model/create.html' %}
+{% block tail %}
     {{ super() }}
     <div class="row-fluid">
         <h1>PMG Bill Tracker ADMIN</h1>
@@ -7,4 +7,4 @@
         <p>This Admin interface lets you manage the information related to the bills going through parliament.</p>
         <p>To get started, <a href="billview/new/">add a new bill</a> and then start <a href="eventview/new/">adding events</a> related to that bill.</p>
     </div>
-{% endblock body %}
+{% endblock tail %}

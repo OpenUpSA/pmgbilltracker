@@ -30,6 +30,8 @@ class Bill(db.Model):
     bill_type = db.Column(db.String(100))
     objective = db.Column(db.String(1000))
 
+    create_template='admin/model/my_create.html'
+
     def to_dict(self, include_related=True):
         # convert table row to dictionary
         bill_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
