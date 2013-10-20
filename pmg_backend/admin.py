@@ -5,7 +5,7 @@ from models import *
 from flask.ext.admin.contrib.fileadmin import FileAdmin
 import os.path as op
 
-admin = Admin(app, name='PMG Bill Tracker')
+admin = Admin(app, name='PMG Bill Tracker', base_template='admin/my_master.html')
 
 # views for CRUD admin
 admin.add_view(ModelView(Bill, db.session))

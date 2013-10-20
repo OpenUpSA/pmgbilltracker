@@ -1,0 +1,9 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+    {{ super() }}
+    <div class="row-fluid">
+        <h1>PMG Bill Tracker ADMIN</h1>
+        <p class="lead">Allow people to keep track of a bill's history as it moves through parliament.</p>
+        <p>To get started, <a href="billview/new/">add a new bill</a> and then start <a href="eventview/new/">adding events</a> related to that bill.</p>
+    </div>
+{% endblock body %}
