@@ -1,4 +1,4 @@
-from flask import request, url_for, session, render_template
+from flask import request, make_response, url_for, session, render_template
 from pmg_backend import app
 import requests
 import simplejson
@@ -60,4 +60,6 @@ def bill(bill_id=None):
         for bill_obj in bill_set:
             out.append(bill_obj.to_dict(include_related=False))
 
-    return simplejson.dumps(out, cls=CustomEncoder)
+    response = make_response(simplejson.dumps(out, cls=CustomEncoder))
+    response.mimetype = "application/json"
+    return response
