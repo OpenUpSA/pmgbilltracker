@@ -43,8 +43,10 @@ def setup():
             sudo('mkdir -p /var/www/pmgbilltracker')
             sudo('mkdir /var/www/pmgbilltracker/instance')
 
+    # clear pip's cache
+    sudo('rm -r /tmp/pip-build-root')
     sudo('pip install Flask')
-    sudo('pip install SQLAlchemy==0.7.10')
+    sudo('pip install SQLAlchemy==0.8.2')
     sudo('pip install Flask-SQLAlchemy==1.0')
     sudo('pip install Flask-Admin==1.0.7')
     sudo('pip install simplejson')
