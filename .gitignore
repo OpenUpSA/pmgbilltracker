@@ -36,3 +36,4 @@ nosetests.xml
 .idea
 debug.log
 *.DS_Store
+pmg_backend/uploads/
