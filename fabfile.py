@@ -45,9 +45,8 @@ def setup():
 
     sudo('pip install Flask')
     sudo('pip install SQLAlchemy==0.7.10')
-    sudo('pip install Flask-SQLAlchemy')
-    sudo('pip install Flask-WTF==0.8.4')  # version 0.9.3 breaks support for flask-admin's file admin
-    sudo('pip install Flask-Admin')
+    sudo('pip install Flask-SQLAlchemy==1.0')
+    sudo('pip install Flask-Admin==1.0.7')
     sudo('pip install simplejson')
 
     # install apache2 and mod-wsgi
