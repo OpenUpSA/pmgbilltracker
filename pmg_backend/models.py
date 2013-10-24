@@ -25,12 +25,10 @@ class User(db.Model):
 class Bill(db.Model):
 
     bill_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(500), unique=True)
+    name = db.Column(db.String(500), unique=True, nullable=False)
     status = db.Column(db.String(500))
     bill_type = db.Column(db.String(100))
     objective = db.Column(db.String(1000))
-
-    create_template='admin/model/my_create.html'
 
     def to_dict(self, include_related=True):
         # convert table row to dictionary
@@ -55,7 +53,7 @@ class Bill(db.Model):
 class Location(db.Model):
 
     location_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(500), unique=True)
+    name = db.Column(db.String(500), unique=True, nullable=False)
     short_name = db.Column(db.String(100))
 
     def to_dict(self):
@@ -72,11 +70,11 @@ class Location(db.Model):
 class Stage(db.Model):
 
     stage_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(500))
+    name = db.Column(db.String(500), nullable=False)
     default_status = db.Column(db.String(500))
 
-    location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'))
-    location = db.relationship('Location', backref=db.backref('stages', lazy='dynamic'))
+    location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'), nullable=False)
+    location = db.relationship('Location')
 
     def to_dict(self):
         # convert table row to dictionary
@@ -121,11 +119,11 @@ class Event(db.Model):
     new_status = db.Column(db.String(500))
 
     bill_id = db.Column(db.Integer, db.ForeignKey('bill.bill_id'), nullable=False)
-    bill = db.relationship('Bill', backref=db.backref('events', lazy='dynamic'))
+    bill = db.relationship('Bill')
     stage_id = db.Column(db.Integer, db.ForeignKey('stage.stage_id'), nullable=False)
-    stage = db.relationship('Stage', backref=db.backref('events', lazy='dynamic'))
+    stage = db.relationship('Stage')
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'), nullable=False)
-    agent = db.relationship('Agent', backref=db.backref('events', lazy='dynamic'))
+    agent = db.relationship('Agent')
 
     def to_dict(self):
         # convert table row to dictionary
@@ -163,7 +161,7 @@ class Content(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('event.event_id'))
     event = db.relationship('Event', backref=db.backref('content', lazy='dynamic'))
     type_id = db.Column(db.Integer, db.ForeignKey('content_type.content_type_id'), nullable=False)
-    type = db.relationship('ContentType', backref=db.backref('content', lazy='dynamic'))
+    type = db.relationship('ContentType')
 
     def to_dict(self):
         # convert table row to dictionary
@@ -171,7 +169,7 @@ class Content(db.Model):
 
         # add related content
         content_dict.pop('type_id')
-        content_dict['type'] = self.content_type.name
+        content_dict['type'] = self.type.name
 
         return content_dict
 

@@ -18,6 +18,7 @@ class MyModelView(ModelView):
 
 
 class BillView(ModelView):
+    column_list = ('name', 'status', 'bill_type', 'objective')
     form_overrides = dict(bill_type=SelectField, objective=TextAreaField)
     form_args = dict(
         # Pass the choices to the `SelectField`
@@ -31,7 +32,6 @@ class BillView(ModelView):
 
 
 class EventView(ModelView):
-    #column_list = ('bill', 'stage', 'content')
     inline_models = [
         (
             Content,
