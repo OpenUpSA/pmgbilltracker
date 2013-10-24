@@ -9,7 +9,7 @@ def rebuild_db():
     db.drop_all()
     db.create_all()
 
-    from pmg_backend.models import Bill, Agent, Location, Stage, Event, Content, Resolution
+    from pmg_backend.models import Bill, Agent, Location, Stage, Event, Content, ContentType
 
     b1 = Bill()
     b1.name = 'Protection of State Information Bill'
@@ -112,21 +112,41 @@ def rebuild_db():
         db.session.add(event)
         events.append(event)
 
+    content_type_details = [
+        "gazette",
+        "revision",
+        "memorandum",
+        "greenpaper",
+        "whitepaper",
+        "draft-bill",
+        "pmg-meeting-report",
+        "committee-report",
+        "hansard-minutes",
+        "vote-count",
+    ]
+
+    content_types = []
+
+    for tmp in content_type_details:
+        content_type = ContentType(name=tmp)
+        db.session.add(content_type)
+        content_types.append(content_type)
+
     content_details = [
-        (events[0], "gazette", "32999", "uploads/gazette-1.pdf"),
-        (events[0], "revision", "B6 2010", "uploads/revision-1.pdf"),
-        (events[2], "revision", "B6B 2010", "uploads/revision-2.pdf"),
-        (events[4], "revision", "B6C 2010", "uploads/revision-3.pdf"),
-        (events[4], "revision", "B6D 2010", "uploads/revision-4.pdf"),
-        (events[0], "memorandum", "Explanatory Memorandum", "uploads/memo-1.html"),
-        (events[0], "greenpaper", "Green Paper", "uploads/greenpaper.pdf"),
-        (events[0], "whitepaper", "White Paper", "uploads/whitepaper.pdf"),
-        (events[0], "draft", "Draft Bill", "uploads/draft.pdf"),
-        (events[1], "pmg-meeting-report", "Meeting report: 20 June 2011", "uploads/pmg-report-1.pdf"),
-        (events[3], "pmg-meeting-report", "Meeting report: 6 May 2012 - Public Hearings", "uploads/pmg-report-2.pdf"),
-        (events[5], "pmg-meeting-report", "Meeting report: 3 May 2013", "uploads/pmg-report-1.pdf"),
-        (events[5], "committee-report", "Committee Report", "uploads/committee-report-1.pdf"),
-        (events[6], "hansard-minutes", "Hansard Minutes", "uploads/hansard-1.pdf"),
+        (events[0], content_types[0], "32999", "uploads/gazette-1.pdf"),
+        (events[0], content_types[1], "B6 2010", "uploads/revision-1.pdf"),
+        (events[2], content_types[1], "B6B 2010", "uploads/revision-2.pdf"),
+        (events[4], content_types[1], "B6C 2010", "uploads/revision-3.pdf"),
+        (events[4], content_types[1], "B6D 2010", "uploads/revision-4.pdf"),
+        (events[0], content_types[2], "Explanatory Memorandum", "uploads/memo-1.html"),
+        (events[0], content_types[3], "Green Paper", "uploads/greenpaper.pdf"),
+        (events[0], content_types[4], "White Paper", "uploads/whitepaper.pdf"),
+        (events[0], content_types[5], "Draft Bill", "uploads/draft.pdf"),
+        (events[1], content_types[6], "Meeting report: 20 June 2011", "uploads/pmg-report-1.pdf"),
+        (events[3], content_types[6], "Meeting report: 6 May 2012 - Public Hearings", "uploads/pmg-report-2.pdf"),
+        (events[5], content_types[6], "Meeting report: 3 May 2013", "uploads/pmg-report-1.pdf"),
+        (events[5], content_types[7], "Committee Report", "uploads/committee-report-1.pdf"),
+        (events[6], content_types[8], "Hansard Minutes", "uploads/hansard-1.pdf"),
         ]
 
     content = []
@@ -138,24 +158,6 @@ def rebuild_db():
         item.url = tmp[3]
         db.session.add(item)
         content.append(item)
-
-    resolution_details = [
-        (events[6], "vote", "pass", 235, 85, 2),
-        (events[8], "vote", "pass", None, None, None),
-        (events[9], "signing", "fail", 235, 85, 2),
-        ]
-
-    resolutions = []
-    for tmp in resolution_details:
-        resolution = Resolution()
-        resolution.event = tmp[0]
-        resolution.type = tmp[1]
-        resolution.outcome = tmp[2]
-        resolution.count_for = tmp[3]
-        resolution.count_against = tmp[4]
-        resolution.count_abstain = tmp[5]
-        db.session.add(resolution)
-        resolutions.append(resolution)
 
     db.session.commit()
     return

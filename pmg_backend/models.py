@@ -117,17 +117,15 @@ class Agent(db.Model):
 class Event(db.Model):
 
     event_id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date)
+    date = db.Column(db.Date, nullable=False)
     new_status = db.Column(db.String(500))
 
-    bill_id = db.Column(db.Integer, db.ForeignKey('bill.bill_id'))
+    bill_id = db.Column(db.Integer, db.ForeignKey('bill.bill_id'), nullable=False)
     bill = db.relationship('Bill', backref=db.backref('events', lazy='dynamic'))
-    stage_id = db.Column(db.Integer, db.ForeignKey('stage.stage_id'))
+    stage_id = db.Column(db.Integer, db.ForeignKey('stage.stage_id'), nullable=False)
     stage = db.relationship('Stage', backref=db.backref('events', lazy='dynamic'))
-    agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'))
+    agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'), nullable=False)
     agent = db.relationship('Agent', backref=db.backref('events', lazy='dynamic'))
-    resolution_id = db.Column(db.Integer, db.ForeignKey('resolution.resolution_id'))
-    resolution = db.relationship('Resolution', backref=db.backref('event', uselist=False))
 
     def to_dict(self):
         # convert table row to dictionary
@@ -137,9 +135,6 @@ class Event(db.Model):
         event_dict['agent'] = self.agent.to_dict()
         event_dict.pop('stage_id')
         event_dict['stage'] = self.stage.to_dict()
-        event_dict.pop('resolution_id')
-        if self.resolution:
-            event_dict['resolution'] = self.resolution.to_dict()
 
         content = []
         for item in self.content.all():
@@ -158,44 +153,46 @@ class Event(db.Model):
         return '<Event: %r>' % str(self)
 
 
-class Resolution(db.Model):
-
-    resolution_id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String(100))
-    outcome = db.Column(db.String(100))
-    count_for = db.Column(db.Integer)
-    count_against = db.Column(db.Integer)
-    count_abstain = db.Column(db.Integer)
-
-    def to_dict(self):
-        # convert table row to dictionary
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-    def __str__(self):
-        return str(self.resolution_id) + " - (" + self.type + ") " + str(self.outcome)
-
-    def __repr__(self):
-        return '<Resolution: %r>' % str(self)
-
-
 class Content(db.Model):
 
     content_id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String(100))
     title = db.Column(db.String(500))
     description = db.Column(db.String(1000))
     url = db.Column(db.String(500))
 
     event_id = db.Column(db.Integer, db.ForeignKey('event.event_id'))
     event = db.relationship('Event', backref=db.backref('content', lazy='dynamic'))
+    type_id = db.Column(db.Integer, db.ForeignKey('content_type.content_type_id'), nullable=False)
+    type = db.relationship('ContentType', backref=db.backref('content', lazy='dynamic'))
 
     def to_dict(self):
         # convert table row to dictionary
         content_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+        # add related content
+        content_dict.pop('type_id')
+        content_dict['type'] = self.content_type.name
+
         return content_dict
 
     def __str__(self):
-        return str(self.content_id) + " - (" + self.type + ") " + self.title
+        return str(self.content_id) + " - (" + self.type.name + ") " + self.title
 
     def __repr__(self):
         return '<Content: %r>' % str(self)
+
+
+class ContentType(db.Model):
+
+    content_type_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True)
+
+    def to_dict(self):
+        # convert table row to dictionary
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __str__(self):
+        return str(self.name)
+
+    def __repr__(self):
+        return '<Content_type: %r>' % str(self)

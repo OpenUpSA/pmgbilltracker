@@ -46,18 +46,16 @@ class EventView(ModelView):
                     }
                 }
             )
-        )
+        ),
     ]
 
 admin = Admin(app, name='PMG Bill Tracker', base_template='admin/my_master.html')
 
-admin.add_view(BillView(Bill, db.session))
-admin.add_view(EventView(Event, db.session))
+admin.add_view(BillView(Bill, db.session, name="Bills"))
+admin.add_view(EventView(Event, db.session, name="Events"))
 
 # views for CRUD admin
-admin.add_view(ModelView(Agent, db.session))
-admin.add_view(ModelView(Location, db.session))
-admin.add_view(ModelView(Stage, db.session))
-
-# manage static files from admin view
-admin.add_view(FileAdmin(path, '/uploads/', name='Uploaded Files'))
+admin.add_view(ModelView(Agent, db.session, name="Agents"))
+admin.add_view(ModelView(Location, db.session, name="Locations"))
+admin.add_view(ModelView(Stage, db.session, name="Stages"))
+admin.add_view(ModelView(ContentType, db.session, name='Content Types'))
