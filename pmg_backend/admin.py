@@ -10,15 +10,15 @@ from wtforms.fields import SelectField, TextAreaField
 path = op.join(op.dirname(__file__), 'uploads')
 
 
-class MyModelView(ModelView):
-    create_template = 'admin/model/my_create.html'
-
-    def __init__(self, model, session, **kwargs):
-        super(MyModelView, self).__init__(model, session, **kwargs)
+#class MyModelView(ModelView):
+#    create_template = 'admin/model/my_create.html'
+#
+#    def __init__(self, model, session, **kwargs):
+#        super(MyModelView, self).__init__(model, session, **kwargs)
 
 
 class BillView(ModelView):
-    column_list = ('name', 'status', 'bill_type', 'objective')
+    form_excluded_columns = ('events', )
     form_overrides = dict(bill_type=SelectField, objective=TextAreaField)
     form_args = dict(
         # Pass the choices to the `SelectField`

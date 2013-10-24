@@ -119,7 +119,7 @@ class Event(db.Model):
     new_status = db.Column(db.String(500))
 
     bill_id = db.Column(db.Integer, db.ForeignKey('bill.bill_id'), nullable=False)
-    bill = db.relationship('Bill')
+    bill = db.relationship('Bill', backref=db.backref('events', lazy='dynamic'))
     stage_id = db.Column(db.Integer, db.ForeignKey('stage.stage_id'), nullable=False)
     stage = db.relationship('Stage')
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'), nullable=False)
