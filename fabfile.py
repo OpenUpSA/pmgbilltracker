@@ -21,6 +21,15 @@ def staging():
     print("STAGING ENVIRONMENT\n")
 
 
+def staging2():
+    """
+    an extra instance to experiment on
+    """
+    staging()
+    env.hosts = ['ec2-54-229-199-121.eu-west-1.compute.amazonaws.com']
+    print("STAGING ENVIRONMENT 2\n")
+
+
 def install_dependencies():
     """
     Install dependencies and create an application directory.
@@ -41,12 +50,12 @@ def install_dependencies():
             # create project folder
             sudo('mkdir -p /var/www/pmgbilltracker')
             sudo('mkdir -p /var/www/pmgbilltracker/pmg_backend')
-            sudo('mkdir /var/www/pmgbilltracker/pmg_backend/instance')
             sudo('mkdir -p /var/www/pmgbilltracker/pmg_frontend')
-            sudo('mkdir /var/www/pmgbilltracker/pmg_frontend/instance')
+            sudo('mkdir /var/www/pmgbilltracker/instance')
 
     # clear pip's cache
-    sudo('rm -r /tmp/pip-build-root')
+    with settings(warn_only=True):
+        sudo('rm -r /tmp/pip-build-root')
     sudo('pip install Flask')
     sudo('pip install SQLAlchemy==0.8.2')
     sudo('pip install Flask-SQLAlchemy==1.0')
@@ -79,14 +88,15 @@ def configure():
     # move files to their intended directories
     sudo('mv -f /tmp/apache_backend.conf /etc/apache2/sites-available/apache_backend.conf')
     sudo('mv -f /tmp/apache_frontend.conf /etc/apache2/sites-available/apache_frontend.conf')
-    sudo('mv -f /tmp/config_backend.py /var/www/pmgbilltracker/pmg_backend/instance/config_backend.py')
-    sudo('mv -f /tmp/config_frontend.py /var/www/pmgbilltracker/pmg_frontend/instance/config_frontend.py')
+    sudo('mv -f /tmp/config_backend.py /var/www/pmgbilltracker/instance/config_backend.py')
+    sudo('mv -f /tmp/config_frontend.py /var/www/pmgbilltracker/instance/config_frontend.py')
     sudo('mv -f /tmp/wsgi_backend.py /var/www/pmgbilltracker/wsgi_backend.py')
     sudo('mv -f /tmp/wsgi_frontend.py /var/www/pmgbilltracker/wsgi_frontend.py')
     sudo('mv -f /tmp/hosts /etc/hosts')
 
     # de-activate default site
-    sudo('a2dissite default')
+    with settings(warn_only=True):
+        sudo('a2dissite 000-default')
 
     # activate site
     sudo('a2ensite apache_backend.conf')
