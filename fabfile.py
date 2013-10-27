@@ -56,6 +56,8 @@ def install_dependencies():
     # clear pip's cache
     with settings(warn_only=True):
         sudo('rm -r /tmp/pip-build-root')
+
+    # install the necessary Python packages
     sudo('pip install Flask')
     sudo('pip install SQLAlchemy==0.8.2')
     sudo('pip install Flask-SQLAlchemy==1.0')
