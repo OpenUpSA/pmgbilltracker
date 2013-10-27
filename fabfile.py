@@ -17,14 +17,13 @@ def staging():
     env.user = 'ubuntu'
     env.group = 'ubuntu'
     env.key_filename = '~/.ssh/aws_code4sa.pem'
-    env['config'] = 'instance/config.py'  # TODO: create separate config for this environment
-    env['virtualhost'] = 'apache_backend.conf'
+    env['config_dir'] = 'config_staging'
     print("STAGING ENVIRONMENT\n")
 
 
 def install_dependencies():
     """
-    Install dependencies, create an application directory, and set up apache.
+    Install dependencies and create an application directory.
     """
 
     # update locale
@@ -41,7 +40,10 @@ def install_dependencies():
         if run("test -d %s" % code_dir).failed:
             # create project folder
             sudo('mkdir -p /var/www/pmgbilltracker')
-            sudo('mkdir /var/www/pmgbilltracker/instance')
+            sudo('mkdir -p /var/www/pmgbilltracker/pmg_backend')
+            sudo('mkdir /var/www/pmgbilltracker/pmg_backend/instance')
+            sudo('mkdir -p /var/www/pmgbilltracker/pmg_frontend')
+            sudo('mkdir /var/www/pmgbilltracker/pmg_frontend/instance')
 
     # clear pip's cache
     sudo('rm -r /tmp/pip-build-root')
@@ -59,25 +61,42 @@ def install_dependencies():
     sudo('chmod -R 770 /var/www/pmgbilltracker')
     sudo('chown -R ' + env.user + ':www-data /var/www/pmgbilltracker')
 
+
+def configure():
+    """
+    Upload config files, and restart apache.
+    """
+
     # upload files to /tmp
-    put(env.virtualhost, '/tmp/' + env.virtualhost)
-    put('wsgi.py', '/tmp/wsgi.py')
+    put(env.config_dir + '/apache_backend.conf', '/tmp/apache_backend.conf')
+    put(env.config_dir + '/apache_frontend.conf', '/tmp/apache_frontend.conf')
+    put(env.config_dir + '/config_backend.py', '/tmp/config_backend.py')
+    put(env.config_dir + '/config_frontend.py', '/tmp/config_frontend.py')
+    put(env.config_dir + '/wsgi_backend.py', '/tmp/wsgi_backend.py')
+    put(env.config_dir + '/wsgi_frontend.py', '/tmp/wsgi_frontend.py')
+    put(env.config_dir + '/hosts', '/tmp/hosts')
 
     # move files to their intended directories
-    sudo('mv -f /tmp/' + env.virtualhost + ' /etc/apache2/sites-available/' + env.virtualhost)
-    sudo('mv -f /tmp/wsgi.py /var/www/pmgbilltracker/wsgi.py')
+    sudo('mv -f /tmp/apache_backend.conf /etc/apache2/sites-available/apache_backend.conf')
+    sudo('mv -f /tmp/apache_frontend.conf /etc/apache2/sites-available/apache_frontend.conf')
+    sudo('mv -f /tmp/config_backend.py /var/www/pmgbilltracker/pmg_backend/instance/config_backend.py')
+    sudo('mv -f /tmp/config_frontend.py /var/www/pmgbilltracker/pmg_frontend/instance/config_frontend.py')
+    sudo('mv -f /tmp/wsgi_backend.py /var/www/pmgbilltracker/wsgi_backend.py')
+    sudo('mv -f /tmp/wsgi_frontend.py /var/www/pmgbilltracker/wsgi_frontend.py')
+    sudo('mv -f /tmp/hosts /etc/hosts')
 
     # de-activate default site
     sudo('a2dissite default')
 
     # activate site
-    sudo('a2ensite ' + env.virtualhost)
+    sudo('a2ensite apache_backend.conf')
+    sudo('a2ensite apache_frontend.conf')
 
     # restart apache
     sudo('/etc/init.d/apache2 reload')
 
 
-def deploy():
+def deploy_backend():
     """
     Upload our package to the server, unzip it, and restart apache.
     """
@@ -96,19 +115,48 @@ def deploy():
     sudo('rm /tmp/pmg_backend.tar.gz')
     local('rm pmg_backend.tar.gz')
 
-    # upload config file
-    put(env['config'], '/tmp/config.py')
-    sudo('mv -f /tmp/config.py /var/www/pmgbilltracker/instance/config.py')
-
     # clean out old logfiles
     with settings(warn_only=True):
-        sudo('rm /var/www/pmgbilltracker/debug.log*')
+        sudo('rm /var/www/pmgbilltracker/pmg_backend/debug.log*')
 
     # ensure that apache user has access to all files
-    sudo('chmod -R 770 /var/www/pmgbilltracker')
-    sudo('chown -R ' + env.user + ':www-data /var/www/pmgbilltracker')
+    sudo('chmod -R 770 /var/www/pmgbilltracker/pmg_backend')
+    sudo('chown -R ' + env.user + ':www-data /var/www/pmgbilltracker/pmg_backend')
 
     # and finally touch the wsgi.py file so that mod_wsgi triggers
     # a reload of the application
     sudo('/etc/init.d/apache2 reload')
-    sudo('touch /var/www/pmgbilltracker/wsgi.py')
+    sudo('touch /var/www/pmgbilltracker/wsgi_backend.py')
+
+
+def deploy_frontend():
+    """
+    Upload our package to the server, unzip it, and restart apache.
+    """
+
+    # create a tarball of our package
+    local('tar -czf pmg_frontend.tar.gz pmg_frontend/', capture=False)
+
+    # upload the source tarball to the temporary folder on the server
+    put('pmg_frontend.tar.gz', '/tmp/pmg_frontend.tar.gz')
+
+    # enter application directory and unzip
+    with cd('/var/www/pmgbilltracker'):
+        sudo('tar xzf /tmp/pmg_frontend.tar.gz')
+
+    # now that all is set up, delete the tarball again
+    sudo('rm /tmp/pmg_frontend.tar.gz')
+    local('rm pmg_frontend.tar.gz')
+
+    # clean out old logfiles
+    with settings(warn_only=True):
+        sudo('rm /var/www/pmgbilltracker/pmg_frontend/debug.log*')
+
+    # ensure that apache user has access to all files
+    sudo('chmod -R 770 /var/www/pmgbilltracker/pmg_frontend')
+    sudo('chown -R ' + env.user + ':www-data /var/www/pmgbilltracker/pmg_frontend')
+
+    # and finally touch the wsgi.py file so that mod_wsgi triggers
+    # a reload of the application
+    sudo('/etc/init.d/apache2 reload')
+    sudo('touch /var/www/pmgbilltracker/wsgi_frontend.py')

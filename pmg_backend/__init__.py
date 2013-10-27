@@ -3,7 +3,7 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask(__name__, instance_relative_config=True)
-app.config.from_pyfile('config.py', silent=True)
+app.config.from_pyfile('config_backend.py', silent=True)
 db = SQLAlchemy(app)
 
 # load log level from config

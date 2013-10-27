@@ -1,6 +1,6 @@
 import logging
 
-HOST = 'localhost:5000'
+HOST = 'localhost:5001'
 SQLALCHEMY_DATABASE_URI = 'sqlite:///pmgbilltracker.db'
 
 LOG_LEVEL = logging.DEBUG
