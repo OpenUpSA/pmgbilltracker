@@ -6,28 +6,19 @@ def staging():
     """
     Env parameters for the staging environment.
     To access this server via SSH:
-        ssh -v -i ~/.ssh/aws_code4sa.pem ubuntu@ec2-54-229-214-9.eu-west-1.compute.amazonaws.com
+        ssh -v -i ~/.ssh/aws_code4sa.pem ubuntu@ec2-54-229-199-121.eu-west-1.compute.amazonaws.com
     Error logs can be found at:
         tail -n 100 /var/log/apache2/error.log
         tail -n 100 /var/www/pmgbilltracker/debug.log
     """
 
-    env.hosts = ['ec2-54-229-214-9.eu-west-1.compute.amazonaws.com']
+    env.hosts = ['ec2-54-229-199-121.eu-west-1.compute.amazonaws.com']
     env.envname = 'staging'
     env.user = 'ubuntu'
     env.group = 'ubuntu'
     env.key_filename = '~/.ssh/aws_code4sa.pem'
     env['config_dir'] = 'config_staging'
     print("STAGING ENVIRONMENT\n")
-
-
-def staging2():
-    """
-    an extra instance to experiment on
-    """
-    staging()
-    env.hosts = ['ec2-54-229-199-121.eu-west-1.compute.amazonaws.com']
-    print("STAGING ENVIRONMENT 2\n")
 
 
 def install_dependencies():
