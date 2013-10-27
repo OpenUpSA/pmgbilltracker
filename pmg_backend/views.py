@@ -5,10 +5,7 @@ import simplejson
 from datetime import datetime, date
 from logging import getLogger
 from models import *
-from pmg_backend import db
-
-# initialize logger
-logger = getLogger(app.config['LOGGER_NAME'])
+from pmg_backend import db, logger
 
 
 class CustomEncoder(simplejson.JSONEncoder):

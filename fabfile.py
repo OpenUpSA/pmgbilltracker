@@ -18,11 +18,11 @@ def staging():
     env.group = 'ubuntu'
     env.key_filename = '~/.ssh/aws_code4sa.pem'
     env['config'] = 'instance/config.py'  # TODO: create separate config for this environment
-    env['virtualhost'] = 'pmg_backend_apache'
+    env['virtualhost'] = 'apache_backend.conf'
     print("STAGING ENVIRONMENT\n")
 
 
-def setup():
+def install_dependencies():
     """
     Install dependencies, create an application directory, and set up apache.
     """
@@ -60,18 +60,18 @@ def setup():
     sudo('chown -R ' + env.user + ':www-data /var/www/pmgbilltracker')
 
     # upload files to /tmp
-    put(env['virtualhost'], '/tmp/pmg_backend_apache')
+    put(env.virtualhost, '/tmp/' + env.virtualhost)
     put('wsgi.py', '/tmp/wsgi.py')
 
     # move files to their intended directories
-    sudo('mv -f /tmp/pmg_backend_apache /etc/apache2/sites-available/pmg_backend_apache')
+    sudo('mv -f /tmp/' + env.virtualhost + ' /etc/apache2/sites-available/' + env.virtualhost)
     sudo('mv -f /tmp/wsgi.py /var/www/pmgbilltracker/wsgi.py')
 
     # de-activate default site
     sudo('a2dissite default')
 
     # activate site
-    sudo('a2ensite pmg_backend_apache')
+    sudo('a2ensite ' + env.virtualhost)
 
     # restart apache
     sudo('/etc/init.d/apache2 reload')
