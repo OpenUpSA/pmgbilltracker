@@ -6,13 +6,13 @@ def staging():
     """
     Env parameters for the staging environment.
     To access this server via SSH:
-        ssh -v -i ~/.ssh/aws_code4sa.pem ubuntu@ec2-54-229-199-121.eu-west-1.compute.amazonaws.com
+        ssh -v -i ~/.ssh/aws_code4sa.pem ubuntu@54.229.255.34
     Error logs can be found at:
         tail -n 100 /var/log/apache2/error.log
         tail -n 100 /var/www/pmgbilltracker/debug.log
     """
 
-    env.hosts = ['ec2-54-229-199-121.eu-west-1.compute.amazonaws.com']
+    env.hosts = ['54.229.255.34']
     env.envname = 'staging'
     env.user = 'ubuntu'
     env.group = 'ubuntu'
