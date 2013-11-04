@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ bill.name }}</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+
+</head>
+<body>
+<div class="container">
+    <h1>{{ bill.name }}</h1>
+
+    <p class="lead">{{ bill.objective }}</p>
+    <p class="pull-right">{{ bill.bill_type }}</p>
+    <p class="label label-info bill-status">{{ bill.status }}</p>
+    <hr>
+
+    {% if bill.events | length > 0 %}
+        {% for event in bill.events %}
+            <div class="location-{{ event.stage.location.location_id }}">
+                <p class="pull-right">{{ event.date }}</p>
+                {% if event.new_status %}
+                    <p>{{ event.new_status }}</p>
+                {% endif %}
+                <p>{{ event.agent }}</p>
+                {% for item in event.content %}
+                    <p>{{ item }}</p>
+                {% endfor %}
+                <p>{{ event.stage }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="lead text-muted">There are no events to display.</p>
+    {% endif %}
+
+</div>
+</body>
+</html>

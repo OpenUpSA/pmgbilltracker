@@ -1,0 +1,20 @@
+/*blue: 16, 116, 188*/
+/*red: 190, 31, 46*/
+/*green: 162, 192, 58*/
+/*orange: 247, 147, 29*/
+
+.bill-status{
+    margin-bottom: 10px;
+}
+
+.location-1{
+    background-color: cornflowerblue;
+}
+
+.location-2{
+    background-color: lightgreen;
+}
+
+.location-3{
+    background-color: greenyellow;
+}

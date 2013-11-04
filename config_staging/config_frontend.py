@@ -1,7 +1,7 @@
 import logging
 
-HOST = 'localhost:5000'
-API_HOST = 'localhost:5001'
+HOST = 'www.pmg.org.za'
+API_HOST = 'api.pmg.org.za'
 
 LOG_LEVEL = logging.DEBUG
 LOGGER_NAME = "pmg_backend_logger"  # make sure this is not the same as the name of the package to avoid conflicts with Flask's own logger

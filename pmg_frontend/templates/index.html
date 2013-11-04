@@ -1,9 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <title>PMG Bill Tracker Index</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+
 </head>
 <body>
-<h1>Hello PMG_frontend</h1>
+<div class="container">
+    <h1>PMG Bill Tracker</h1>
+    <hr>
+    {% for bill in bills %}
+        <h2>{{ bill.name }}</h2>
+        <p class="label label-info bill-status">{{ bill.status }}</p>
+        <p>{{ bill.bill_type }}</p>
+        <p><em>{{ bill.objective }}</em></p>
+        <a href="/bill/{{ bill.bill_id }}/"><span class="glyphicon glyphicon-chevron-right"></span> more info</a>
+        <hr>
+    {% endfor %}
+</div>
 </body>
 </html>

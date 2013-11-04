@@ -54,6 +54,7 @@ def install_dependencies():
     sudo('pip install Flask-SQLAlchemy==1.0')
     sudo('pip install Flask-Admin==1.0.7')
     sudo('pip install simplejson')
+    sudo('pip install requests==2.0.1')
 
     # install apache2 and mod-wsgi
     sudo('apt-get install apache2')
