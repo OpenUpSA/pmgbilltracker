@@ -21,10 +21,15 @@
 
 {% macro render_content(item) -%}
     <p class="content-item">
-        {% if item.type in ["revision", "draft-bill"] %}
-        <a href="{{ item.url }}"><span class="glyphicon glyphicon-file"></span> {{ item.title }}</a>
-        {% else %}
-        {{ item.title }} <a href="{{ item.url }}"><span class="glyphicon glyphicon-chevron-right"></span> more</a>
-        {% endif %}
+    <a href="{{ item.url }}">
+        {% if item.type in ["revision", ] -%}
+        <i class="fa fa-file-text fa-lg"></i>
+        {% elif item.type in ["whitepaper", "greenpaper", "draft-bill"] -%}
+        <i class="fa fa-file-o fa-lg"></i>
+        {% else -%}
+        {{ item.type }} -
+        {%- endif %}
+    {{ item.title }}
+    </a>
     </p>
 {%- endmacro %}
