@@ -1,0 +1,30 @@
+{% macro render_event(event) -%}
+    <div class="row">
+        <div class="col-md-12 event">
+            <p class="pull-right">{{ event.date }}</p>
+            <div class="icon-placeholder pull-left"></div>
+            <p class="stage-title text-muted">Stage: {{ event.stage.name }}</p>
+            {% if event.new_status %}
+                <p>{{ event.new_status }}</p>
+            {% endif %}
+
+            <p>{{ event.agent.name }}</p>
+
+            {% if event.content | length > 0 %}
+                {% for item in event.content %}
+                    {{ render_content(item) }}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{%- endmacro %}
+
+{% macro render_content(item) -%}
+    <p class="content-item">
+        {% if item.type in ["revision", "draft-bill"] %}
+        <a href="{{ item.url }}"><span class="glyphicon glyphicon-file"></span> {{ item.title }}</a>
+        {% else %}
+        {{ item.title }} <a href="{{ item.url }}"><span class="glyphicon glyphicon-chevron-right"></span> more</a>
+        {% endif %}
+    </p>
+{%- endmacro %}

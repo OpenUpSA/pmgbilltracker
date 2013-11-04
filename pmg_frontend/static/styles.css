@@ -52,3 +52,28 @@
 .location-title.location-3{
     background-color: greenyellow;
 }
+
+.stage-title{
+    text-transform:uppercase;
+    font-weight: bold;
+}
+
+.event{
+    position: relative;
+    padding-left: 95px;
+    min-height: 85px;
+}
+
+.icon-placeholder{
+    position: absolute;
+    left: 0;
+    width: 75px;
+    height: 75px;
+    margin: 10px;
+    margin-top: 5px;
+    background-color: lightgrey;
+}
+
+.content-item{
+    margin-left: 20px;
+}

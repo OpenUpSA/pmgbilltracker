@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from 'macros.html' import render_event %}
 {% block title %}{{ bill.name }}{% endblock %}
 {% block page %}
 
@@ -18,7 +19,7 @@
                     </div>
                 {% endif %}
                 <div class="container location location-{{ event.stage.location.location_id }}">
-                <div class="location-title location-{{ event.stage.location.location_id }}">Level: {{ event.stage.location.name }}</div>
+                <div class="location-title location-{{ event.stage.location.location_id }}">{{ event.stage.location.name }}</div>
                 {% set prev_location = event.stage.location.location_id %}
             {% else %}
                 {% if not loop.first %}
@@ -26,30 +27,8 @@
                 {% endif %}
             {% endif %}
 
-        <div class="row">
-            <div class="col-md-12">
-                <p class="pull-right">{{ event.date }}</p>
-                <p class="text-muted">Stage: {{ event.stage.name }}</p>
-                {% if event.new_status %}
-                    <p>{{ event.new_status }}</p>
-                {% endif %}
+            {{ render_event(event) }}
 
-                <p>{{ event.agent.name }}</p>
-
-                {% if event.content | length > 0 %}
-                    <ul>
-                        {% for item in event.content %}
-
-                            <li>{{ item.title }} <a href="{{ item.url }}"><span class="glyphicon glyphicon-chevron-right"> </span> more</a></li>
-                            {#                            {% if item.description %}#}
-                            {#                                <p><em>{{ item.description }}</em></p>#}
-                            {#                            {% endif %}#}
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </div>
-            {#            <div class="col-md-3"></div>#}
-        </div>
         {% if loop.last %}
             </div>
         {% endif %}

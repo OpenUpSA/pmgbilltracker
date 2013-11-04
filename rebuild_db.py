@@ -90,15 +90,15 @@ def rebuild_db():
     event_details = [
         (datetime.date(2010, 3, 4), stages[0], agents[5], "Introduced to parliament"),
         (datetime.date(2011, 6, 20), stages[1], agents[2], "Assigned to a committee"),
-        (datetime.date(2011, 9, 4), stages[1], agents[2], ""),
-        (datetime.date(2012, 5, 6), stages[2], agents[2], ""),
-        (datetime.date(2013, 4, 24), stages[1], agents[2], ""),
-        (datetime.date(2013, 5, 3), stages[1], agents[2], ""),
+        (datetime.date(2011, 9, 4), stages[1], agents[2]),
+        (datetime.date(2012, 5, 6), stages[2], agents[2]),
+        (datetime.date(2013, 4, 24), stages[1], agents[2]),
+        (datetime.date(2013, 5, 3), stages[1], agents[2]),
         (datetime.date(2013, 8, 20), stages[3], agents[0], "Accepted by the National Assembly"),
-        (datetime.date(2013, 9, 1), stages[5], agents[3], ""),
+        (datetime.date(2013, 9, 1), stages[5], agents[3]),
         (datetime.date(2013, 9, 2), stages[6], agents[1], "Accepted by the NCOP"),
         (datetime.date(2013, 9, 3), stages[8], agents[6], "Sent back to Parliament"),
-        (datetime.date(2013, 9, 4), stages[1], agents[2], ""),
+        (datetime.date(2013, 9, 4), stages[1], agents[2]),
         ]
 
     events = []
@@ -109,7 +109,10 @@ def rebuild_db():
         event.date = tmp[0]
         event.stage = tmp[1]
         event.agent = tmp[2]
-        event.new_status = tmp[3]
+        try:
+            event.new_status = tmp[3]
+        except IndexError:
+            event.new_status = tmp[1].default_status
         db.session.add(event)
         events.append(event)
 
