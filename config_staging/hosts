@@ -1,5 +1,6 @@
 127.0.0.1 localhost
 127.0.0.1 api.pmg.org.za
+127.0.0.1 www.pmg.org.za
 127.0.0.1 pmg.org.za
 
 # The following lines are desirable for IPv6 capable hosts
