@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>PMG Bill Tracker Index</title>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+{% extends "base.html" %}
 
-</head>
-<body>
-<div class="container">
+{% block page %}
     <h1>PMG Bill Tracker</h1>
     <hr>
     {% for bill in bills %}
@@ -20,6 +11,4 @@
         <a href="/bill/{{ bill.bill_id }}/"><span class="glyphicon glyphicon-chevron-right"></span> more info</a>
         <hr>
     {% endfor %}
-</div>
-</body>
-</html>
+{% endblock page %}

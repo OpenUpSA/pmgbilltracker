@@ -1,15 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ bill.name }}</title>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+{% extends "base.html" %}
+{% block title %}{{ bill.name }}{% endblock %}
+{% block page %}
 
-</head>
-<body>
-<div class="container">
     <h1>{{ bill.name }}</h1>
 
     <p class="lead">{{ bill.objective }}</p>
@@ -18,23 +10,52 @@
     <hr>
 
     {% if bill.events | length > 0 %}
+        {% set prev_location = bill.events[0].stage.location.location_id %}
+
         {% for event in bill.events %}
-            <div class="location-{{ event.stage.location.location_id }}">
+            {% if loop.first or event.stage.location.location_id != prev_location %}
+                {% if not loop.first %}
+                    </div>
+                {% endif %}
+                <div class="container location location-{{ event.stage.location.location_id }}">
+                <div class="location-title location-{{ event.stage.location.location_id }}">Level: {{ event.stage.location.name }}</div>
+                {% set prev_location = event.stage.location.location_id %}
+            {% else %}
+                {% if not loop.first %}
+                    <hr>
+                {% endif %}
+            {% endif %}
+
+        <div class="row">
+            <div class="col-md-12">
                 <p class="pull-right">{{ event.date }}</p>
+                <p class="text-muted">Stage: {{ event.stage.name }}</p>
                 {% if event.new_status %}
                     <p>{{ event.new_status }}</p>
                 {% endif %}
-                <p>{{ event.agent }}</p>
-                {% for item in event.content %}
-                    <p>{{ item }}</p>
-                {% endfor %}
-                <p>{{ event.stage }}</p>
+
+                <p>{{ event.agent.name }}</p>
+
+                {% if event.content | length > 0 %}
+                    <ul>
+                        {% for item in event.content %}
+
+                            <li>{{ item.title }} <a href="{{ item.url }}"><span class="glyphicon glyphicon-chevron-right"> </span> more</a></li>
+                            {#                            {% if item.description %}#}
+                            {#                                <p><em>{{ item.description }}</em></p>#}
+                            {#                            {% endif %}#}
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             </div>
+            {#            <div class="col-md-3"></div>#}
+        </div>
+        {% if loop.last %}
+            </div>
+        {% endif %}
         {% endfor %}
     {% else %}
         <p class="lead text-muted">There are no events to display.</p>
     {% endif %}
 
-</div>
-</body>
-</html>
+{% endblock page %}
