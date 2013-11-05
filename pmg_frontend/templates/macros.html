@@ -10,11 +10,10 @@
 
             <div class="icon-placeholder pull-left"></div>
             <p class="text-muted"><span class="stage-title">Stage: {{ event.stage.name }}</span></p>
-            {#            {% if event.new_status -%}#}
-            {#                <p>Bill status: <strong>{{ event.new_status }}</strong></p>#}
-            {#            {%- endif %}#}
 
             {{ render_agent(event.agent) }}
+
+            {% if event.notes %}<p>{{ event.notes }}</p>{% endif %}
 
             {% if event.content %}
                 {{ render_content(event.content) }}

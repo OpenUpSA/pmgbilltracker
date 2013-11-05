@@ -117,6 +117,7 @@ class Event(db.Model):
     event_id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
     new_status = db.Column(db.String(500))
+    notes = db.Column(db.String(5000))
 
     bill_id = db.Column(db.Integer, db.ForeignKey('bill.bill_id'), nullable=False)
     bill = db.relationship('Bill', backref=db.backref('events', lazy='dynamic'))

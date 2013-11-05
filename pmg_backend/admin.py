@@ -32,6 +32,7 @@ class BillView(ModelView):
 
 
 class EventView(ModelView):
+    form_overrides = dict(notes=TextAreaField)
     inline_models = [
         (
             Content,
