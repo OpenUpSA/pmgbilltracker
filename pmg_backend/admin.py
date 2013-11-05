@@ -3,11 +3,10 @@ from flask.ext.admin import Admin, form, BaseView, expose
 from flask.ext.admin.contrib.sqla import ModelView
 from models import *
 from flask.ext.admin.contrib.fileadmin import FileAdmin
-import os.path as op
 from wtforms.fields import SelectField, TextAreaField
 
 # base path for uploaded content
-path = op.join(op.dirname(__file__), 'uploads')
+upload_path = app.config['UPLOAD_PATH']
 
 
 #class MyModelView(ModelView):
@@ -35,6 +34,20 @@ class EventView(ModelView):
     form_overrides = dict(notes=TextAreaField)
     inline_models = [
         (
+            Version,
+            dict(
+                form_overrides={
+                    'url': form.FileUploadField
+                },
+                form_args={
+                    'url': {
+                        'label': 'File',
+                        'base_path': upload_path
+                    }
+                }
+            )
+        ),
+        (
             Content,
             dict(
                 form_overrides={
@@ -43,7 +56,7 @@ class EventView(ModelView):
                 form_args={
                     'url': {
                         'label': 'File',
-                        'base_path': path
+                        'base_path': upload_path
                     }
                 }
             )
@@ -51,6 +64,8 @@ class EventView(ModelView):
     ]
 
 admin = Admin(app, name='PMG Bill Tracker', base_template='admin/my_master.html')
+
+admin.add_view(FileAdmin(upload_path, '/uploads/', name='Uploads'))
 
 admin.add_view(BillView(Bill, db.session, name="Bills"))
 admin.add_view(EventView(Event, db.session, name="Events"))

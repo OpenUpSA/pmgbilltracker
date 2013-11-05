@@ -1,3 +1,4 @@
+import os.path as op
 import logging
 
 HOST = 'localhost:5000'
@@ -8,3 +9,5 @@ LOGGER_NAME = "pmg_backend_logger"  # make sure this is not the same as the name
 DEBUG = True
 
 SECRET_KEY = "AEORJAEONIAEGCBGKMALMAENFXGOAERGN"
+
+UPLOAD_PATH = op.join(op.dirname(__file__), 'uploads')

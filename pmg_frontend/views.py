@@ -1,4 +1,4 @@
-from flask import request, make_response, url_for, session, render_template, abort
+from flask import request, make_response, url_for, session, render_template, abort, send_from_directory
 from pmg_frontend import app
 import requests
 import simplejson
@@ -37,3 +37,15 @@ def detail(bill_id=None):
     bill = r.json()
 
     return render_template('detail.html', bill=bill)
+
+
+@app.route('/uploads/<path:file_name>')
+def uploads(file_name):
+    """
+    Serve uploaded files from the Flask dev server. On staging or production, these should be served by Apache.
+    """
+
+    logger.debug("uploads called")
+    logger.debug(app.instance_path)
+    logger.debug(file_name)
+    return send_from_directory(app.config['UPLOAD_PATH'], file_name, as_attachment=True)
