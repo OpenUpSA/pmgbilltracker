@@ -137,11 +137,11 @@ def rebuild_db():
         content_types.append(content_type)
 
     content_details = [
-        (events[0], content_types[0], "32999", "uploads/gazette-1.pdf"),
-        (events[0], content_types[1], "B6 2010", "uploads/revision-1.pdf"),
-        (events[2], content_types[1], "B6B 2010", "uploads/revision-2.pdf"),
-        (events[4], content_types[1], "B6C 2010", "uploads/revision-3.pdf"),
-        (events[4], content_types[1], "B6D 2010", "uploads/revision-4.pdf"),
+        (events[0], content_types[0], "Gazette no. 32999", "uploads/gazette-1.pdf"),
+        (events[0], content_types[1], "Bill version B6 2010", "uploads/revision-1.pdf"),
+        (events[2], content_types[1], "Bill version B6B 2010", "uploads/revision-2.pdf"),
+        (events[4], content_types[1], "Bill version B6C 2010", "uploads/revision-3.pdf"),
+        (events[4], content_types[1], "Bill version B6D 2010", "uploads/revision-4.pdf"),
         (events[0], content_types[2], "Explanatory Memorandum", "uploads/memo-1.html"),
         (events[0], content_types[3], "Green Paper", "uploads/greenpaper.pdf"),
         (events[0], content_types[4], "White Paper", "uploads/whitepaper.pdf"),

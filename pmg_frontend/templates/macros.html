@@ -1,9 +1,14 @@
 {% macro render_event(event) -%}
     <div class="row">
         <div class="col-md-12 event">
-            <p class="pull-right">{{ event.date }}</p>
+            {% if event.content.get('revision') -%}
+                <div class="revision-container pull-right">
+                    {{ render_revision(event.content.get('revision')) }}
+                </div>
+            {%- endif %}
+
             <div class="icon-placeholder pull-left"></div>
-            <p class="stage-title text-muted">Stage: {{ event.stage.name }}</p>
+            <p class="text-muted"><span class="stage-title">Stage: {{ event.stage.name }}</span>, {{ event.date }}</p>
             {% if event.new_status %}
                 <p>{{ event.new_status }}</p>
             {% endif %}
@@ -12,32 +17,33 @@
 
             {% if event.content %}
                 {{ render_content(event.content) }}
-            {% endif %}
+            {%- endif %}
         </div>
     </div>
 {%- endmacro %}
 
 {% macro render_content(content_dict) -%}
-
     {% for type, items in content_dict.iteritems() %}
-        {{ render_content_item(type, items) }}
+        {% if type != "revision" -%}
+            {{ render_content_item(type, items) }}
+        {%- endif %}
     {% endfor %}
 {%- endmacro %}
 
 {% macro render_content_item(type, items) -%}
     {% for item in items %}
-    <p class="content-item">
-        <a href="{{ item.url }}">
-            {% if type in ["revision", ] -%}
-                <i class="fa fa-file-text fa-lg"></i>
-            {% elif type in ["whitepaper", "greenpaper", "draft-bill"] -%}
-                <i class="fa fa-file-o fa-lg"></i>
-            {% else -%}
-                {{ type }} -
-            {%- endif %}
-            {{ item.title }}
-        </a>
-    </p>
+        <p class="content-item">
+            <a href="{{ item.url }}">
+                <i class="fa fa-file-o fa-lg"></i> {{ item.title }}
+            </a>
+        </p>
     {% endfor %}
 {%- endmacro %}
 
+{% macro render_revision(revision_list) -%}
+    {% for revision in revision_list %}
+        <a class="btn btn-primary btn-lg revision" href="{{ revision.url }}" role="button">
+            <i class="fa fa-file-text"></i> {{ revision.title }}
+        </a><br>
+    {% endfor %}
+{%- endmacro %}
