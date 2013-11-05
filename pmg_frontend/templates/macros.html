@@ -3,8 +3,8 @@
         <div class="col-md-12 event">
             <div class="revision-container pull-right text-right">
                 <p class="text-muted event-date"><small>{{ event.date }}</small></p>
-                {% if event.content.get('revision') -%}
-                    {{ render_revision(event.content.get('revision')) }}
+                {% if event.versions -%}
+                    {{ render_bill_versions(event.versions) }}
                 {%- endif %}
             </div>
 
@@ -41,9 +41,7 @@
 
 {% macro render_content(content_dict) -%}
     {% for type, items in content_dict.iteritems() %}
-        {% if type != "revision" -%}
-            {{ render_content_item(type, items) }}
-        {%- endif %}
+        {{ render_content_item(type, items) }}
     {% endfor %}
 {%- endmacro %}
 
@@ -57,10 +55,14 @@
     {% endfor %}
 {%- endmacro %}
 
-{% macro render_revision(revision_list) -%}
-    {% for revision in revision_list %}
-        <a class="btn btn-primary btn-lg revision" href="{{ revision.url }}" role="button">
-            <i class="fa fa-file-text"></i> {{ revision.title }}
-        </a><br>
+{% macro render_bill_versions(version_list) -%}
+    {% for version in version_list %}
+        {{ render_bill_version(version) }}
     {% endfor %}
+{%- endmacro %}
+
+{% macro render_bill_version(version) -%}
+    <a class="btn btn-primary btn-lg version" href="{{ version.url }}" role="button">
+        <i class="fa fa-file-text"></i> Bill version {{ version.title }}
+    </a><br>
 {%- endmacro %}

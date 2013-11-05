@@ -38,8 +38,12 @@ class Bill(db.Model):
             # add related event objects
             event_list = []
             if self.events:
+                latest_version = None
                 for event in self.events.order_by(Event.date.desc()):
                     event_list.append(event.to_dict())
+                    if len(event.bill_versions.all()) > 0 and not latest_version:
+                        latest_version = event.bill_versions[-1].to_dict()
+                        bill_dict['latest_version'] = latest_version
             bill_dict['events'] = event_list
         return bill_dict
 
@@ -135,6 +139,13 @@ class Event(db.Model):
         event_dict.pop('stage_id')
         event_dict['stage'] = self.stage.to_dict()
 
+        versions = []
+        for item in self.bill_versions.all():
+            tmp = item.to_dict()
+            tmp.pop('event_id')
+            versions.append(tmp)
+        event_dict['versions'] = versions
+
         content = {}
         for item in self.content.all():
             tmp = item.to_dict()
@@ -154,6 +165,27 @@ class Event(db.Model):
 
     def __repr__(self):
         return '<Event: %r>' % str(self)
+
+
+class Version(db.Model):
+
+    version_id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(500))
+    description = db.Column(db.String(1000))
+    url = db.Column(db.String(500))
+
+    event_id = db.Column(db.Integer, db.ForeignKey('event.event_id'))
+    event = db.relationship('Event', backref=db.backref('bill_versions', lazy='dynamic'))
+
+    def to_dict(self):
+        # convert table row to dictionary
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __str__(self):
+        return str(self.version_id) + " - " + self.title + " (" + self.url + ")"
+
+    def __repr__(self):
+        return '<Version: %r>' % str(self)
 
 
 class Content(db.Model):

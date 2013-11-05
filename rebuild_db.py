@@ -9,7 +9,7 @@ def rebuild_db():
     db.drop_all()
     db.create_all()
 
-    from pmg_backend.models import Bill, Agent, Location, Stage, Event, Content, ContentType
+    from pmg_backend.models import Bill, Agent, Location, Stage, Event, Version, Content, ContentType
 
     b1 = Bill()
     b1.name = 'Protection of State Information Bill'
@@ -116,9 +116,22 @@ def rebuild_db():
         db.session.add(event)
         events.append(event)
 
+    bill_version_details = [
+        (events[0], "B6 2010", "uploads/revision-1.pdf"),
+        (events[2], "B6B 2010", "uploads/revision-2.pdf"),
+        (events[4], "B6C 2010", "uploads/revision-3.pdf"),
+        (events[4], "B6D 2010", "uploads/revision-4.pdf"),
+        ]
+
+    for tmp in bill_version_details:
+        item = Version()
+        item.event = tmp[0]
+        item.title = tmp[1]
+        item.url = tmp[2]
+        db.session.add(item)
+
     content_type_details = [
         "gazette",
-        "revision",
         "memorandum",
         "greenpaper",
         "whitepaper",
@@ -138,19 +151,15 @@ def rebuild_db():
 
     content_details = [
         (events[0], content_types[0], "Gazette no. 32999", "uploads/gazette-1.pdf"),
-        (events[0], content_types[1], "Bill version B6 2010", "uploads/revision-1.pdf"),
-        (events[2], content_types[1], "Bill version B6B 2010", "uploads/revision-2.pdf"),
-        (events[4], content_types[1], "Bill version B6C 2010", "uploads/revision-3.pdf"),
-        (events[4], content_types[1], "Bill version B6D 2010", "uploads/revision-4.pdf"),
-        (events[0], content_types[2], "Explanatory Memorandum", "uploads/memo-1.html"),
-        (events[0], content_types[3], "Green Paper", "uploads/greenpaper.pdf"),
-        (events[0], content_types[4], "White Paper", "uploads/whitepaper.pdf"),
-        (events[0], content_types[5], "Draft Bill", "uploads/draft.pdf"),
-        (events[1], content_types[6], "Meeting report: 20 June 2011", "uploads/pmg-report-1.pdf"),
-        (events[3], content_types[6], "Meeting report: 6 May 2012 - Public Hearings", "uploads/pmg-report-2.pdf"),
-        (events[5], content_types[6], "Meeting report: 3 May 2013", "uploads/pmg-report-1.pdf"),
-        (events[5], content_types[7], "Committee Report", "uploads/committee-report-1.pdf"),
-        (events[6], content_types[8], "Hansard Minutes", "uploads/hansard-1.pdf"),
+        (events[0], content_types[1], "Explanatory Memorandum", "uploads/memo-1.html"),
+        (events[0], content_types[2], "Green Paper", "uploads/greenpaper.pdf"),
+        (events[0], content_types[3], "White Paper", "uploads/whitepaper.pdf"),
+        (events[0], content_types[4], "Draft Bill", "uploads/draft.pdf"),
+        (events[1], content_types[5], "Meeting report: 20 June 2011", "uploads/pmg-report-1.pdf"),
+        (events[3], content_types[5], "Meeting report: 6 May 2012 - Public Hearings", "uploads/pmg-report-2.pdf"),
+        (events[5], content_types[5], "Meeting report: 3 May 2013", "uploads/pmg-report-1.pdf"),
+        (events[5], content_types[6], "Committee Report", "uploads/committee-report-1.pdf"),
+        (events[6], content_types[7], "Hansard Minutes", "uploads/hansard-1.pdf"),
         ]
 
     content = []
