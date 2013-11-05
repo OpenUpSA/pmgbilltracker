@@ -1,25 +1,43 @@
 {% macro render_event(event) -%}
     <div class="row">
         <div class="col-md-12 event">
-            {% if event.content.get('revision') -%}
-                <div class="revision-container pull-right">
+            <div class="revision-container pull-right text-right">
+                <p class="text-muted event-date"><small>{{ event.date }}</small></p>
+                {% if event.content.get('revision') -%}
                     {{ render_revision(event.content.get('revision')) }}
-                </div>
-            {%- endif %}
+                {%- endif %}
+            </div>
 
             <div class="icon-placeholder pull-left"></div>
-            <p class="text-muted"><span class="stage-title">Stage: {{ event.stage.name }}</span>, {{ event.date }}</p>
-            {% if event.new_status %}
-                <p>{{ event.new_status }}</p>
-            {% endif %}
+            <p class="text-muted"><span class="stage-title">Stage: {{ event.stage.name }}</span></p>
+            {#            {% if event.new_status -%}#}
+            {#                <p>Bill status: <strong>{{ event.new_status }}</strong></p>#}
+            {#            {%- endif %}#}
 
-            <p>{{ event.agent.name }}</p>
+            {{ render_agent(event.agent) }}
 
             {% if event.content %}
                 {{ render_content(event.content) }}
             {%- endif %}
         </div>
     </div>
+{%- endmacro %}
+
+{% macro render_agent(agent) -%}
+    <p>
+        {% if agent.type in ["minister", "president", "mp"] -%}
+            <i class="fa fa-user"></i>
+        {% elif agent.type == "house" -%}
+            <i class="fa fa-gavel"></i>
+        {% else -%}
+            <i class="fa fa-group"></i>
+        {%- endif %}
+        {% if agent.name -%}
+            {{ agent.name }}
+        {% else -%}
+            {{ agent.type }}
+        {%- endif %}
+    </p>
 {%- endmacro %}
 
 {% macro render_content(content_dict) -%}

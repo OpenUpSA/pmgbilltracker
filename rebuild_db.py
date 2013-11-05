@@ -72,8 +72,8 @@ def rebuild_db():
         (locations[0], "Public participation", "Open for public submissions"),
         (locations[0], "National Assembly", "Up for debate in the National Assembly"),
         (locations[1], "Introduced to National Council of Provinces", "Waiting to be assigned to a committee"),
-        (locations[1], "National Council of Provinces Committee", "Under review by National Council of Provinces Committee"),
-        (locations[1], "National Council of Provinces", "Up for debate in the National Council of Provinces"),
+        (locations[1], "National Council of Provinces Committee", "Under review by NCOP Committee"),
+        (locations[1], "National Council of Provinces", "Up for debate in the NCOP"),
         (locations[0], "Mediation Committee", "Under review by Joint Committee"),
         (locations[2], "Presidential Signature", "Waiting to be signed into law"),
         ]
