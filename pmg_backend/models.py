@@ -134,11 +134,15 @@ class Event(db.Model):
         event_dict.pop('stage_id')
         event_dict['stage'] = self.stage.to_dict()
 
-        content = []
+        content = {}
         for item in self.content.all():
             tmp = item.to_dict()
             tmp.pop('event_id')
-            content.append(tmp)
+            content_type = tmp['type']
+            if content.get(content_type):
+                content[content_type].append(tmp)
+            else:
+                content[content_type] = [tmp, ]
         event_dict['content'] = content
 
         event_dict.pop('bill_id')
