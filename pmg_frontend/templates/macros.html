@@ -10,26 +10,34 @@
 
             <p>{{ event.agent.name }}</p>
 
-            {% if event.content | length > 0 %}
-                {% for item in event.content %}
-                    {{ render_content(item) }}
-                {% endfor %}
+            {% if event.content %}
+                {{ render_content(event.content) }}
             {% endif %}
         </div>
     </div>
 {%- endmacro %}
 
-{% macro render_content(item) -%}
-    <p class="content-item">
-    <a href="{{ item.url }}">
-        {% if item.type in ["revision", ] -%}
-        <i class="fa fa-file-text fa-lg"></i>
-        {% elif item.type in ["whitepaper", "greenpaper", "draft-bill"] -%}
-        <i class="fa fa-file-o fa-lg"></i>
-        {% else -%}
-        {{ item.type }} -
-        {%- endif %}
-    {{ item.title }}
-    </a>
-    </p>
+{% macro render_content(content_dict) -%}
+
+    {% for type, items in content_dict.iteritems() %}
+        {{ render_content_item(type, items) }}
+    {% endfor %}
 {%- endmacro %}
+
+{% macro render_content_item(type, items) -%}
+    {% for item in items %}
+    <p class="content-item">
+        <a href="{{ item.url }}">
+            {% if type in ["revision", ] -%}
+                <i class="fa fa-file-text fa-lg"></i>
+            {% elif type in ["whitepaper", "greenpaper", "draft-bill"] -%}
+                <i class="fa fa-file-o fa-lg"></i>
+            {% else -%}
+                {{ type }} -
+            {%- endif %}
+            {{ item.title }}
+        </a>
+    </p>
+    {% endfor %}
+{%- endmacro %}
+
