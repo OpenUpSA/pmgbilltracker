@@ -26,7 +26,6 @@ class Bill(db.Model):
 
     bill_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(500), unique=True, nullable=False)
-    status = db.Column(db.String(500))
     bill_type = db.Column(db.String(100))
     objective = db.Column(db.String(1000))
 
@@ -39,11 +38,18 @@ class Bill(db.Model):
             event_list = []
             if self.events:
                 latest_version = None
+                current_status = None
                 for event in self.events.order_by(Event.date.desc()):
+                    # add event
                     event_list.append(event.to_dict())
-                    if len(event.bill_versions.all()) > 0 and not latest_version:
+                    # extract latest bill version
+                    if not latest_version and len(event.bill_versions.all()) > 0:
                         latest_version = event.bill_versions[-1].to_dict()
                         bill_dict['latest_version'] = latest_version
+                    # extract current status
+                    if not current_status and event.new_status:
+                        current_status = event.new_status
+                        bill_dict['status'] = current_status
             bill_dict['events'] = event_list
         return bill_dict
 

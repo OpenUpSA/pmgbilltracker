@@ -13,21 +13,18 @@ def rebuild_db():
 
     b1 = Bill()
     b1.name = 'Protection of State Information Bill'
-    b1.status = 'Sent back to Parliament by the President'
     b1.bill_type = 'Section 75 (Ordinary Bills not affecting provinces)'
     b1.objective = 'To provide for the protection of certain information from destruction, loss or unlawful disclosure; to regulate the manner in which information may be protected; to repeal the Protection of Information Act, 1982; and to provide for matters connected therewith.'
     db.session.add(b1)
 
     b2 = Bill()
     b2.name = 'Example Bill'
-    b2.status = 'Unknown'
     b2.bill_type = "Section 76 (Ordinary Bills affecting the provinces)"
     b2.objective = "To demonstrate the efficacy of the PMG bill-tracking application."
     db.session.add(b2)
 
     b3 = Bill()
     b3.name = 'Another Example Bill'
-    b3.status = 'Unknown'
     b3.bill_type = 'Section 75 (Ordinary Bills not affecting provinces)'
     b3.objective = "To go yet further in demonstrating the efficacy of the PMG bill-tracking application."
     db.session.add(b3)
