@@ -62,7 +62,7 @@
 {%- endmacro %}
 
 {% macro render_bill_version(version) -%}
-    <a class="btn btn-primary btn-lg version" href="/uploads/{{ version.url }}" role="button">
+    <a class="btn btn-primary btn-lg version" href="/{{ version.url }}" role="button">
         <i class="fa fa-file-text"></i> Bill version {{ version.title }}
     </a><br>
 {%- endmacro %}

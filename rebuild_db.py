@@ -114,10 +114,10 @@ def rebuild_db():
         events.append(event)
 
     bill_version_details = [
-        (events[0], "B6 2010", "uploads/revision-1.pdf"),
-        (events[2], "B6B 2010", "uploads/revision-2.pdf"),
-        (events[4], "B6C 2010", "uploads/revision-3.pdf"),
-        (events[4], "B6D 2010", "uploads/revision-4.pdf"),
+        (events[0], "B6 2010", "uploads/B6-2010.pdf"),
+        (events[2], "B6B 2010", "uploads/B6B-2010.pdf"),
+        (events[4], "B6C 2010", "uploads/B6E-2010_15Oct2013.pdf"),
+        (events[4], "B6D 2010", "uploads/B6F-2010_15Oct2013.pdf"),
         ]
 
     for tmp in bill_version_details:
