@@ -8,8 +8,16 @@
     <link rel="stylesheet" type="text/css" href="/static/styles.css">
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
 
+    {% block head %}
+    {% endblock %}
 </head>
 <body>
+<div class="banner">
+    <div class="container"><a href="/"><img id="pmg-logo" src="/static/images/pmg_logo.png"></a></div>
+    <div id="banner-hr"></div>
+</div>
+{% block page_header %}
+{% endblock %}
 <div class="container">
     {% block page %}
     {% endblock %}

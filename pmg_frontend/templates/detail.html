@@ -1,25 +1,33 @@
 {% extends "base.html" %}
 {% from 'macros.html' import render_event %}
 {% block title %}{{ bill.name }}{% endblock %}
-{% block page %}
 
-    <h1>{{ bill.name }}</h1>
+{% block page_header %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1>{{ bill.name }}</h1>
 
-    <p>{{ bill.bill_type }}</p>
-    <p class="lead">{{ bill.objective }}</p>
-    {% if bill.latest_version %}
-        <div class="pull-right">
-            Latest version: <a href="/{{ bill.latest_version.url }}">
-            <i class="fa fa-file-text"></i> {{ bill.latest_version.title }}
-        </a><br>
+            <p>{{ bill.bill_type }}</p>
+            <p class="lead">{{ bill.objective }}</p>
+            {% if bill.latest_version %}
+                <div class="pull-right">
+                    Latest version: <a href="/{{ bill.latest_version.url }}">
+                    <i class="fa fa-file-text"></i> {{ bill.latest_version.title }}
+                </a><br>
+                </div>
+            {% endif %}
+            <p class="label label-info bill-status">Status: {{ bill.status }}</p>
         </div>
-    {% endif %}
-    <p class="label label-info bill-status">{{ bill.status }}</p>
+    </div>
+{%  endblock %}
 
-    <hr>
+{% block page %}
 
     {% if bill.events | length > 0 %}
         {% set prev_location = bill.events[0].stage.location.location_id %}
+
+        <h2>Bill history</h2>
+        <hr>
 
         {% for event in bill.events %}
             {% if loop.first or event.stage.location.location_id != prev_location %}

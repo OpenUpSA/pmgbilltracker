@@ -3,6 +3,39 @@
 /*green: 162, 192, 58*/
 /*orange: 247, 147, 29*/
 
+#pmg-logo{
+    margin: 5px;
+}
+
+#banner-hr{
+    height: 15px;
+    width: 100%;
+    background-color: cornflowerblue;
+}
+
+.bill-index-tile{
+    padding-top: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+    cursor: pointer;
+}
+
+.bill-index-tile:hover{
+    background-color: #eeeeee;
+}
+
+.bill-index-tile hr{
+    margin-bottom: 0;
+}
+
+.jumbotron h1 {
+    font-size: 45px;
+}
+
+.jumbotron{
+    font-size: 16px;
+}
+
 .bill-status{
     margin-bottom: 10px;
 }
@@ -87,3 +120,4 @@
 .version{
     margin-bottom: 10px;
 }
+
