@@ -107,17 +107,22 @@ def deploy_backend():
 
     # create a tarball of our package
     local('tar -czf pmg_backend.tar.gz pmg_backend/', capture=False)
+    local('tar -czf uploads.tar.gz instance/uploads/', capture=False)
 
     # upload the source tarball to the temporary folder on the server
     put('pmg_backend.tar.gz', '/tmp/pmg_backend.tar.gz')
+    put('uploads.tar.gz', '/tmp/uploads.tar.gz')
 
     # enter application directory and unzip
     with cd('/var/www/pmgbilltracker'):
         sudo('tar xzf /tmp/pmg_backend.tar.gz')
+        sudo('tar xzf /tmp/uploads.tar.gz')
 
     # now that all is set up, delete the tarball again
     sudo('rm /tmp/pmg_backend.tar.gz')
+    sudo('rm /tmp/uploads.tar.gz')
     local('rm pmg_backend.tar.gz')
+    local('rm uploads.tar.gz')
 
     # clean out old logfiles
     with settings(warn_only=True):
@@ -125,7 +130,9 @@ def deploy_backend():
 
     # ensure that apache user has access to all files
     sudo('chmod -R 770 /var/www/pmgbilltracker/pmg_backend')
+    sudo('chmod -R 770 /var/www/pmgbilltracker/instance')
     sudo('chown -R ' + env.user + ':www-data /var/www/pmgbilltracker/pmg_backend')
+    sudo('chown -R ' + env.user + ':www-data /var/www/pmgbilltracker/instance')
 
     # and finally touch the wsgi.py file so that mod_wsgi triggers
     # a reload of the application
