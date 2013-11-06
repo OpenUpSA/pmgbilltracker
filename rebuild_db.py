@@ -147,16 +147,16 @@ def rebuild_db():
         content_types.append(content_type)
 
     content_details = [
-        (events[0], content_types[0], "Gazette no. 32999", "uploads/gazette-1.pdf"),
-        (events[0], content_types[1], "Explanatory Memorandum", "uploads/memo-1.html"),
-        (events[0], content_types[2], "Green Paper", "uploads/greenpaper.pdf"),
-        (events[0], content_types[3], "White Paper", "uploads/whitepaper.pdf"),
-        (events[0], content_types[4], "Draft Bill", "uploads/draft.pdf"),
-        (events[1], content_types[5], "Meeting report: 20 June 2011", "uploads/pmg-report-1.pdf"),
-        (events[3], content_types[5], "Meeting report: 6 May 2012 - Public Hearings", "uploads/pmg-report-2.pdf"),
-        (events[5], content_types[5], "Meeting report: 3 May 2013", "uploads/pmg-report-1.pdf"),
-        (events[5], content_types[6], "Committee Report", "uploads/committee-report-1.pdf"),
-        (events[6], content_types[7], "Hansard Minutes", "uploads/hansard-1.pdf"),
+        (events[0], content_types[0], "Gazette no. 32999", "uploads/example.pdf"),
+        (events[0], content_types[1], "Explanatory Memorandum", "uploads/example.pdf"),
+        (events[0], content_types[2], "Green Paper", "uploads/example.pdf"),
+        (events[0], content_types[3], "White Paper", "uploads/example.pdf"),
+        (events[0], content_types[4], "Draft Bill", "uploads/example.pdf"),
+        (events[1], content_types[5], "Meeting report: 20 June 2011", "uploads/example.pdf"),
+        (events[3], content_types[5], "Meeting report: 6 May 2012 - Public Hearings", "uploads/example.pdf"),
+        (events[5], content_types[5], "Meeting report: 3 May 2013", "uploads/example.pdf"),
+        (events[5], content_types[6], "Committee Report", "uploads/example.pdf"),
+        (events[6], content_types[7], "Hansard Minutes", "uploads/example.pdf"),
         ]
 
     content = []

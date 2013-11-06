@@ -63,7 +63,7 @@
 {% macro render_content_item(type, items) -%}
     {% for item in items %}
         <p class="content-item">
-            <a href="{{ item.url }}">
+            <a href="/{{ item.url }}">
                 <i class="fa fa-file-o fa-lg"></i> {{ item.title }}
             </a>
         </p>
