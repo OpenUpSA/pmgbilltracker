@@ -8,7 +8,22 @@
                 {%- endif %}
             </div>
 
-            <div class="icon-placeholder pull-left"></div>
+            <div class="icon-placeholder pull-left">
+                {% set
+            icon_dict = {
+            1: "Bill-Introduced.png",
+            2: "Committee-Discussion.png",
+            3: "Public-Participation.png",
+            4: "1st-House.png",
+            5: "Bill-Introduced.png",
+            6: "Committee-Discussion.png",
+            7: "2nd-House.png",
+            8: "Committee-Discussion.png",
+            9: "Signed-by-President.png",
+            }
+                        %}
+                <img class="stage-icon" src="/static/icons/{{ icon_dict[event.stage.stage_id] }}"/>
+            </div>
             <p class="text-muted"><span class="stage-title">Stage: {{ event.stage.name }}</span></p>
 
             {{ render_agent(event.agent) }}

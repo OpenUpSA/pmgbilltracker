@@ -72,6 +72,12 @@
     margin: 10px;
     margin-top: 5px;
     background-color: lightgrey;
+    border-radius: 5px;
+}
+
+.stage-icon{
+    width: 65px;
+    margin: 5px;
 }
 
 .content-item{
