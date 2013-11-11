@@ -121,3 +121,13 @@
     margin-bottom: 10px;
 }
 
+#process-img-container{
+    background-image:url('/static/images/highlight.png');
+    background-repeat:no-repeat;
+    background-size:10%;
+    background-position: 59.7% 23%;
+}
+
+#process-img{
+    width: 100%;
+}
