@@ -63,9 +63,15 @@
 {% macro render_content_item(type, items) -%}
     {% for item in items %}
         <p class="content-item">
-            <a href="/{{ item.url }}">
-                <i class="fa fa-file-o fa-lg"></i> {{ item.title }}
-            </a>
+            {% if "http://" in item.url %}
+                <a href="{{ item.url }}" target="_blank">
+                    <i class="fa fa-chevron-right fa-lg"></i> {{ item.title }}
+                </a>
+            {% else %}
+                <a href="/{{ item.url }}">
+                    <i class="fa fa-file-o fa-lg"></i> {{ item.title }}
+                </a>
+            {% endif %}
         </p>
     {% endfor %}
 {%- endmacro %}
