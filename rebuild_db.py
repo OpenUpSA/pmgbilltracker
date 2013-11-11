@@ -96,6 +96,7 @@ def rebuild_db():
         (datetime.date(2013, 9, 2), stages[6], agents[1], "Accepted by the NCOP"),
         (datetime.date(2013, 9, 3), stages[8], agents[6], "Sent back to Parliament"),
         (datetime.date(2013, 9, 4), stages[1], agents[2]),
+        (datetime.date(2013, 10, 15), stages[1], agents[2]),
         ]
 
     events = []
@@ -116,8 +117,10 @@ def rebuild_db():
     bill_version_details = [
         (events[0], "B6 2010", "uploads/B6-2010.pdf"),
         (events[2], "B6B 2010", "uploads/B6B-2010.pdf"),
-        (events[4], "B6C 2010", "uploads/B6E-2010_15Oct2013.pdf"),
-        (events[4], "B6D 2010", "uploads/B6F-2010_15Oct2013.pdf"),
+        (events[4], "B6C 2010", "uploads/B6C-2010.pdf"),
+        (events[4], "B6D 2010", "uploads/B6D-2010.pdf"),
+        (events[11], "B6E 2010", "uploads/B6E-2010.pdf"),
+        (events[11], "B6F 2010", "uploads/B6F-2010.pdf"),
         ]
 
     for tmp in bill_version_details:
