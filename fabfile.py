@@ -134,10 +134,8 @@ def deploy_backend():
     sudo('chown -R ' + env.user + ':www-data /var/www/pmgbilltracker/pmg_backend')
     sudo('chown -R ' + env.user + ':www-data /var/www/pmgbilltracker/instance')
 
-    # and finally touch the wsgi.py file so that mod_wsgi triggers
-    # a reload of the application
+    # and finally reload the application
     sudo('/etc/init.d/apache2 reload')
-    sudo('touch /var/www/pmgbilltracker/wsgi_backend.py')
 
 
 def deploy_frontend():
@@ -151,8 +149,13 @@ def deploy_frontend():
     # upload the source tarball to the temporary folder on the server
     put('pmg_frontend.tar.gz', '/tmp/pmg_frontend.tar.gz')
 
-    # enter application directory and unzip
+    # turn off apache
+    with settings(warn_only=True):
+        sudo('/etc/init.d/apache2 stop')
+
+    # enter application directory
     with cd('/var/www/pmgbilltracker'):
+        # and unzip new files
         sudo('tar xzf /tmp/pmg_frontend.tar.gz')
 
     # now that all is set up, delete the tarball again
@@ -167,7 +170,5 @@ def deploy_frontend():
     sudo('chmod -R 770 /var/www/pmgbilltracker/pmg_frontend')
     sudo('chown -R ' + env.user + ':www-data /var/www/pmgbilltracker/pmg_frontend')
 
-    # and finally touch the wsgi.py file so that mod_wsgi triggers
-    # a reload of the application
-    sudo('/etc/init.d/apache2 reload')
-    sudo('touch /var/www/pmgbilltracker/wsgi_frontend.py')
+    # and finally reload the application
+    sudo('/etc/init.d/apache2 start')
