@@ -92,6 +92,12 @@ def configure():
     with settings(warn_only=True):
         sudo('a2dissite 000-default')
 
+    # enable apache's caching plugin
+    sudo('a2enmod expires')
+
+    # enable apache's gzip plugin
+    sudo('a2enmod deflate')
+
     # activate site
     sudo('a2ensite apache_backend.conf')
     sudo('a2ensite apache_frontend.conf')
