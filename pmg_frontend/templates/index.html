@@ -1,15 +1,5 @@
 {% extends "base.html" %}
 
-{% block head %}
-    <script type="text/javascript">
-    $(function(){
-        $(".bill-index-tile").on('click', function(){
-            window.location = "/bill/" + $(this).attr('data-bill-id')
-        })
-    })
-    </script>
-{% endblock %}
-
 {% block page %}
     <h1>Available bills</h1>
     <hr>
@@ -24,3 +14,13 @@
         </div>
     {% endfor %}
 {% endblock page %}
+
+{% block javascript %}
+    <script type="text/javascript">
+    $(function(){
+        $(".bill-index-tile").on('click', function(){
+            window.location = "/bill/" + $(this).attr('data-bill-id')
+        })
+    })
+    </script>
+{% endblock %}
