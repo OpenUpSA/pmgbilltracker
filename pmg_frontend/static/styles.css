@@ -91,7 +91,7 @@
     font-weight: bold;
 }
 
-.event{
+.stage{
     position: relative;
     padding-left: 95px;
     min-height: 85px;
@@ -113,9 +113,9 @@
     margin: 10px;
 }
 
-.content-item{
-    margin-left: 20px;
-}
+/*.content-item{*/
+    /*margin-left: 20px;*/
+/*}*/
 
 .version{
     margin-bottom: 10px;

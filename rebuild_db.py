@@ -134,7 +134,7 @@ def new_report(report_dict, tmp_bill, tmp_stage, tmp_agent, content_type):
     item.event = event
     item.type = content_type
     item.title = tmp_title
-    item.url = tmp_link
+    item.url = "http://www.pmg.org.za" + tmp_link
     #print event
     #print item
     return event, item

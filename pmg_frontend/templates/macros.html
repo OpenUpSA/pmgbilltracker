@@ -1,39 +1,42 @@
-{% macro render_event(event) -%}
+{% macro render_stage(stage) -%}
     <div class="row">
-        <div class="col-md-12 event">
-            <div class="revision-container pull-right text-right">
-                <p class="text-muted event-date"><small>{{ event.date }}</small></p>
-                {% if event.versions -%}
-                    {{ render_bill_versions(event.versions) }}
-                {%- endif %}
-            </div>
-
+        <div class="col-md-12 stage">
             <div class="icon-placeholder pull-left">
                 {% set
             icon_dict = {
-            1: "Bill-Introduced.png",
-            2: "Committee-Discussion.png",
-            3: "Public-Participation.png",
-            4: "1st-House.png",
-            5: "Bill-Introduced.png",
-            6: "Committee-Discussion.png",
-            7: "2nd-House.png",
-            8: "Committee-Discussion.png",
-            9: "Signed-by-President.png",
+                1: "Bill-Introduced.png",
+                2: "Committee-Discussion.png",
+                3: "Public-Participation.png",
+                4: "1st-House.png",
+                5: "Bill-Introduced.png",
+                6: "Committee-Discussion.png",
+                7: "2nd-House.png",
+                8: "Committee-Discussion.png",
+                9: "Signed-by-President.png",
             }
                         %}
-                <img class="stage-icon" src="/static/icons/{{ icon_dict[event.stage.stage_id] }}"/>
+                <img class="stage-icon" src="/static/icons/{{ icon_dict[stage[0].stage.stage_id] }}"/>
             </div>
-            <p class="text-muted"><span class="stage-title">Stage: {{ event.stage.name }}</span></p>
+            <p class="text-muted"><span class="stage-title">Stage: {{ stage[0].stage.name }}</span></p>
 
-            {{ render_agent(event.agent) }}
+            {{ render_agent(stage[0].agent) }}
 
-            {% if event.notes %}<p>{{ event.notes }}</p>{% endif %}
+            {% for event in stage %}
+                <div class="row">
+                    <div class="col-md-8">
+                        {% if event.content %}
+                            {{ render_content(event.content) }}
+                        {%- endif %}
+                    </div>
+{#                    <div class="col-md-4"></div>#}
+                    <div class="col-md-4"><p class="text-muted pull-right">{{ event.date }}</p></div>
 
-            {% if event.content %}
-                {{ render_content(event.content) }}
-            {%- endif %}
-        </div>
+                </div>
+                {% if event.notes %}<p>{{ event.notes }}</p>{% endif %}
+
+            {% endfor %}
+
+    </div>
     </div>
 {%- endmacro %}
 
@@ -76,14 +79,8 @@
     {% endfor %}
 {%- endmacro %}
 
-{% macro render_bill_versions(version_list) -%}
-    {% for version in version_list %}
-        {{ render_bill_version(version) }}
-    {% endfor %}
-{%- endmacro %}
-
-{% macro render_bill_version(version) -%}
-    <a class="btn btn-primary btn-lg version" href="/{{ version.url }}" role="button">
-        <i class="fa fa-file-text"></i> Bill version {{ version.title }}
-    </a><br>
-{%- endmacro %}
+{#{% macro render_bill_versions(version_list) -%}#}
+{#    {% for version in version_list %}#}
+{#        {{ render_bill_version(version) }}#}
+{#    {% endfor %}#}
+{#{%- endmacro %}#}

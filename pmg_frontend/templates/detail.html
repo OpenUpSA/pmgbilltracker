@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from 'macros.html' import render_event %}
+{% from 'macros.html' import render_stage %}
 {% block title %}{{ bill.name }}{% endblock %}
 
 {% block page_header %}
@@ -27,32 +27,29 @@
 
 {% block page %}
 
-    {% if bill.events | length > 0 %}
-        {% set prev_location = bill.events[0].stage.location.location_id %}
-
+    {% if stages %}
+        {% set prev_location = stages[0][0].stage.location.location_id %}
         <h2>Bill history</h2>
         <hr>
 
-        {% for event in bill.events %}
-            {% if loop.first or event.stage.location.location_id != prev_location %}
+        {% for stage in stages %}
+            {% if loop.first or stage[0].stage.location.location_id != prev_location %}
                 {% if not loop.first %}
                     </div>
                 {% endif %}
-                <div class="container location location-{{ event.stage.location.location_id }}">
-                <div class="location-title location-{{ event.stage.location.location_id }}">{{ event.stage.location.name }}</div>
-                {% set prev_location = event.stage.location.location_id %}
+                <!-- Location container -->
+                <div class="container location location-{{ stage[0].stage.location.location_id }}">
+                <div class="location-title location-{{ stage[0].stage.location.location_id }}">{{ stage[0].stage.location.name }}</div>
+                {% set prev_location = stage[0].stage.location.location_id %}
             {% else %}
                 {% if not loop.first %}
                     <hr>
                 {% endif %}
             {% endif %}
 
-        {{ render_event(event) }}
-
-        {% if loop.last %}
-            </div>
-        {% endif %}
+            {{ render_stage(stage) }}
         {% endfor %}
+
     {% else %}
         <p class="lead text-muted">There are no events to display.</p>
     {% endif %}

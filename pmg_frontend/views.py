@@ -35,8 +35,18 @@ def detail(bill_id=None):
     logger.debug("detail page called")
     r = requests.get("http://" + API_HOST + "/bill/" + str(bill_id) + "/")
     bill = r.json()
+    # separate events into stages
+    stages = []
+    current_stage = []
+    prev_stage = None
+    for event in bill['events']:
+        if current_stage and (event['stage']['stage_id'] != prev_stage):
+            stages.append(current_stage)
+            current_stage = []
+            prev_stage = event['stage']['stage_id']
+        current_stage.append(event)
 
-    return render_template('detail.html', bill=bill)
+    return render_template('detail.html', bill=bill, stages=stages)
 
 
 @app.route('/uploads/<path:file_name>')
