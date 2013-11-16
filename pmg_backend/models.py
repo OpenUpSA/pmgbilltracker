@@ -41,7 +41,7 @@ class Bill(db.Model):
             if self.events:
                 latest_version = None
                 current_status = None
-                for event in self.events.order_by(Event.date.desc()):
+                for event in self.events.order_by(Event.date):
                     # add event
                     event_list.append(event.to_dict())
                     # extract latest bill version
