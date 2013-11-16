@@ -30,8 +30,10 @@ class Bill(db.Model):
     objective = db.Column(db.String(1000))
 
     def to_dict(self, include_related=True):
-        # convert table row to dictionary
-        bill_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        bill_dict = {
+            c.name : getattr(self, c.name) 
+            for c in self.__table__.columns
+        }
         
         if include_related:
             # add related event objects
@@ -67,7 +69,6 @@ class Location(db.Model):
     short_name = db.Column(db.String(100))
 
     def to_dict(self):
-        # convert table row to dictionary
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
     def __str__(self):
@@ -83,12 +84,16 @@ class Stage(db.Model):
     name = db.Column(db.String(500), nullable=False)
     default_status = db.Column(db.String(500))
 
-    location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'), nullable=False)
+    location_id = db.Column(
+        db.Integer, db.ForeignKey('location.location_id'), nullable=False
+    )
     location = db.relationship('Location')
 
     def to_dict(self):
-        # convert table row to dictionary
-        stage_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        stage_dict = {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+        }
         stage_dict.pop('location_id')
         stage_dict['location'] = self.location.to_dict()
         return stage_dict
@@ -109,8 +114,9 @@ class Agent(db.Model):
     url = db.Column(db.String(500))
 
     def to_dict(self):
-        # convert table row to dictionary
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        return {
+            c.name: getattr(self, c.name) for c in self.__table__.columns
+        }
 
     def __str__(self):
         tmp = str(self.agent_id) + " - (" + self.type + ")"
@@ -137,7 +143,6 @@ class Event(db.Model):
     agent = db.relationship('Agent')
 
     def to_dict(self):
-        # convert table row to dictionary
         event_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
         # nest related fields
         event_dict.pop('agent_id')
@@ -184,8 +189,10 @@ class Version(db.Model):
     event = db.relationship('Event', backref=db.backref('bill_versions', lazy='dynamic'))
 
     def to_dict(self):
-        # convert table row to dictionary
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        return {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+        }
 
     def __str__(self):
         return str(self.version_id) + " - " + self.title + " (" + self.url + ")"
@@ -207,8 +214,10 @@ class Content(db.Model):
     type = db.relationship('ContentType')
 
     def to_dict(self):
-        # convert table row to dictionary
-        content_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        content_dict = {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+        }
 
         # add related content
         content_dict.pop('type_id')
@@ -229,8 +238,10 @@ class ContentType(db.Model):
     name = db.Column(db.String(100), unique=True)
 
     def to_dict(self):
-        # convert table row to dictionary
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        return {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+        }
 
     def __str__(self):
         return str(self.name)

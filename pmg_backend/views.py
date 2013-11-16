@@ -14,17 +14,14 @@ class CustomEncoder(simplejson.JSONEncoder):
     """
 
     def default(self, obj):
-        # turn dates into strings
         if isinstance(obj, (datetime, date)):
             encoded_obj = obj.strftime("%B %d, %Y")
-        # serialize nested objects
         elif isinstance(obj, db.Model):
             try:
                 encoded_obj = simplejson.dumps(obj.to_dict(), cls=CustomEncoder)
                 logger.debug(encoded_obj)
             except Exception:
                 encoded_obj = str(obj)
-        # everything else is handled by the simplejson serializer
         else:
             encoded_obj = simplejson.JSONEncoder.default(self, obj)
         return encoded_obj

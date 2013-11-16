@@ -26,40 +26,29 @@ class BillView(ModelView):
                 ("Section 75 (Ordinary Bills not affecting the provinces)", "Section 75 (Ordinary Bills not affecting the provinces)"),
                 ("Section 76 (Ordinary Bills affecting the provinces)", "Section 76 (Ordinary Bills affecting the provinces)"),
                 ("Other", "Other"),
-                ]
-        ))
+            ]
+        )
+    )
 
 
 class EventView(ModelView):
     form_overrides = dict(notes=TextAreaField)
     inline_models = [
         (
-            Version,
-            dict(
-                form_overrides={
-                    'url': form.FileUploadField
-                },
-                form_args={
-                    'url': {
-                        'label': 'File',
-                        'base_path': upload_path
-                    }
+            Version, {
+                'form_overrides' : {'url': form.FileUploadField},
+                'form_args' : {
+                    'url': {'label': 'File', 'base_path': upload_path}
                 }
-            )
+            }
         ),
         (
-            Content,
-            dict(
-                form_overrides={
-                    'url': form.FileUploadField
-                },
-                form_args={
-                    'url': {
-                        'label': 'File',
-                        'base_path': upload_path
-                    }
+            Content, {
+                'form_overrides' : {'url': form.FileUploadField},
+                'form_args' : {
+                    'url': {'label': 'File', 'base_path': upload_path}
                 }
-            )
+            }
         ),
     ]
 
