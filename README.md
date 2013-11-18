@@ -12,11 +12,13 @@ SETUP FOR LOCAL ENVIRONMENT:
 -----------------------
 To run this application in your local environment, using the builtin Flask dev-server:
 
-1. Install the required Python packages listed in *fabfile.py* under *install_dependencies()*.
-
-2. Navigate to the application folder in your terminal and run the dev server. First for the backend application:
+1. Navigate into the application folder and install the required Python packages:
 
         cd pmgbilltracker
+        sudo pip install -r requirements/local.txt
+
+2. Run the dev server. First for the backend application:
+
         python runserver_backend.py
 
 3. Open a new terminal, and do the same for the frontend application:
@@ -43,9 +45,20 @@ To deploy this application to an Ubuntu 13.10 instance on AWS EC2:
 4. Navigate into the application folder and run the server setup and deploy scripts:
 
         cd pmgbilltracker
-        fab staging install_dependencies
+        fab staging setup
         fab staging configure
         fab staging deploy_backend
         fab staging deploy_frontend
 
 More details about setup and deployment can be found in fabfile.py, the script that fabric runs during deployment.
+
+NOTES:
+------
+To access this server via SSH::
+
+    ssh -v -i ~/.ssh/aws_code4sa.pem ubuntu@54.229.255.34
+
+Error logs can be found at::
+
+    tail -n 100 /var/log/apache2/error.log
+    tail -n 100 /var/www/pmgbilltracker/debug.log

@@ -30,8 +30,8 @@ class CustomEncoder(simplejson.JSONEncoder):
 @app.route('/')
 def autodiscover():
     """
-    Provide a landing page that documents the API endpoints that are available, provides a link
-    to the admin interface and gives a high-level overview of the content in the database.
+    Provide a landing page that documents the API endpoints that are available, and provides a link
+    to the admin interface.
     """
 
     logger.debug("landing page called")
