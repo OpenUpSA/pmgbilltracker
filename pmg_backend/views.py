@@ -50,7 +50,7 @@ def bill(bill_id=None):
 
     else:
         out = []
-        bill_set = Bill.query.all()
+        bill_set = Bill.query.order_by(Bill.year.desc()).all()
         for bill_obj in bill_set:
             out.append(bill_obj.to_dict(include_related=False))
 

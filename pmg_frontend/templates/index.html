@@ -5,10 +5,16 @@
     <hr>
     {% for bill in bills %}
         <div class="bill-index-tile" data-bill-id="{{ bill.bill_id }}">
-            <h2>{{ bill.name }}</h2>
-            <p class="label label-info bill-status">{{ bill.status }}</p>
-            <p>{{ bill.bill_type }}</p>
-            <p><em>{{ bill.objective }}</em></p>
+            <h2>{{ bill.name }} <span class="pull-right"><small>({{ bill.code }} {{ bill.year }})</small></span></h2>
+            {% if bill.introduced_by -%}
+                <p>Introduced by: {{ bill.introduced_by }}</p>
+            {%- endif %}
+            {% if bill.type -%}
+                <p>{{ bill.bill_type }}</p>
+            {%- endif %}
+            {% if bill.objective -%}
+                <p><em>{{ bill.objective }}</em></p>
+            {%- endif %}
             <a href="/bill/{{ bill.bill_id }}/"><span class="glyphicon glyphicon-chevron-right"></span> more info</a>
             <hr>
         </div>
@@ -17,10 +23,10 @@
 
 {% block javascript %}
     <script type="text/javascript">
-    $(function(){
-        $(".bill-index-tile").on('click', function(){
-            window.location = "/bill/" + $(this).attr('data-bill-id')
+        $(function(){
+            $(".bill-index-tile").on('click', function(){
+                window.location = "/bill/" + $(this).attr('data-bill-id')
+            })
         })
-    })
     </script>
 {% endblock %}

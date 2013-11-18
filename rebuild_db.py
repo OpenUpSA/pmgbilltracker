@@ -55,6 +55,7 @@ def rebuild_db():
     b1 = Bill()
     b1.name = 'Protection of State Information Bill'
     b1.code = "Bill 06"
+    b1.year = 2010
     b1.introduced_by = "Minister of State Security"
     b1.bill_type = 'Section 75 (Ordinary Bills not affecting provinces)'
     b1.objective = 'To provide for the protection of certain information from destruction, loss or unlawful disclosure; to regulate the manner in which information may be protected; to repeal the Protection of Information Act, 1982; and to provide for matters connected therewith.'
@@ -67,6 +68,8 @@ def rebuild_db():
         tmp.code = bill["bill_number"]
         if bill.get("introduced_by"):
             tmp.introduced_by = bill["introduced_by"]
+        if bill.get("versions"):
+            tmp.year = int(bill["versions"][-1]["date"][0:4])
         unique = tmp.name + tmp.code
         while unique in log:
             tmp.code += " II"
