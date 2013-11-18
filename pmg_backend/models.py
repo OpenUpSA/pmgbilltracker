@@ -24,10 +24,15 @@ class User(db.Model):
 
 class Bill(db.Model):
 
+    __table_args__ = ( db.UniqueConstraint('name', 'code'), { } )
     bill_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(500), unique=True, nullable=False)
+    name = db.Column(db.String(500), nullable=False)
+    code = db.Column(db.String(100))
+    introduced_by = db.Column(db.String(500))
     bill_type = db.Column(db.String(100))
     objective = db.Column(db.String(1000))
+
+
 
     def to_dict(self, include_related=True):
         bill_dict = {
