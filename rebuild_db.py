@@ -144,17 +144,9 @@ def rebuild_db():
 
     event_details = [
         (datetime.date(2010, 3, 4), stages[0], agents[5], "Introduced to parliament"),
-        (datetime.date(2011, 6, 20), stages[1], agents[2], "Assigned to a committee"),
         (datetime.date(2011, 9, 4), stages[1], agents[2]),
-        (datetime.date(2012, 5, 6), stages[2], agents[2]),
         (datetime.date(2013, 4, 24), stages[1], agents[2]),
-        (datetime.date(2013, 5, 3), stages[1], agents[2]),
-        (datetime.date(2013, 8, 20), stages[3], agents[0], "Accepted by the National Assembly"),
-        (datetime.date(2013, 9, 1), stages[5], agents[3]),
-        (datetime.date(2013, 9, 2), stages[7], agents[1], "Accepted by the NCOP"),
-        (datetime.date(2013, 9, 3), stages[9], agents[6], "Sent back to Parliament"),
-        (datetime.date(2013, 9, 4), stages[1], agents[2]),
-        (datetime.date(2013, 10, 15), stages[1], agents[2]),
+        (datetime.date(2013, 10, 15), stages[1], agents[2], "Revised by National Assembly Committee"),
         ]
 
     events = []
@@ -174,11 +166,11 @@ def rebuild_db():
 
     bill_version_details = [
         (events[0], "B6 2010", "uploads/B6-2010.pdf"),
-        (events[2], "B6B 2010", "uploads/B6B-2010.pdf"),
-        (events[4], "B6C 2010", "uploads/B6C-2010.pdf"),
-        (events[4], "B6D 2010", "uploads/B6D-2010.pdf"),
-        (events[11], "B6E 2010", "uploads/B6E-2010.pdf"),
-        (events[11], "B6F 2010", "uploads/B6F-2010.pdf"),
+        (events[1], "B6B 2010", "uploads/B6B-2010.pdf"),
+        (events[2], "B6C 2010", "uploads/B6C-2010.pdf"),
+        (events[2], "B6D 2010", "uploads/B6D-2010.pdf"),
+        (events[3], "B6E 2010", "uploads/B6E-2010.pdf"),
+        (events[3], "B6F 2010", "uploads/B6F-2010.pdf"),
         ]
 
     for tmp in bill_version_details:
@@ -208,27 +200,27 @@ def rebuild_db():
         db.session.add(content_type)
         content_types.append(content_type)
 
-    content_details = [
-        (events[0], content_types[0], "Gazette no. 32999", "uploads/Gazette-32999_2010-03-05.pdf"),
-        (events[0], content_types[3], "White Paper", "uploads/Gazette-30885_2008-03-18.pdf"),
-        (events[1], content_types[5], "Meeting report: 20 June 2011", "uploads/example.pdf"),
-        (events[3], content_types[5], "Meeting report: 6 May 2012 - Public Hearings", "uploads/example.pdf"),
-        (events[4], content_types[6], "Committee Report", "http://www.pmg.org.za/report/20130423-protection-state-information-bill-and-committee-report-adoption"),
-        (events[5], content_types[5], "Meeting report: 3 May 2013", "uploads/example.pdf"),
-        (events[5], content_types[6], "Committee Report", "uploads/example.pdf"),
-        (events[6], content_types[7], "Hansard Minutes", "uploads/example.pdf"),
-        (events[11], content_types[6], "Committee Report", "http://www.pmg.org.za/atc131015-report-ad-hoc-committee-protection-state-information-bill-protection-state-information-bill-b-6d-2010"),
-        ]
+    #content_details = [
+    #    (events[0], content_types[0], "Gazette no. 32999", "uploads/Gazette-32999_2010-03-05.pdf"),
+    #    (events[0], content_types[3], "White Paper", "uploads/Gazette-30885_2008-03-18.pdf"),
+    #    (events[1], content_types[5], "Meeting report: 20 June 2011", "uploads/example.pdf"),
+    #    (events[3], content_types[5], "Meeting report: 6 May 2012 - Public Hearings", "uploads/example.pdf"),
+    #    (events[4], content_types[6], "Committee Report", "http://www.pmg.org.za/report/20130423-protection-state-information-bill-and-committee-report-adoption"),
+    #    (events[5], content_types[5], "Meeting report: 3 May 2013", "uploads/example.pdf"),
+    #    (events[5], content_types[6], "Committee Report", "uploads/example.pdf"),
+    #    (events[6], content_types[7], "Hansard Minutes", "uploads/example.pdf"),
+    #    (events[11], content_types[6], "Committee Report", "http://www.pmg.org.za/atc131015-report-ad-hoc-committee-protection-state-information-bill-protection-state-information-bill-b-6d-2010"),
+    #    ]
 
-    content = []
-    for tmp in content_details:
-        item = Content()
-        item.event = tmp[0]
-        item.type = tmp[1]
-        item.title = tmp[2]
-        item.url = tmp[3]
-        db.session.add(item)
-        content.append(item)
+    #content = []
+    #for tmp in content_details:
+    #    item = Content()
+    #    item.event = tmp[0]
+    #    item.type = tmp[1]
+    #    item.title = tmp[2]
+    #    item.url = tmp[3]
+    #    db.session.add(item)
+    #    content.append(item)
 
     for na_report in na_reports:
         tmp_event, tmp_content = new_report(na_report, b1, stages[1], agents[2], content_types[-1])
