@@ -7,16 +7,28 @@
         <div class="container">
             <h1>{{ bill.name }}</h1>
 
-            <p>{{ bill.bill_type }}</p>
-            <p class="lead">{{ bill.objective }}</p>
-            {% if bill.latest_version %}
+            {% if bill.introduced_by -%}
+                <p>Introduced by: {{ bill.introduced_by }}</p>
+            {%- endif %}
+
+            {% if bill.bill_type -%}
+                <p>{{ bill.bill_type }}</p>
+            {%- endif %}
+
+            {% if bill.objective -%}
+                <p class="lead">{{ bill.objective }}</p>
+            {%- endif %}
+
+            {% if bill.latest_version -%}
                 <div class="pull-right">
                     Latest version: <a href="/{{ bill.latest_version.url }}">
                     <i class="fa fa-file-text"></i> {{ bill.latest_version.title }}
                 </a><br>
                 </div>
-            {% endif %}
+            {%- endif %}
+        {% if bill.status -%}
             <p class="label label-info bill-status">Status: {{ bill.status }}</p>
+        {%- endif %}
         </div>
     </div>
 
