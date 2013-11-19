@@ -21,8 +21,8 @@
 
             {% if bill.latest_version -%}
                 <div class="pull-right">
-                    Latest version: <a href="/{{ bill.latest_version.url }}">
-                    <i class="fa fa-file-text"></i> {{ bill.latest_version.title }}
+                    <a class="btn btn-primary" role="button" target="_blank" href="/{{ bill.latest_version.url }}">
+                    <i class="fa fa-file-text"></i> Latest version ({{ bill.latest_version.title }})
                 </a><br>
                 </div>
             {%- endif %}

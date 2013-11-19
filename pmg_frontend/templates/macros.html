@@ -29,15 +29,20 @@
                             {{ render_content(event.content) }}
                         {%- endif %}
                     </div>
-{#                    <div class="col-md-4"></div>#}
-                    <div class="col-md-4"><p class="text-muted pull-right">{{ event.date }}</p></div>
+                    <div class="col-md-4 text-right">
+                        {% if event.versions %}
+                            {{ render_versions(event.versions) }}
+                        {% else %}
+                            <p class="text-muted pull-right">{{ event.date }}</p>
+                        {%- endif %}
+                    </div>
 
                 </div>
                 {% if event.notes %}<p>{{ event.notes }}</p>{% endif %}
 
             {% endfor %}
 
-    </div>
+        </div>
     </div>
 {%- endmacro %}
 
@@ -80,8 +85,10 @@
     {% endfor %}
 {%- endmacro %}
 
-{#{% macro render_bill_versions(version_list) -%}#}
-{#    {% for version in version_list %}#}
-{#        {{ render_bill_version(version) }}#}
-{#    {% endfor %}#}
-{#{%- endmacro %}#}
+{% macro render_versions(version_list) -%}
+    {% for version in version_list %}
+        <a class="btn btn-primary bill-version" role="button" target="_blank" href="/{{ version.url }}">
+            <i class="fa fa-file-text"></i> Bill version: {{ version.title }}
+        </a><br>
+    {% endfor %}
+{%- endmacro %}

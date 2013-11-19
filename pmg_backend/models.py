@@ -51,7 +51,7 @@ class Bill(db.Model):
                     # add event
                     event_list.append(event.to_dict())
                     # extract latest bill version
-                    if not latest_version and len(event.bill_versions.all()) > 0:
+                    if len(event.bill_versions.all()) > 0:
                         latest_version = event.bill_versions[-1].to_dict()
                         bill_dict['latest_version'] = latest_version
                     # extract current status
