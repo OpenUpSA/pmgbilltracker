@@ -7,8 +7,16 @@ tmp = open('db_sources/na_reports.json', 'r')
 na_reports = simplejson.load(tmp)
 tmp.close()
 
+tmp = open('db_sources/na_hearings.json', 'r')
+na_hearings = simplejson.load(tmp)
+tmp.close()
+
 tmp = open('db_sources/ncop_reports.json', 'r')
 ncop_reports = simplejson.load(tmp)
+tmp.close()
+
+tmp = open('db_sources/ncop_hearings.json', 'r')
+ncop_hearings = simplejson.load(tmp)
 tmp.close()
 
 tmp = open('db_sources/all_bills.json', 'r')
@@ -119,6 +127,7 @@ def rebuild_db():
         (locations[0], "National Assembly", "Up for debate in the National Assembly"),
         (locations[1], "Introduced to National Council of Provinces", "Waiting to be assigned to a committee"),
         (locations[1], "National Council of Provinces Committee", "Under review by NCOP Committee"),
+        (locations[1], "Public participation", "Open for public submissions"),
         (locations[1], "National Council of Provinces", "Up for debate in the NCOP"),
         (locations[0], "Mediation Committee", "Under review by Joint Committee"),
         (locations[2], "Presidential Signature", "Waiting to be signed into law"),
@@ -142,8 +151,8 @@ def rebuild_db():
         (datetime.date(2013, 5, 3), stages[1], agents[2]),
         (datetime.date(2013, 8, 20), stages[3], agents[0], "Accepted by the National Assembly"),
         (datetime.date(2013, 9, 1), stages[5], agents[3]),
-        (datetime.date(2013, 9, 2), stages[6], agents[1], "Accepted by the NCOP"),
-        (datetime.date(2013, 9, 3), stages[8], agents[6], "Sent back to Parliament"),
+        (datetime.date(2013, 9, 2), stages[7], agents[1], "Accepted by the NCOP"),
+        (datetime.date(2013, 9, 3), stages[9], agents[6], "Sent back to Parliament"),
         (datetime.date(2013, 9, 4), stages[1], agents[2]),
         (datetime.date(2013, 10, 15), stages[1], agents[2]),
         ]
@@ -226,8 +235,18 @@ def rebuild_db():
         db.session.add(tmp_event)
         db.session.add(tmp_content)
 
+    for na_report in na_hearings:
+        tmp_event, tmp_content = new_report(na_report, b1, stages[2], agents[2], content_types[-1])
+        db.session.add(tmp_event)
+        db.session.add(tmp_content)
+
     for ncop_report in ncop_reports:
         tmp_event, tmp_content = new_report(ncop_report, b1, stages[5], agents[3], content_types[-1])
+        db.session.add(tmp_event)
+        db.session.add(tmp_content)
+
+    for ncop_report in ncop_hearings:
+        tmp_event, tmp_content = new_report(ncop_report, b1, stages[6], agents[3], content_types[-1])
         db.session.add(tmp_event)
         db.session.add(tmp_content)
 

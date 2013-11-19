@@ -51,8 +51,14 @@ def bill(bill_id=None):
     else:
         out = []
         bill_set = Bill.query.order_by(Bill.year.desc()).all()
+        tmp = None
         for bill_obj in bill_set:
-            out.append(bill_obj.to_dict(include_related=False))
+            # catch protection of state information bill, so it can go up top
+            if bill_obj.bill_id == 1:
+                tmp = bill_obj.to_dict(include_related=False)
+            else:
+                out.append(bill_obj.to_dict(include_related=False))
+        out = [tmp] + out
 
     response = make_response(simplejson.dumps(out, cls=CustomEncoder))
     response.mimetype = "application/json"
