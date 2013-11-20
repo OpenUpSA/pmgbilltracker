@@ -39,32 +39,6 @@ class Bill(db.Model):
     draft = db.Column(db.String(200))
     gazette = db.Column(db.String(200))
 
-    def to_dict(self, include_related=True):
-        bill_dict = {
-            c.name : getattr(self, c.name)
-            for c in self.__table__.columns
-        }
-
-        if include_related:
-            # add related entry objects
-            entry_list = []
-            if self.entries:
-                latest_version = None
-                current_status = None
-                for entry in self.entries.order_by(Entry.date):
-                    # add entry
-                    entry_list.append(entry.to_dict())
-                    # extract latest bill version
-                    if len(entry.bill_versions.all()) > 0:
-                        latest_version = entry.bill_versions[-1].to_dict()
-                        bill_dict['latest_version'] = latest_version
-                    # extract current status
-                    if entry.new_status:
-                        current_status = entry.new_status
-                        bill_dict['status'] = current_status
-            bill_dict['entries'] = entry_list
-        return bill_dict
-
     def __str__(self):
         return str(self.bill_id) + " - " + self.name
 
@@ -78,9 +52,6 @@ class Location(db.Model):
     name = db.Column(db.String(500), unique=True, nullable=False)
     short_name = db.Column(db.String(100))
 
-    def to_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
     def __str__(self):
         return str(self.location_id) + " - " + self.name
 
@@ -93,13 +64,6 @@ class Stage(db.Model):
     stage_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(500), nullable=False)
     default_status = db.Column(db.String(500))
-
-    def to_dict(self):
-        stage_dict = {
-            c.name: getattr(self, c.name)
-            for c in self.__table__.columns
-        }
-        return stage_dict
 
     def __str__(self):
         return str(self.stage_id) + " - " + self.name
@@ -115,11 +79,6 @@ class Agent(db.Model):
     name = db.Column(db.String(500))
     short_name = db.Column(db.String(100))
     url = db.Column(db.String(500))
-
-    def to_dict(self):
-        return {
-            c.name: getattr(self, c.name) for c in self.__table__.columns
-        }
 
     def __str__(self):
         tmp = str(self.agent_id) + " - (" + self.type + ")"
@@ -147,37 +106,6 @@ class Entry(db.Model):
     agent = db.relationship('Agent')
     location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'), nullable=True)
     location = db.relationship('Location')
-
-    def to_dict(self):
-        entry_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
-        # nest related fields
-        entry_dict.pop('agent_id')
-        entry_dict['agent'] = self.agent.to_dict()
-        entry_dict.pop('stage_id')
-        entry_dict['stage'] = self.stage.to_dict()
-        entry_dict.pop('location_id')
-        entry_dict['location'] = self.location.to_dict()
-
-        versions = []
-        for item in self.bill_versions.all():
-            tmp = item.to_dict()
-            tmp.pop('entry_id')
-            versions.append(tmp)
-        entry_dict['versions'] = versions
-
-        content = {}
-        for item in self.content.all():
-            tmp = item.to_dict()
-            tmp.pop('entry_id')
-            content_type = tmp['type']
-            if content.get(content_type):
-                content[content_type].append(tmp)
-            else:
-                content[content_type] = [tmp, ]
-        entry_dict['content'] = content
-
-        entry_dict.pop('bill_id')
-        return entry_dict
 
     def __str__(self):
         return str(self.entry_id) + " - (" + str(self.stage) + ") " + str(self.agent)
