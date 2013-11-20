@@ -23,9 +23,32 @@ class BillView(ModelView):
         )
     )
 
+entry_types = [
+        "gazette",
+        "memorandum",
+        "greenpaper",
+        "whitepaper",
+        "draft",
+        "bill"
+        "pmg-meeting-report",
+        "committee-report",
+        "hansard-minutes",
+        "vote-count",
+        "other",
+        ]
+
+entry_type_choices = []
+for entry_type in entry_types:
+    entry_type_choices.append((entry_type, entry_type))
 
 class EntryView(ModelView):
-    form_overrides = dict(notes=TextAreaField)
+    form_overrides = dict(type=SelectField, notes=TextAreaField)
+    form_args = dict(
+        # Pass the choices to the `SelectField`
+        bill_type=dict(
+            choices=entry_type_choices
+        )
+    )
     inline_models = [
         (
             Tag, {

@@ -133,19 +133,6 @@ class Agent(db.Model):
 
 class Entry(db.Model):
 
-    #content_type_details = [
-    #    "gazette",
-    #    "memorandum",
-    #    "greenpaper",
-    #    "whitepaper",
-    #    "draft-bill",
-    #    "pmg-meeting-report",
-    #    "committee-report",
-    #    "hansard-minutes",
-    #    "vote-count",
-    #    "other",
-    #    ]
-
     entry_id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
 
