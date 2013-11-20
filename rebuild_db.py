@@ -200,28 +200,6 @@ def rebuild_db():
         db.session.add(content_type)
         content_types.append(content_type)
 
-    #content_details = [
-    #    (events[0], content_types[0], "Gazette no. 32999", "uploads/Gazette-32999_2010-03-05.pdf"),
-    #    (events[0], content_types[3], "White Paper", "uploads/Gazette-30885_2008-03-18.pdf"),
-    #    (events[1], content_types[5], "Meeting report: 20 June 2011", "uploads/example.pdf"),
-    #    (events[3], content_types[5], "Meeting report: 6 May 2012 - Public Hearings", "uploads/example.pdf"),
-    #    (events[4], content_types[6], "Committee Report", "http://www.pmg.org.za/report/20130423-protection-state-information-bill-and-committee-report-adoption"),
-    #    (events[5], content_types[5], "Meeting report: 3 May 2013", "uploads/example.pdf"),
-    #    (events[5], content_types[6], "Committee Report", "uploads/example.pdf"),
-    #    (events[6], content_types[7], "Hansard Minutes", "uploads/example.pdf"),
-    #    (events[11], content_types[6], "Committee Report", "http://www.pmg.org.za/atc131015-report-ad-hoc-committee-protection-state-information-bill-protection-state-information-bill-b-6d-2010"),
-    #    ]
-
-    #content = []
-    #for tmp in content_details:
-    #    item = Content()
-    #    item.event = tmp[0]
-    #    item.type = tmp[1]
-    #    item.title = tmp[2]
-    #    item.url = tmp[3]
-    #    db.session.add(item)
-    #    content.append(item)
-
     for na_report in na_reports:
         tmp_event, tmp_content = new_report(na_report, b1, stages[1], agents[2], content_types[-1])
         db.session.add(tmp_event)
