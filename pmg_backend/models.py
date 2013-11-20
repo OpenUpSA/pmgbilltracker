@@ -133,6 +133,19 @@ class Agent(db.Model):
 
 class Entry(db.Model):
 
+    #content_type_details = [
+    #    "gazette",
+    #    "memorandum",
+    #    "greenpaper",
+    #    "whitepaper",
+    #    "draft-bill",
+    #    "pmg-meeting-report",
+    #    "committee-report",
+    #    "hansard-minutes",
+    #    "vote-count",
+    #    "other",
+    #    ]
+
     entry_id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
 
@@ -141,11 +154,11 @@ class Entry(db.Model):
     title = db.Column(db.String(500))
     description = db.Column(db.String(1000))
 
-    stage_id = db.Column(db.Integer, db.ForeignKey('stage.stage_id'), nullable=False)
+    stage_id = db.Column(db.Integer, db.ForeignKey('stage.stage_id'), nullable=True)
     stage = db.relationship('Stage')
-    agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'), nullable=False)
+    agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'), nullable=True)
     agent = db.relationship('Agent')
-    location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'), nullable=False)
+    location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'), nullable=True)
     location = db.relationship('Location')
 
     def to_dict(self):

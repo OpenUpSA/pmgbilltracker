@@ -1,5 +1,5 @@
 import datetime
-from pmg_backend.models import Bill, Agent, Location, Stage, Event, Version, Content, ContentType
+from pmg_backend.models import Bill, Agent, Location, Stage, Entry
 from pmg_backend import db
 import simplejson
 
@@ -36,20 +36,20 @@ def new_report(report_dict, tmp_bill, tmp_stage, tmp_agent, content_type):
     tmp_link = report_dict['link'][0]
     tmp_title = report_dict['title'][0]
 
-    event = Event()
-    event.bill = tmp_bill
-    event.date = tmp_date
-    event.stage = tmp_stage
-    event.agent = tmp_agent
+    entry = Entry()
+    entry.bill = tmp_bill
+    entry.date = tmp_date
+    entry.stage = tmp_stage
+    entry.agent = tmp_agent
 
     item = Content()
-    item.event = event
+    item.entry = entry
     item.type = content_type
     item.title = tmp_title
     item.url = "http://www.pmg.org.za" + tmp_link
-    #print event
+    #print entry
     #print item
-    return event, item
+    return entry, item
 
 
 def rebuild_db():
@@ -69,22 +69,22 @@ def rebuild_db():
     b1.objective = 'To provide for the protection of certain information from destruction, loss or unlawful disclosure; to regulate the manner in which information may be protected; to repeal the Protection of Information Act, 1982; and to provide for matters connected therewith.'
     db.session.add(b1)
 
-    log = []
-    for bill in all_bills:
-        tmp = Bill()
-        tmp.name = bill["bill_name"]
-        tmp.code = bill["bill_number"]
-        if bill.get("introduced_by"):
-            tmp.introduced_by = bill["introduced_by"]
-        if bill.get("versions"):
-            tmp.year = int(bill["versions"][-1]["date"][0:4])
-        unique = tmp.name + tmp.code
-        while unique in log:
-            tmp.code += " II"
-            unique += " II"
-
-        db.session.add(tmp)
-        log.append(unique)
+    #log = []
+    #for bill in all_bills:
+    #    tmp = Bill()
+    #    tmp.name = bill["bill_name"]
+    #    tmp.code = bill["bill_number"]
+    #    if bill.get("introduced_by"):
+    #        tmp.introduced_by = bill["introduced_by"]
+    #    if bill.get("versions"):
+    #        tmp.year = int(bill["versions"][-1]["date"][0:4])
+    #    unique = tmp.name + tmp.code
+    #    while unique in log:
+    #        tmp.code += " II"
+    #        unique += " II"
+    #
+    #    db.session.add(tmp)
+    #    log.append(unique)
 
     location_details = [
         ("National Assembly", "NA"),
@@ -142,83 +142,44 @@ def rebuild_db():
         db.session.add(stage)
         stages.append(stage)
 
-    event_details = [
-        (datetime.date(2010, 3, 4), stages[0], agents[5], "Introduced to parliament"),
-        (datetime.date(2011, 9, 4), stages[1], agents[2]),
-        (datetime.date(2013, 4, 24), stages[1], agents[2]),
-        (datetime.date(2013, 10, 15), stages[1], agents[2], "Revised by National Assembly Committee"),
+    bill_entries = [
+        (datetime.date(2010, 3, 4), "bill", stages[0], agents[5], "uploads/B6-2010.pdf"),
+        (datetime.date(2011, 9, 4), "bill", stages[1], agents[2], "uploads/B6B-2010.pdf"),
+        (datetime.date(2013, 4, 24), "bill", stages[1], agents[2], "uploads/B6C-2010.pdf"),
+        (datetime.date(2013, 4, 24), "bill", stages[1], agents[2], "uploads/B6D-2010.pdf"),
+        (datetime.date(2013, 10, 15), "bill", stages[1], agents[2], "uploads/B6E-2010.pdf"),
+        (datetime.date(2013, 10, 15), "bill", stages[1], agents[2], "uploads/B6F-2010.pdf"),
         ]
 
-    events = []
+    for tmp in bill_entries:
+        entry = Entry()
+        entry.bill = b1
+        entry.date = tmp[0]
+        entry.type = tmp[1]
+        entry.stage = tmp[2]
+        entry.agent = tmp[3]
+        entry.url = tmp[4]
+        db.session.add(entry)
 
-    for tmp in event_details:
-        event = Event()
-        event.bill = b1
-        event.date = tmp[0]
-        event.stage = tmp[1]
-        event.agent = tmp[2]
-        try:
-            event.new_status = tmp[3]
-        except IndexError:
-            event.new_status = tmp[1].default_status
-        db.session.add(event)
-        events.append(event)
-
-    bill_version_details = [
-        (events[0], "B6 2010", "uploads/B6-2010.pdf"),
-        (events[1], "B6B 2010", "uploads/B6B-2010.pdf"),
-        (events[2], "B6C 2010", "uploads/B6C-2010.pdf"),
-        (events[2], "B6D 2010", "uploads/B6D-2010.pdf"),
-        (events[3], "B6E 2010", "uploads/B6E-2010.pdf"),
-        (events[3], "B6F 2010", "uploads/B6F-2010.pdf"),
-        ]
-
-    for tmp in bill_version_details:
-        item = Version()
-        item.event = tmp[0]
-        item.title = tmp[1]
-        item.url = tmp[2]
-        db.session.add(item)
-
-    content_type_details = [
-        "gazette",
-        "memorandum",
-        "greenpaper",
-        "whitepaper",
-        "draft-bill",
-        "pmg-meeting-report",
-        "committee-report",
-        "hansard-minutes",
-        "vote-count",
-        "other",
-        ]
-
-    content_types = []
-
-    for tmp in content_type_details:
-        content_type = ContentType(name=tmp)
-        db.session.add(content_type)
-        content_types.append(content_type)
-
-    for na_report in na_reports:
-        tmp_event, tmp_content = new_report(na_report, b1, stages[1], agents[2], content_types[-1])
-        db.session.add(tmp_event)
-        db.session.add(tmp_content)
-
-    for na_report in na_hearings:
-        tmp_event, tmp_content = new_report(na_report, b1, stages[2], agents[2], content_types[-1])
-        db.session.add(tmp_event)
-        db.session.add(tmp_content)
-
-    for ncop_report in ncop_reports:
-        tmp_event, tmp_content = new_report(ncop_report, b1, stages[5], agents[3], content_types[-1])
-        db.session.add(tmp_event)
-        db.session.add(tmp_content)
-
-    for ncop_report in ncop_hearings:
-        tmp_event, tmp_content = new_report(ncop_report, b1, stages[6], agents[3], content_types[-1])
-        db.session.add(tmp_event)
-        db.session.add(tmp_content)
+    #for na_report in na_reports:
+    #    tmp_entry, tmp_content = new_report(na_report, b1, stages[1], agents[2], content_types[-1])
+    #    db.session.add(tmp_entry)
+    #    db.session.add(tmp_content)
+    #
+    #for na_report in na_hearings:
+    #    tmp_entry, tmp_content = new_report(na_report, b1, stages[2], agents[2], content_types[-1])
+    #    db.session.add(tmp_entry)
+    #    db.session.add(tmp_content)
+    #
+    #for ncop_report in ncop_reports:
+    #    tmp_entry, tmp_content = new_report(ncop_report, b1, stages[5], agents[3], content_types[-1])
+    #    db.session.add(tmp_entry)
+    #    db.session.add(tmp_content)
+    #
+    #for ncop_report in ncop_hearings:
+    #    tmp_entry, tmp_content = new_report(ncop_report, b1, stages[6], agents[3], content_types[-1])
+    #    db.session.add(tmp_entry)
+    #    db.session.add(tmp_content)
 
     db.session.commit()
     return
