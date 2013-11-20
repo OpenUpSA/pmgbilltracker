@@ -54,11 +54,11 @@ More details about setup and deployment can be found in fabfile.py, the script t
 
 NOTES:
 ------
-To access this server via SSH::
+To access this server via SSH:
 
     ssh -v -i ~/.ssh/aws_code4sa.pem ubuntu@54.229.255.34
 
-Error logs can be found at::
+Error logs can be found at:
 
     tail -n 100 /var/log/apache2/error.log
     tail -n 100 /var/www/pmgbilltracker/debug.log
