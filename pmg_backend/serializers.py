@@ -25,78 +25,62 @@ class CustomEncoder(simplejson.JSONEncoder):
 
 class BaseSerializer():
     """
-    Convert sqlalchemy models to Python dicts, before encoding them in JSON format.
+    Convert SQLAlchemy models to Python dicts, before encoding them in JSON format.
     """
 
     def __init__(self):
         return
 
-    def to_dict(self, obj):
-        return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
+    def to_dict(self, obj, include_related=False):
+        tmp_dict = {
+            c.name: getattr(obj, c.name) for c in obj.__table__.columns
+        }
+        return tmp_dict
 
-    def serialize(self, obj_or_list):
+    def serialize(self, obj_or_list, include_related=False):
         if isinstance(obj_or_list, db.Model):
-            out = self.to_dict(obj_or_list)
-            return simplejson.dumps(out, cls=CustomEncoder)
+            out = self.to_dict(obj_or_list, include_related)
         else:
             out = []
             for obj in obj_or_list:
-                out.append(self.to_dict(obj))
-            return simplejson.dumps(out, cls=CustomEncoder)
+                out.append(self.to_dict(obj, include_related))
+        return simplejson.dumps(out, cls=CustomEncoder)
 
 
-# Entry stuff
-#
-#def to_dict(self):
-#    entry_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
-#    # nest related fields
-#    entry_dict.pop('agent_id')
-#    entry_dict['agent'] = self.agent.to_dict()
-#    entry_dict.pop('stage_id')
-#    entry_dict['stage'] = self.stage.to_dict()
-#    entry_dict.pop('location_id')
-#    entry_dict['location'] = self.location.to_dict()
-#
-#    versions = []
-#    for item in self.bill_versions.all():
-#        tmp = item.to_dict()
-#        tmp.pop('entry_id')
-#        versions.append(tmp)
-#    entry_dict['versions'] = versions
-#
-#    content = {}
-#    for item in self.content.all():
-#        tmp = item.to_dict()
-#        tmp.pop('entry_id')
-#        content_type = tmp['type']
-#        if content.get(content_type):
-#            content[content_type].append(tmp)
-#        else:
-#            content[content_type] = [tmp, ]
-#    entry_dict['content'] = content
-#
-#    entry_dict.pop('bill_id')
-#    return entry_dict
+class BillSerializer(BaseSerializer):
+    """
+    Handle Bill models, and their related content.
+    """
 
-# Bill stuff
-#
-#if include_related:
-#    # add related entry objects
-#    entry_list = []
-#    if self.entries:
-#        latest_version = None
-#        current_status = None
-#        for entry in self.entries.order_by(Entry.date):
-#            # add entry
-#            entry_list.append(entry.to_dict())
-#            # extract latest bill version
-#            if len(entry.bill_versions.all()) > 0:
-#                latest_version = entry.bill_versions[-1].to_dict()
-#                bill_dict['latest_version'] = latest_version
-#            # extract current status
-#            if entry.new_status:
-#                current_status = entry.new_status
-#                bill_dict['status'] = current_status
-#    bill_dict['entries'] = entry_list
-#return bill_dict
+    def __init__(self):
+        return
 
+    def to_dict(self, obj, include_related=False):
+        tmp_dict = BaseSerializer.to_dict(self, obj)
+        content = []
+        if include_related:
+            for tag in obj.content.all():
+                tag_dict = BaseSerializer.to_dict(self, tag)
+                tag_dict.pop('bill_id')
+                entry_dict = BaseSerializer.to_dict(self, tag.entry)
+
+                location_dict = BaseSerializer.to_dict(self, tag.entry.location)
+                stage_dict = BaseSerializer.to_dict(self, tag.entry.stage)
+                agent_dict = BaseSerializer.to_dict(self, tag.entry.agent)
+
+                entry_dict['location'] = location_dict
+                entry_dict['stage'] = stage_dict
+                entry_dict['agent'] = agent_dict
+
+                entry_dict.pop('location_id')
+                entry_dict.pop('stage_id')
+                entry_dict.pop('agent_id')
+
+                tag_dict['entry'] = entry_dict
+                tag_dict.pop('entry_id')
+
+                content.append(tag_dict)
+                tmp_dict['content'] = content
+        else:
+            tmp_dict['content_count'] = obj.content.count()
+        return tmp_dict
