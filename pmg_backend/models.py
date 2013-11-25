@@ -21,6 +21,13 @@ class User(db.Model):
         return '<User %r>' % self.username
 
 
+# M2M table
+entry_bills_table = db.Table('entry_bills', db.Model.metadata,
+                             db.Column('entry_id', db.Integer, db.ForeignKey('entry.entry_id')),
+                             db.Column('bill_id', db.Integer, db.ForeignKey('bill.bill_id'))
+)
+
+
 class Bill(db.Model):
 
     __table_args__ = ( db.UniqueConstraint('code', 'year'), { } )
@@ -37,6 +44,8 @@ class Bill(db.Model):
     green_paper = db.Column(db.String(200))
     draft = db.Column(db.String(200))
     gazette = db.Column(db.String(200))
+
+    entries = db.relationship('Entry', secondary=entry_bills_table)
 
     def __str__(self):
         return str(self.bill_id) + " - " + self.name
@@ -105,25 +114,10 @@ class Entry(db.Model):
     agent = db.relationship('Agent')
     location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'), nullable=True)
     location = db.relationship('Location')
+    bills = db.relationship('Bill', secondary=entry_bills_table)
 
     def __str__(self):
         return str(self.entry_id) + " - (" + str(self.stage) + ") " + str(self.agent)
-
-    def __repr__(self):
-        return '<Entry: %r>' % str(self)
-
-
-class Tag(db.Model):
-
-    tag_id = db.Column(db.Integer, primary_key=True)
-
-    bill_id = db.Column(db.Integer, db.ForeignKey('bill.bill_id'), nullable=False)
-    bill = db.relationship('Bill', backref=db.backref('content', lazy='dynamic'))
-    entry_id = db.Column(db.Integer, db.ForeignKey('entry.entry_id'), nullable=False)
-    entry = db.relationship('Entry', backref=db.backref('tags', lazy='dynamic'))
-
-    def __str__(self):
-        return str(self.tag_id) + " - (" + str(self.bill) + ") " + str(self.entry)
 
     def __repr__(self):
         return '<Entry: %r>' % str(self)

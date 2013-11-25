@@ -41,6 +41,7 @@ entry_type_choices = []
 for entry_type in entry_types:
     entry_type_choices.append((entry_type, entry_type))
 
+
 class EntryView(ModelView):
     form_overrides = dict(type=SelectField, notes=TextAreaField)
     form_args = dict(
@@ -49,16 +50,21 @@ class EntryView(ModelView):
             choices=entry_type_choices
         )
     )
-    inline_models = [
-        (
-            Tag, {
-                'form_overrides' : {'url': form.FileUploadField},
-                'form_args' : {
-                    'url': {'label': 'File', 'base_path': upload_path}
-                }
-            }
-        ),
-    ]
+    form_ajax_refs = {
+        'bills': {
+            'fields': (Bill.name,)
+        }
+    }
+    #inline_models = [
+    #    (
+    #        Tag, {
+    #            'form_overrides' : {'url': form.FileUploadField},
+    #            'form_args' : {
+    #                'url': {'label': 'File', 'base_path': upload_path}
+    #            }
+    #        }
+    #    ),
+    #]
 
 admin = Admin(app, name='PMG Bill Tracker', base_template='admin/my_master.html')
 
@@ -72,4 +78,4 @@ admin.add_view(ModelView(Agent, db.session, name="Agents"))
 admin.add_view(ModelView(Location, db.session, name="Locations"))
 admin.add_view(ModelView(Stage, db.session, name="Stages"))
 
-admin.add_view(ModelView(Tag, db.session, name="Tags"))
+#admin.add_view(ModelView(Tag, db.session, name="Tags"))

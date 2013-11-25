@@ -57,32 +57,28 @@ class BillSerializer(BaseSerializer):
 
     def to_dict(self, obj, include_related=False):
         tmp_dict = BaseSerializer.to_dict(self, obj)
-        content = []
+        entries = []
         if include_related:
-            for tag in obj.content.all():
-                tag_dict = BaseSerializer.to_dict(self, tag)
-                tag_dict.pop('bill_id')
-                entry_dict = BaseSerializer.to_dict(self, tag.entry)
+            for entry in obj.entries:
+                entry_dict = BaseSerializer.to_dict(self, entry)
+                #entry_dict.pop('bill_id')
 
-                if tag.entry.location:
-                    location_dict = BaseSerializer.to_dict(self, tag.entry.location)
+                if entry.location:
+                    location_dict = BaseSerializer.to_dict(self, entry.location)
                     entry_dict['location'] = location_dict
-                if tag.entry.stage:
-                    stage_dict = BaseSerializer.to_dict(self, tag.entry.stage)
+                if entry.stage:
+                    stage_dict = BaseSerializer.to_dict(self, entry.stage)
                     entry_dict['stage'] = stage_dict
-                if tag.entry.agent:
-                    agent_dict = BaseSerializer.to_dict(self, tag.entry.agent)
+                if entry.agent:
+                    agent_dict = BaseSerializer.to_dict(self, entry.agent)
                     entry_dict['agent'] = agent_dict
 
                 entry_dict.pop('location_id')
                 entry_dict.pop('stage_id')
                 entry_dict.pop('agent_id')
 
-                tag_dict['entry'] = entry_dict
-                tag_dict.pop('entry_id')
-
-                content.append(tag_dict)
-                tmp_dict['content'] = content
+                entries.append(entry_dict)
+                tmp_dict['entries'] = entries
         else:
-            tmp_dict['content_count'] = obj.content.count()
+            tmp_dict['entry_count'] = len(obj.entries)
         return tmp_dict
