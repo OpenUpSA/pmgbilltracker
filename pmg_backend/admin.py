@@ -29,7 +29,7 @@ entry_types = [
         "greenpaper",
         "whitepaper",
         "draft",
-        "bill"
+        "bill",
         "pmg-meeting-report",
         "committee-report",
         "hansard-minutes",
@@ -45,7 +45,7 @@ class EntryView(ModelView):
     form_overrides = dict(type=SelectField, notes=TextAreaField)
     form_args = dict(
         # Pass the choices to the `SelectField`
-        bill_type=dict(
+        type=dict(
             choices=entry_type_choices
         )
     )

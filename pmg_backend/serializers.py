@@ -64,13 +64,15 @@ class BillSerializer(BaseSerializer):
                 tag_dict.pop('bill_id')
                 entry_dict = BaseSerializer.to_dict(self, tag.entry)
 
-                location_dict = BaseSerializer.to_dict(self, tag.entry.location)
-                stage_dict = BaseSerializer.to_dict(self, tag.entry.stage)
-                agent_dict = BaseSerializer.to_dict(self, tag.entry.agent)
-
-                entry_dict['location'] = location_dict
-                entry_dict['stage'] = stage_dict
-                entry_dict['agent'] = agent_dict
+                if tag.entry.location:
+                    location_dict = BaseSerializer.to_dict(self, tag.entry.location)
+                    entry_dict['location'] = location_dict
+                if tag.entry.stage:
+                    stage_dict = BaseSerializer.to_dict(self, tag.entry.stage)
+                    entry_dict['stage'] = stage_dict
+                if tag.entry.agent:
+                    agent_dict = BaseSerializer.to_dict(self, tag.entry.agent)
+                    entry_dict['agent'] = agent_dict
 
                 entry_dict.pop('location_id')
                 entry_dict.pop('stage_id')
