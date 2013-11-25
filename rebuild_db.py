@@ -64,22 +64,26 @@ def rebuild_db():
     b1.objective = 'To provide for the protection of certain information from destruction, loss or unlawful disclosure; to regulate the manner in which information may be protected; to repeal the Protection of Information Act, 1982; and to provide for matters connected therewith.'
     db.session.add(b1)
 
-    #log = []
-    #for bill in all_bills:
-    #    tmp = Bill()
-    #    tmp.name = bill["bill_name"]
-    #    tmp.code = bill["bill_number"]
-    #    if bill.get("introduced_by"):
-    #        tmp.introduced_by = bill["introduced_by"]
-    #    if bill.get("versions"):
-    #        tmp.year = int(bill["versions"][-1]["date"][0:4])
-    #    unique = tmp.name + tmp.code
-    #    while unique in log:
-    #        tmp.code += " II"
-    #        unique += " II"
-    #
-    #    db.session.add(tmp)
-    #    log.append(unique)
+    log = []
+    for bill in all_bills:
+        # test for draft bills
+        code = bill['bill_number'].lower().replace("x", "")
+        if (not "draft" in bill['bill_name'].lower()) and len(code) > 1:
+            if not bill['bill_name'] == "Protection Of Information Bill":
+                tmp = Bill()
+                tmp.name = bill["bill_name"]
+                tmp.code = bill["bill_number"]
+                if bill.get("introduced_by"):
+                    tmp.introduced_by = bill["introduced_by"]
+                if bill.get("versions"):
+                    tmp.year = int(bill["versions"][-1]["date"][0:4])
+                unique = str(tmp.year) + " " + tmp.code
+                while unique in log:
+                    tmp.code += " II"
+                    unique += " II"
+
+                db.session.add(tmp)
+                log.append(unique)
 
     location_details = [
         ("National Assembly", "NA"),
