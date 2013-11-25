@@ -50,21 +50,7 @@ class EntryView(ModelView):
             choices=entry_type_choices
         )
     )
-    form_ajax_refs = {
-        'bills': {
-            'fields': (Bill.name,)
-        }
-    }
-    #inline_models = [
-    #    (
-    #        Tag, {
-    #            'form_overrides' : {'url': form.FileUploadField},
-    #            'form_args' : {
-    #                'url': {'label': 'File', 'base_path': upload_path}
-    #            }
-    #        }
-    #    ),
-    #]
+    # TODO: add inline file upload / select existing uploads / paste raw url
 
 admin = Admin(app, name='PMG Bill Tracker', base_template='admin/my_master.html')
 

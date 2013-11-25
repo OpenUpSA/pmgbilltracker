@@ -25,7 +25,7 @@ all_bills = simplejson.load(tmp)
 tmp.close()
 
 
-def new_report(report_dict, tmp_bill, tmp_stage, tmp_agent, content_type):
+def new_report(report_dict, tmp_bill, tmp_stage, tmp_agent, entry_type):
 
     tmp_date = report_dict['date'][0]
     # convert date string to datetime object
@@ -37,19 +37,14 @@ def new_report(report_dict, tmp_bill, tmp_stage, tmp_agent, content_type):
     tmp_title = report_dict['title'][0]
 
     entry = Entry()
-    entry.bill = tmp_bill
+    entry.bills = [tmp_bill,]
     entry.date = tmp_date
     entry.stage = tmp_stage
     entry.agent = tmp_agent
-
-    item = Content()
-    item.entry = entry
-    item.type = content_type
-    item.title = tmp_title
-    item.url = "http://www.pmg.org.za" + tmp_link
-    #print entry
-    #print item
-    return entry, item
+    entry.type = entry_type
+    entry.title = tmp_title
+    entry.url = "http://www.pmg.org.za" + tmp_link
+    return entry
 
 
 def rebuild_db():
@@ -161,25 +156,21 @@ def rebuild_db():
         entry.url = tmp[4]
         db.session.add(entry)
 
-    #for na_report in na_reports:
-    #    tmp_entry, tmp_content = new_report(na_report, b1, stages[1], agents[2], content_types[-1])
-    #    db.session.add(tmp_entry)
-    #    db.session.add(tmp_content)
-    #
-    #for na_report in na_hearings:
-    #    tmp_entry, tmp_content = new_report(na_report, b1, stages[2], agents[2], content_types[-1])
-    #    db.session.add(tmp_entry)
-    #    db.session.add(tmp_content)
-    #
-    #for ncop_report in ncop_reports:
-    #    tmp_entry, tmp_content = new_report(ncop_report, b1, stages[5], agents[3], content_types[-1])
-    #    db.session.add(tmp_entry)
-    #    db.session.add(tmp_content)
-    #
-    #for ncop_report in ncop_hearings:
-    #    tmp_entry, tmp_content = new_report(ncop_report, b1, stages[6], agents[3], content_types[-1])
-    #    db.session.add(tmp_entry)
-    #    db.session.add(tmp_content)
+    for na_report in na_reports:
+        tmp_entry = new_report(na_report, b1, stages[1], agents[2], "pmg-meeting-report")
+        db.session.add(tmp_entry)
+
+    for na_report in na_hearings:
+        tmp_entry = new_report(na_report, b1, stages[2], agents[2], "pmg-meeting-report")
+        db.session.add(tmp_entry)
+
+    for ncop_report in ncop_reports:
+        tmp_entry = new_report(ncop_report, b1, stages[5], agents[3], "pmg-meeting-report")
+        db.session.add(tmp_entry)
+
+    for ncop_report in ncop_hearings:
+        tmp_entry = new_report(ncop_report, b1, stages[6], agents[3], "pmg-meeting-report")
+        db.session.add(tmp_entry)
 
     db.session.commit()
     return
