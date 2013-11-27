@@ -103,14 +103,14 @@
 {% macro render_entry(entry) -%}
 
     {% if entry.type == "bill" %}
-        <p class="bill-version">
-    New version introduced.
+        <p class="bill-version"><span class="entry-date text-muted">{{ entry.date }} - </span>
+        New version introduced.
         <a class="btn btn-primary btn-sm pull-right" role="button" target="_blank" href="/{{ entry.url }}">
             <i class="fa fa-file-text"></i> {{ entry.title }}
         </a>
             </p>
     {% else %}
-        <p class="entry">
+        <p class="entry"><span class="entry-date text-muted">{{ entry.date }} - </span>
         {% if "http://" in entry.url %}
             <a href="{{ entry.url }}" target="_blank">
                 <i class="fa fa-chevron-right fa-lg"></i> {{ entry.title }}
