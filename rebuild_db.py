@@ -142,22 +142,23 @@ def rebuild_db():
         stages.append(stage)
 
     bill_entries = [
-        (datetime.date(2010, 3, 4), "bill", stages[0], agents[5], "uploads/B6-2010.pdf"),
-        (datetime.date(2011, 9, 4), "bill", stages[1], agents[2], "uploads/B6B-2010.pdf"),
-        (datetime.date(2013, 4, 24), "bill", stages[1], agents[2], "uploads/B6C-2010.pdf"),
-        (datetime.date(2013, 4, 24), "bill", stages[1], agents[2], "uploads/B6D-2010.pdf"),
-        (datetime.date(2013, 10, 15), "bill", stages[1], agents[2], "uploads/B6E-2010.pdf"),
-        (datetime.date(2013, 10, 15), "bill", stages[1], agents[2], "uploads/B6F-2010.pdf"),
+        (datetime.date(2010, 3, 4), "bill", stages[0], agents[5], "uploads/B6-2010.pdf", "Protection of State Information Bill [B6 2010]"),
+        (datetime.date(2011, 9, 4), "bill", stages[1], agents[2], "uploads/B6B-2010.pdf", "Protection of State Information Bill [B6B 2010]"),
+        (datetime.date(2013, 4, 24), "bill", stages[1], agents[2], "uploads/B6C-2010.pdf", "Protection of State Information Bill [B6C 2010]"),
+        (datetime.date(2013, 4, 24), "bill", stages[1], agents[2], "uploads/B6D-2010.pdf", "Protection of State Information Bill [B6D 2010]"),
+        (datetime.date(2013, 10, 15), "bill", stages[1], agents[2], "uploads/B6E-2010.pdf", "Protection of State Information Bill [B6E 2010]"),
+        (datetime.date(2013, 10, 15), "bill", stages[1], agents[2], "uploads/B6F-2010.pdf", "Protection of State Information Bill [B6F 2010]"),
         ]
 
     for tmp in bill_entries:
         entry = Entry()
-        entry.bill = b1
+        entry.bills = [b1,]
         entry.date = tmp[0]
         entry.type = tmp[1]
         entry.stage = tmp[2]
         entry.agent = tmp[3]
         entry.url = tmp[4]
+        entry.title = tmp[5]
         db.session.add(entry)
 
     for na_report in na_reports:

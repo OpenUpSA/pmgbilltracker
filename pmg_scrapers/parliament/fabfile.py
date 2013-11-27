@@ -5,12 +5,12 @@ from fabric.api import *
 def server():
     """
     To access this server via SSH:
-        ssh -v -i ~/.ssh/aws_code4sa.pem ubuntu@ec2-54-194-43-40.eu-west-1.compute.amazonaws.com
+        ssh -v -i ~/.ssh/aws_code4sa.pem ubuntu@54.194.55.6
     Logs can be found at:
         tail -n 100 /home/ubuntu/spider.log
     """
 
-    env.hosts = ['ec2-54-194-43-40.eu-west-1.compute.amazonaws.com']
+    env.hosts = ['54.194.55.6']
     env.envname = 'server'
     env.user = 'ubuntu'
     env.group = 'ubuntu'

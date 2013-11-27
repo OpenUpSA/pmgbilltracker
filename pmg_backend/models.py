@@ -1,4 +1,5 @@
 from pmg_backend import db
+from sqlalchemy.orm import backref
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,8 +45,6 @@ class Bill(db.Model):
     green_paper = db.Column(db.String(200))
     draft = db.Column(db.String(200))
     gazette = db.Column(db.String(200))
-
-    entries = db.relationship('Entry', secondary=entry_bills_table)
 
     def __str__(self):
         return str(self.bill_id) + " - " + self.name
@@ -115,7 +114,7 @@ class Entry(db.Model):
     stage = db.relationship('Stage')
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'), nullable=True)
     agent = db.relationship('Agent')
-    bills = db.relationship('Bill', secondary=entry_bills_table)
+    bills = db.relationship('Bill', secondary=entry_bills_table, backref=backref("entries", order_by=date))
 
     def __str__(self):
         return str(self.entry_id) + " - (" + str(self.stage) + ") " + str(self.agent)

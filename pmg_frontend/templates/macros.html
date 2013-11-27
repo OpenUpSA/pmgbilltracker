@@ -1,49 +1,47 @@
-{% macro render_stage(stage) -%}
-    <div class="row">
-        <div class="col-md-12 stage">
-            <div class="icon-placeholder pull-left">
-                {% set
-            icon_dict = {
-                1: "Bill-Introduced.png",
-                2: "Committee-Discussion.png",
-                3: "Public-Participation.png",
-                4: "1st-House.png",
-                5: "Bill-Introduced.png",
-                6: "Committee-Discussion.png",
-                7: "Public-Participation.png",
-                8: "2nd-House.png",
-                9: "Committee-Discussion.png",
-                10: "Signed-by-President.png",
-            }
-                        %}
-                <img class="stage-icon" src="/static/icons/{{ icon_dict[stage[0].stage.stage_id] }}"/>
-            </div>
-            <p class="text-muted"><span class="stage-title">Stage: {{ stage[0].stage.name }}</span></p>
+{% macro render_entries(entries) -%}
 
-            {{ render_agent(stage[0].agent) }}
+    {% for entry in entries %}
+        {{ render_entry(entry) }}
+    {%  endfor %}
 
-            {% for event in stage %}
-                <div class="row">
-                    <div class="col-md-8">
-                        {% if event.content %}
-                            {{ render_content(event.content) }}
-                        {%- endif %}
-                    </div>
-                    <div class="col-md-4 text-right">
-                        {% if event.versions %}
-                            {{ render_versions(event.versions) }}
-                        {% else %}
-                            <p class="text-muted pull-right">{{ event.date }}</p>
-                        {%- endif %}
-                    </div>
-
-                </div>
-                {% if event.notes %}<p>{{ event.notes }}</p>{% endif %}
-
-            {% endfor %}
-
-        </div>
-    </div>
+    {#    {% if loop.first or stage[0].stage.location.location_id != prev_location %}#}
+    {#                {% if not loop.first %}#}
+    {#                    </div>#}
+    {#                {% endif %}#}
+    {#                <!-- Location container -->#}
+    {#                <div class="container location location-{{ stage[0].stage.location.location_id }}">#}
+    {#                <div class="location-title location-{{ stage[0].stage_id }}">{{ stage[0].stage.name }}</div>#}
+    {#                {% set prev_location = stage[0].stage.location.location_id %}#}
+    {#            {% else %}#}
+    {#                {% if not loop.first %}#}
+    {#                    <hr>#}
+    {#                {% endif %}#}
+    {#            {% endif %}#}
+    {#    <div class="row">#}
+    {#        <div class="col-md-12 stage">#}
+    {#            <div class="icon-placeholder pull-left">#}
+    {#                {% set#}
+    {#            icon_dict = {#}
+    {#                1: "Bill-Introduced.png",#}
+    {#                2: "Committee-Discussion.png",#}
+    {#                3: "Public-Participation.png",#}
+    {#                4: "1st-House.png",#}
+    {#                5: "Bill-Introduced.png",#}
+    {#                6: "Committee-Discussion.png",#}
+    {#                7: "Public-Participation.png",#}
+    {#                8: "2nd-House.png",#}
+    {#                9: "Committee-Discussion.png",#}
+    {#                10: "Signed-by-President.png",#}
+    {#            }#}
+    {#                        %}#}
+    {#                <img class="stage-icon" src="/static/icons/{{ icon_dict[stage[0].stage.stage_id] }}"/>#}
+    {#            </div>#}
+    {#            <p class="text-muted"><span class="stage-title">Stage: {{ stage[0].stage.name }}</span></p>#}
+    {##}
+    {#            {{ render_agent(stage[0].agent) }}#}
+    {##}
+    {#        </div>#}
+    {#    </div>#}
 {%- endmacro %}
 
 {% macro render_agent(agent) -%}
@@ -63,26 +61,25 @@
     </p>
 {%- endmacro %}
 
-{% macro render_content(content_dict) -%}
-    {% for type, items in content_dict.iteritems() %}
-        {{ render_content_item(type, items) }}
-    {% endfor %}
-{%- endmacro %}
 
-{% macro render_content_item(type, items) -%}
-    {% for item in items %}
-        <p class="content-item">
-            {% if "http://" in item.url %}
-                <a href="{{ item.url }}" target="_blank">
-                    <i class="fa fa-chevron-right fa-lg"></i> {{ item.title }}
-                </a>
-            {% else %}
-                <a href="/{{ item.url }}">
-                    <i class="fa fa-file-o fa-lg"></i> {{ item.title }}
-                </a>
-            {% endif %}
-        </p>
-    {% endfor %}
+{% macro render_entry(entry) -%}
+    <div class="row">
+        <p>{{ entry.type }}</p>
+    </div>
+    <p class="content-item">
+        {% if "http://" in entry.url %}
+            <a href="{{ entry.url }}" target="_blank">
+                <i class="fa fa-chevron-right fa-lg"></i> {{ entry.title }}
+            </a>
+        {% else %}
+            <a href="/{{ entry.url }}">
+                <i class="fa fa-file-o fa-lg"></i> {{ entry.title }}
+            </a>
+        {% endif %}
+    {% if entry.description %}
+        <br>{{ entry.description }}
+    {% endif %}
+    </p>
 {%- endmacro %}
 
 {% macro render_versions(version_list) -%}
