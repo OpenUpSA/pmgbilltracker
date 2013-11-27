@@ -24,7 +24,13 @@
     background-color: #eeeeee;
 }
 
+.bill-index-tile h3{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
 .bill-index-tile hr{
+    margin-top: 5px;
     margin-bottom: 0;
 }
 
@@ -45,6 +51,11 @@
     border-width: 2px;
     border-style: solid;
     margin-bottom: 20px;
+
+    margin-left: -17px;
+    padding-left: 17px;
+    margin-right: -17px;
+    padding-right: 17px;
 }
 
 .location.location-1{
