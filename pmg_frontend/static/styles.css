@@ -116,10 +116,6 @@
     margin: 10px;
 }
 
-/*.content-item{*/
-    /*margin-left: 20px;*/
-/*}*/
-
 .version{
     margin-bottom: 10px;
 }
@@ -136,5 +132,6 @@
 }
 
 .bill-version{
-    margin-bottom: 15px;
+    margin-right: 15px;
+    margin-bottom: 20px;
 }
