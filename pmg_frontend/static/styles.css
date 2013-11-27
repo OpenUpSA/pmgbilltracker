@@ -141,3 +141,7 @@
 .bill-link{
     margin-left: 5px;
 }
+
+.entry-date{
+    min-width: 140px;
+}
