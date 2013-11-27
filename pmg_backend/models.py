@@ -73,6 +73,9 @@ class Stage(db.Model):
     name = db.Column(db.String(500), nullable=False)
     default_status = db.Column(db.String(500))
 
+    location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'), nullable=True)
+    location = db.relationship('Location')
+
     def __str__(self):
         return str(self.stage_id) + " - " + self.name
 
@@ -112,8 +115,6 @@ class Entry(db.Model):
     stage = db.relationship('Stage')
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'), nullable=True)
     agent = db.relationship('Agent')
-    location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'), nullable=True)
-    location = db.relationship('Location')
     bills = db.relationship('Bill', secondary=entry_bills_table)
 
     def __str__(self):

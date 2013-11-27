@@ -61,21 +61,18 @@ class BillSerializer(BaseSerializer):
         if include_related:
             for entry in obj.entries:
                 entry_dict = BaseSerializer.to_dict(self, entry)
-                #entry_dict.pop('bill_id')
-
-                if entry.location:
-                    location_dict = BaseSerializer.to_dict(self, entry.location)
-                    entry_dict['location'] = location_dict
                 if entry.stage:
                     stage_dict = BaseSerializer.to_dict(self, entry.stage)
                     entry_dict['stage'] = stage_dict
+                    if entry.stage.location:
+                        location_dict = BaseSerializer.to_dict(self, entry.stage.location)
+                        entry_dict['stage']['location'] = location_dict
+                        entry_dict['stage'].pop('location_id')
+                    entry_dict.pop('stage_id')
                 if entry.agent:
                     agent_dict = BaseSerializer.to_dict(self, entry.agent)
                     entry_dict['agent'] = agent_dict
-
-                entry_dict.pop('location_id')
-                entry_dict.pop('stage_id')
-                entry_dict.pop('agent_id')
+                    entry_dict.pop('agent_id')
 
                 entries.append(entry_dict)
                 tmp_dict['entries'] = entries
