@@ -1,47 +1,48 @@
 {% macro render_entries(entries) -%}
+
     {% set current_location_id = 0 %}
+    {% set current_stage_id = 0 %}
 
     {% for entry in entries %}
+        {# Location Container #}
         {% if entry.stage and entry.stage.location and (entry.stage.location.location_id != current_location_id) %}
+            {% if current_stage_id != 0 %}
+                </div>
+                {% set current_stage_id = 0 %}
+            {% endif %}
             {{ start_location(entry.stage.location, current_location_id) }}
             {% set current_location_id = entry.stage.location.location_id %}
-        {% elif entry.stage and entry.stage.location %}
-        {# do nothing #}
+        {% elif entry.stage and entry.stage.location and (entry.stage.location.location_id == current_location_id) %}
+            {# do nothing #}
         {% elif current_location_id != 0 %}
             </div>
             {% set current_location_id = 0 %}
         {% endif %}
+
+        {# Stage Container #}
+        {% if entry.stage and (entry.stage.stage_id != current_stage_id) %}
+            {{ start_stage(entry.stage, current_stage_id) }}
+            {% set current_stage_id = entry.stage.stage_id %}
+        {% elif entry.stage and (entry.stage.stage_id == current_stage_id) %}
+            {# do nothing #}
+        {% elif current_stage_id != 0 %}
+            </div>
+            {% set current_stage_id = 0 %}
+        {% endif %}
+
         {{ render_entry(entry) }}
     {%  endfor %}
+
+    {% if current_stage_id != 0 %}
+        {# close last stage div #}
+        </div>
+    {% endif %}
 
     {% if current_location != 0 %}
         {# close last location div #}
         </div>
     {% endif %}
 
-    {#    <div class="row">#}
-    {#        <div class="col-md-12 stage">#}
-    {#            <div class="icon-placeholder pull-left">#}
-    {#                {% set#}
-    {#            icon_dict = {#}
-    {#                1: "Bill-Introduced.png",#}
-    {#                2: "Committee-Discussion.png",#}
-    {#                3: "Public-Participation.png",#}
-    {#                4: "1st-House.png",#}
-    {#                5: "Bill-Introduced.png",#}
-    {#                6: "Committee-Discussion.png",#}
-    {#                7: "Public-Participation.png",#}
-    {#                8: "2nd-House.png",#}
-    {#                9: "Committee-Discussion.png",#}
-    {#                10: "Signed-by-President.png",#}
-    {#            }#}
-    {#                        %}#}
-    {#                <img class="stage-icon" src="/static/icons/{{ icon_dict[stage[0].stage.stage_id] }}"/>#}
-    {#            </div>#}
-    {#            <p class="text-muted"><span class="stage-title">Stage: {{ stage[0].stage.name }}</span></p>#}
-    {#            {{ render_agent(stage[0].agent) }}#}
-    {#        </div>#}
-    {#    </div>#}
 {%- endmacro %}
 
 {% macro render_agent(agent) -%}
@@ -67,15 +68,42 @@
         </div>
     {% endif %}
     <div class="location location-{{ location.location_id }}">
-        <div class="location-title location-{{ location.location_id }}">
-            {{ location.name }}
-        </div>
+    <div class="location-title location-{{ location.location_id }}">
+        {{ location.name }}
+    </div>
+{%- endmacro %}
+
+{% macro start_stage(stage, current_stage_id) -%}
+    {% if current_stage_id != 0 %}
+        </div><hr>
+    {% endif %}
+    <div class="stage">
+
+    <div class="icon-placeholder pull-left">
+        {% set
+                icon_dict = {
+                    1: "Bill-Introduced.png",
+                    2: "Committee-Discussion.png",
+                    3: "Public-Participation.png",
+                    4: "1st-House.png",
+                    5: "Bill-Introduced.png",
+                    6: "Committee-Discussion.png",
+                    7: "Public-Participation.png",
+                    8: "2nd-House.png",
+                    9: "Committee-Discussion.png",
+                    10: "Signed-by-President.png",
+                }
+                %}
+        <img class="stage-icon" src="/static/icons/{{ icon_dict[stage.stage_id] }}"/>
+    </div>
+    <p class="text-muted"><span class="stage-title">Stage: {{ stage.name }}</span></p>
+
 {%- endmacro %}
 
 {% macro render_entry(entry) -%}
-{#    <div class="row">#}
-{#        <p>{{ entry.type }}</p>#}
-{#    </div>#}
+    {#    <div class="row">#}
+    {#        <p>{{ entry.type }}</p>#}
+    {#    </div>#}
     <p class="content-item">
         {% if "http://" in entry.url %}
             <a href="{{ entry.url }}" target="_blank">
