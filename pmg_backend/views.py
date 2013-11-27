@@ -19,15 +19,26 @@ def autodiscover():
 
 
 @app.route('/bill/')
-@app.route('/bill/<bill_id>/')
-def bill(bill_id=None):
+@app.route('/bill/year/<year>/')
+def bill_list(year=None):
 
-    logger.debug("Bill endpoint called")
-    if bill_id:
-        tmp = Bill.query.get_or_404(bill_id)
-        response = make_response(bill_serializer.serialize(tmp, include_related=True))
+    logger.debug("Bill list endpoint called")
+    if year:
+        tmp = Bill.query.filter(Bill.year==int(year)).all()
+        response = make_response(bill_serializer.serialize(tmp))
     else:
         tmp = Bill.query.order_by(Bill.year.desc()).all()
         response = make_response(bill_serializer.serialize(tmp))
+    response.mimetype = "application/json"
+    return response
+
+
+@app.route('/bill/<bill_id>/')
+def bill_detail(bill_id):
+
+    logger.debug("Bill detail endpoint called")
+
+    tmp = Bill.query.get_or_404(bill_id)
+    response = make_response(bill_serializer.serialize(tmp, include_related=True))
     response.mimetype = "application/json"
     return response

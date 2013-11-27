@@ -9,16 +9,17 @@ from pmg_frontend import logger
 API_HOST = app.config['API_HOST']
 
 @app.route('/')
-def index():
+@app.route('/<year>/')
+def index(year='2013'):
     """
     Display a list of available bills, with some summary info and a link to each bill's detail page.
     """
 
     logger.debug("landing page called")
-    r = requests.get("http://" + API_HOST + "/bill/")
+    r = requests.get("http://" + API_HOST + "/bill/year/" + year + "/")
     bills = r.json()
 
-    return render_template('index.html', bills=bills)
+    return render_template('index.html', year=year, bills=bills)
 
 
 @app.route('/bill/<bill_id>/')
