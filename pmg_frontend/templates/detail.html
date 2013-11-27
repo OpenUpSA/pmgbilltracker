@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from 'macros.html' import render_stage %}
+{% from 'macros.html' import render_entries %}
 {% block title %}{{ bill.name }}{% endblock %}
 
 {% block page_header %}
@@ -21,8 +21,9 @@
 
             {% if bill.latest_version -%}
                 <div class="pull-right">
+                Latest version:
                     <a class="btn btn-primary" role="button" target="_blank" href="/{{ bill.latest_version.url }}">
-                    <i class="fa fa-file-text"></i> Latest version ({{ bill.latest_version.title }})
+                    <i class="fa fa-file-text"></i> {{ bill.latest_version.title }}
                 </a><br>
                 </div>
             {%- endif %}
@@ -39,29 +40,11 @@
 
 {% block page %}
 
-    {% if stages %}
-        {% set prev_location = stages[0][0].stage.location.location_id %}
+    {% if bill.entries %}
+        {% set prev_location = bill.entries[0].stage.location.location_id %}
         <h2>Bill history</h2>
         <hr>
-
-        {% for stage in stages %}
-            {% if loop.first or stage[0].stage.location.location_id != prev_location %}
-                {% if not loop.first %}
-                    </div>
-                {% endif %}
-                <!-- Location container -->
-                <div class="container location location-{{ stage[0].stage.location.location_id }}">
-                <div class="location-title location-{{ stage[0].stage.location.location_id }}">{{ stage[0].stage.location.name }}</div>
-                {% set prev_location = stage[0].stage.location.location_id %}
-            {% else %}
-                {% if not loop.first %}
-                    <hr>
-                {% endif %}
-            {% endif %}
-
-            {{ render_stage(stage) }}
-        {% endfor %}
-
+            {{ render_entries(bill.entries) }}
     {% else %}
         <p class="lead text-muted">There are no events to display.</p>
     {% endif %}

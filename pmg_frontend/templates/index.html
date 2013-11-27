@@ -5,7 +5,7 @@
     <hr>
     {% for bill in bills %}
         <div class="bill-index-tile" data-bill-id="{{ bill.bill_id }}">
-            <h2>{{ bill.name }} <span class="pull-right"><small>({{ bill.code }} {{ bill.year }})</small></span></h2>
+            <h3>{{ bill.name }} <span class="pull-right"><small>({{ bill.code }} {{ bill.year }})</small></span></h3>
             {% if bill.introduced_by -%}
                 <p>Introduced by: {{ bill.introduced_by }}</p>
             {%- endif %}

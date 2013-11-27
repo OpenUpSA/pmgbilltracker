@@ -24,7 +24,13 @@
     background-color: #eeeeee;
 }
 
+.bill-index-tile h3{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
 .bill-index-tile hr{
+    margin-top: 5px;
     margin-bottom: 0;
 }
 
@@ -64,10 +70,7 @@
     border-top-right-radius: 15px;
     margin-top: -2px;
     padding-top: 2px;
-    margin-left: -17px;
     padding-left: 17px;
-    margin-right: -17px;
-    padding-right: 17px;
     margin-bottom: 10px;
     line-height: 2em;
     text-transform:uppercase;
@@ -113,10 +116,6 @@
     margin: 10px;
 }
 
-/*.content-item{*/
-    /*margin-left: 20px;*/
-/*}*/
-
 .version{
     margin-bottom: 10px;
 }
@@ -133,5 +132,6 @@
 }
 
 .bill-version{
-    margin-bottom: 15px;
+    margin-right: 15px;
+    margin-bottom: 20px;
 }
