@@ -62,6 +62,10 @@ def rebuild_db():
     b1.introduced_by = "Minister of State Security"
     b1.bill_type = 'Section 75 (Ordinary Bills not affecting provinces)'
     b1.objective = 'To provide for the protection of certain information from destruction, loss or unlawful disclosure; to regulate the manner in which information may be protected; to repeal the Protection of Information Act, 1982; and to provide for matters connected therewith.'
+    b1.draft = 'uploads/example.pdf'
+    b1.white_paper = 'uploads/example.pdf'
+    b1.green_paper = 'uploads/example.pdf'
+    b1.gazette = 'uploads/Gazette-32999_2010-03-05.pdf'
     db.session.add(b1)
 
     log = []

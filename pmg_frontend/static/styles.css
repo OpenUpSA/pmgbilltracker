@@ -40,6 +40,8 @@
 
 .jumbotron{
     font-size: 16px;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 .bill-status{
@@ -134,4 +136,8 @@
 .bill-version{
     margin-right: 15px;
     margin-bottom: 20px;
+}
+
+.bill-link{
+    margin-left: 5px;
 }
