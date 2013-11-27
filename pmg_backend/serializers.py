@@ -59,8 +59,11 @@ class BillSerializer(BaseSerializer):
         tmp_dict = BaseSerializer.to_dict(self, obj)
         entries = []
         if include_related:
+            latest_version_dict = {}
             for entry in obj.entries:
                 entry_dict = BaseSerializer.to_dict(self, entry)
+                if entry.type == "bill":
+                    latest_version_dict = entry_dict
                 if entry.stage:
                     stage_dict = BaseSerializer.to_dict(self, entry.stage)
                     entry_dict['stage'] = stage_dict
@@ -76,6 +79,8 @@ class BillSerializer(BaseSerializer):
 
                 entries.append(entry_dict)
                 tmp_dict['entries'] = entries
+            if latest_version_dict:
+                tmp_dict['latest_version'] = latest_version_dict
         else:
             tmp_dict['entry_count'] = len(obj.entries)
         return tmp_dict
