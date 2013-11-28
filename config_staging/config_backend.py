@@ -1,7 +1,7 @@
 import os.path as op
 import logging
 
-HOST = 'api.pmg.org.za'
+HOST = 'api.demo4sa.org'
 SQLALCHEMY_DATABASE_URI = 'sqlite:///pmgbilltracker.db'
 
 LOG_LEVEL = logging.DEBUG
