@@ -3,14 +3,23 @@
 {% block page %}
     <h1>Available bills</h1>
     <hr>
-    <div class="search-box-container pull-right">
-        <input id="search-box" type="text" data-source="{{ api_host }}/bill/">
+    <div class="row">
+        <div class="col-xs-7">
+            <div class="btn-group">
+                {% for i in ['2013', '2012', '2011', '2010', '2009', '2008', '2007', '2006'] %}
+                    <a href="/{{ i }}/" role="button" class="btn btn-default{% if year == i %} active{% endif %}">{{ i }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-xs-5">
+            <div class="search-box-container input-group" style="width: 100%;">
+                <span class="input-group-addon glyphicon glyphicon-search" style="top: 0;"></span>
+                <input id="search-box" type="search" class="form-control">
+            </div>
+        </div>
     </div>
-    <div class="btn-group">
-        {% for i in ['2013', '2012', '2011', '2010', '2009', '2008', '2007', '2006'] %}
-            <a href="/{{ i }}/" role="button" class="btn btn-default{% if year == i %} active{% endif %}">{{ i }}</a>
-        {% endfor %}
-    </div>
+
+
     <hr>
     {% for bill in bills %}
         <div class="bill-index-tile" data-bill-id="{{ bill.bill_id }}">
@@ -35,13 +44,38 @@
     <script type="text/javascript">
         $(function(){
             $(".bill-index-tile").on('click', function(){
-                window.location = "/bill/" + $(this).attr('data-bill-id')
+                window.location = "/bill/" + $(this).attr('data-bill-id') + "/"
             })
 
-            var options = {
-                'source': ["one", "two", "three"],
-                'updater': function(item){console.log(item)}
+            autocomplete_data = []
+            $.get("http://{{ api_host }}/bill/", function(data){
+                autocomplete_data = data;
+            }).fail(function() {
+                        $("#search-box").attr('disabled', "disabled").attr('placeholder', "Search is not available at present.")
 
+                    });
+
+            var options = {
+                source: function(query, process) {
+                    objects = [];
+                    map = {};
+                    $.each(autocomplete_data, function(i, object) {
+                        var tmp_name = object.name
+                        var tmp_code = "(" + object.code + " " + object.year + ")"
+                        if (tmp_name.length + tmp_code.length > 33)
+                            tmp_name = object.name.substring(0, 30) + "..."
+                        var key = tmp_name + " - " + tmp_code
+                        map[key] = object;
+                        objects.push(key);
+                    });
+                    process(objects);
+                },
+                updater: function(item) {
+                    $('hiddenInputElement').val(map[item].bill_id);
+                    window.location = "/bill/" + map[item].bill_id + "/"
+                    console.log(map[item].bill_id)
+                    return item;
+                }
             }
             $("#search-box").typeahead(options)
         })

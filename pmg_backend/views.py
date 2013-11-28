@@ -30,6 +30,7 @@ def bill_list(year=None):
         tmp = Bill.query.order_by(Bill.year.desc()).all()
         response = make_response(bill_serializer.serialize(tmp))
     response.mimetype = "application/json"
+    response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend
     return response
 
 

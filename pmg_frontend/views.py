@@ -10,13 +10,19 @@ API_HOST = app.config['API_HOST']
 
 @app.route('/')
 @app.route('/<year>/')
-def index(year='2013'):
+def index(year=2013):
     """
     Display a list of available bills, with some summary info and a link to each bill's detail page.
     """
 
+    try:
+        year = int(year)
+    except ValueError as e:
+        logger.debug(e)
+        abort(400)
+
     logger.debug("landing page called")
-    r = requests.get("http://" + API_HOST + "/bill/year/" + year + "/")
+    r = requests.get("http://" + API_HOST + "/bill/year/" + str(year) + "/")
     bills = r.json()
 
     return render_template('index.html', year=year, bills=bills, api_host=API_HOST)
