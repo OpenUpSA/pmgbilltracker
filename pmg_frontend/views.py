@@ -19,7 +19,7 @@ def index(year='2013'):
     r = requests.get("http://" + API_HOST + "/bill/year/" + year + "/")
     bills = r.json()
 
-    return render_template('index.html', year=year, bills=bills)
+    return render_template('index.html', year=year, bills=bills, api_host=API_HOST)
 
 
 @app.route('/bill/<bill_id>/')
