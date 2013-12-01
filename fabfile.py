@@ -5,11 +5,6 @@ from fabric.api import *
 def staging():
     """
     Env parameters for the staging environment.
-    To access this server via SSH:
-        ssh -v -i ~/.ssh/aws_code4sa.pem ubuntu@54.229.255.34
-    Error logs can be found at:
-        tail -n 100 /var/log/apache2/error.log
-        tail -n 100 /var/www/pmgbilltracker/debug.log
     """
 
     env.hosts = ['54.229.255.34']
@@ -21,7 +16,7 @@ def staging():
     print("STAGING ENVIRONMENT\n")
 
 
-def install_dependencies():
+def setup():
     """
     Install dependencies and create an application directory.
     """
@@ -49,12 +44,9 @@ def install_dependencies():
         sudo('rm -r /tmp/pip-build-root')
 
     # install the necessary Python packages
-    sudo('pip install Flask')
-    sudo('pip install SQLAlchemy==0.8.2')
-    sudo('pip install Flask-SQLAlchemy==1.0')
-    sudo('pip install Flask-Admin==1.0.7')
-    sudo('pip install simplejson')
-    sudo('pip install requests==2.0.1')
+    put('requirements/base.txt', '/tmp/base.txt')
+    put('requirements/production.txt', '/tmp/production.txt')
+    sudo('pip install -r /tmp/production.txt')
 
     # install apache2 and mod-wsgi
     sudo('apt-get install apache2')

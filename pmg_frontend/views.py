@@ -9,16 +9,23 @@ from pmg_frontend import logger
 API_HOST = app.config['API_HOST']
 
 @app.route('/')
-def index():
+@app.route('/<year>/')
+def index(year=2013):
     """
     Display a list of available bills, with some summary info and a link to each bill's detail page.
     """
 
+    try:
+        year = int(year)
+    except ValueError as e:
+        logger.debug(e)
+        abort(400)
+
     logger.debug("landing page called")
-    r = requests.get("http://" + API_HOST + "/bill/")
+    r = requests.get("http://" + API_HOST + "/bill/year/" + str(year) + "/")
     bills = r.json()
 
-    return render_template('index.html', bills=bills)
+    return render_template('index.html', year=year, bills=bills, api_host=API_HOST)
 
 
 @app.route('/bill/<bill_id>/')
@@ -35,18 +42,8 @@ def detail(bill_id=None):
     logger.debug("detail page called")
     r = requests.get("http://" + API_HOST + "/bill/" + str(bill_id) + "/")
     bill = r.json()
-    # separate events into stages
-    stages = []
-    current_stage = []
-    prev_stage = None
-    for event in bill['events']:
-        if current_stage and (event['stage']['stage_id'] != prev_stage):
-            stages.append(current_stage)
-            current_stage = []
-            prev_stage = event['stage']['stage_id']
-        current_stage.append(event)
 
-    return render_template('detail.html', bill=bill, stages=stages)
+    return render_template('detail.html', bill=bill)
 
 
 @app.route('/uploads/<path:file_name>')
