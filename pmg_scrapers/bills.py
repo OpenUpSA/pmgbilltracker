@@ -11,28 +11,7 @@ import json
 from BeautifulSoup import BeautifulSoup
 from dateutil import parser as dateparser
 from datetime import datetime
-
-def handler(obj):
-    if hasattr(obj, 'isoformat'):
-        return obj.isoformat()
-    else:
-        raise TypeError, 'Object of type %s with value of %s is not JSON serializable' % (type(obj), repr(obj))
-
-class URLFetcher(object):
-    def __init__(self, url):
-        self.url = url
-
-    @property
-    def html(self):
-        r = requests.get(self.url)
-        return r.content
-
-class FileFetcher(object):
-    filename = "bill"
-
-    @property
-    def html(self):
-        return open(FileFetcher.filename).read()
+import scrapertools
 
 class BillParser(object):
     def __init__(self):
@@ -95,7 +74,7 @@ bills = []
 for url in pager.next_page:
     print(url, file=sys.stderr)
     parser = BillParser()
-    html = URLFetcher(url).html
+    html = scrapertools.URLFetcher(url).html
     soup = BeautifulSoup(html)
     rows = soup.findAll("tr")
 
@@ -103,4 +82,4 @@ for url in pager.next_page:
         while not parser.state_fn(row):
             pass
     bills.extend(parser.bills)
-print(json.dumps(bills, indent=4, default=handler))
+print(json.dumps(bills, indent=4, default=scrapertools.handler))
