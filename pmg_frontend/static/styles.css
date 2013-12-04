@@ -15,23 +15,18 @@
 
 .bill-index-tile{
     padding-top: 5px;
+    padding-bottom: 5px;
     padding-left: 15px;
     padding-right: 15px;
     cursor: pointer;
 }
 
+.bill-index-tile p{
+    margin-bottom: 0;
+}
+
 .bill-index-tile:hover{
     background-color: #eeeeee;
-}
-
-.bill-index-tile h3{
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
-
-.bill-index-tile hr{
-    margin-top: 5px;
-    margin-bottom: 0;
 }
 
 .jumbotron h1 {

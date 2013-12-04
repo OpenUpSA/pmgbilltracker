@@ -76,7 +76,7 @@ def rebuild_db():
             if not bill['bill_name'] == "Protection Of Information Bill":
                 tmp = Bill()
                 tmp.name = bill["bill_name"]
-                tmp.code = bill["bill_number"]
+                tmp.code = bill["bill_number"].replace("Bill ", "B")
                 if bill.get("introduced_by"):
                     tmp.introduced_by = bill["introduced_by"]
                 if bill.get("versions"):
