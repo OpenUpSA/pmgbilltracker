@@ -21,8 +21,11 @@
 
         {# Stage Container #}
         {% if entry.stage and (entry.stage.stage_id != current_stage_id) %}
-            {{ start_stage(entry.stage, current_stage_id) }}
-            {% set current_stage_id = entry.stage.stage_id %}
+            {# Handle public hearing events separately. #}
+            {% if not entry.stage.stage_id in [3, 7] %}
+                {{ start_stage(entry.stage, current_stage_id) }}
+                {% set current_stage_id = entry.stage.stage_id %}
+            {% endif %}
         {% elif entry.stage and (entry.stage.stage_id == current_stage_id) %}
             {# do nothing #}
         {% elif current_stage_id != 0 %}
@@ -78,7 +81,6 @@
         </div><hr>
     {% endif %}
     <div class="stage">
-
     <div class="icon-placeholder pull-left">
         {% set
                 icon_dict = {
@@ -97,11 +99,10 @@
         <img class="stage-icon" src="/static/icons/{{ icon_dict[stage.stage_id] }}"/>
     </div>
     <p class="text-muted"><span class="stage-title">Stage: {{ stage.name }}</span></p>
-
 {%- endmacro %}
 
 {% macro render_entry(entry) -%}
-    <div class="bill-history-entry">
+    <div class="bill-history-entry{% if entry.stage.stage_id in [3, 7] %} public-hearing{% endif %}">
         <p class="entry-date text-muted pull-left">{{ entry.date }}</p>
         {% if entry.type == "bill" %}
             <p class="bill-version">
@@ -113,15 +114,21 @@
         {% else %}
 
             <p class="entry">
+                {% if entry.stage.stage_id in [3, 7] %}
+                    <a href="{{ entry.url }}" target="_blank">
+                        <span class="label label-success pull-right" style="margin-right: 25px;">Public participation</span>
+                    </a>
+                {% endif %}
                 {% if "http://" in entry.url %}
                     <a href="{{ entry.url }}" target="_blank">
                         {{ entry.title }}
                     </a>
                 {% else %}
                     <a href="/{{ entry.url }}">
-                        <i class="fa fa-file-o fa-lg"></i> {{ entry.title }}
+                        <i class="fa fa-file-o fa-lg" target="_blank"></i> {{ entry.title }}
                     </a>
                 {% endif %}
+
                 {% if entry.description %}
                     <br>{{ entry.description }}
                 {% endif %}
