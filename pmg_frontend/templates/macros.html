@@ -101,38 +101,31 @@
 {%- endmacro %}
 
 {% macro render_entry(entry) -%}
-    <p class="entry-date text-muted pull-left">{{ entry.date }}</p>
-    {% if entry.type == "bill" %}
-        <p class="bill-version">
-        New version introduced.
-        <a class="btn btn-primary btn-sm pull-right" role="button" target="_blank" href="/{{ entry.url }}">
-            <i class="fa fa-file-text"></i> {{ entry.title }}
-        </a>
+    <div class="bill-history-entry">
+        <p class="entry-date text-muted pull-left">{{ entry.date }}</p>
+        {% if entry.type == "bill" %}
+            <p class="bill-version">
+                New version introduced.
+                <a class="btn btn-primary btn-sm pull-right" role="button" target="_blank" href="/{{ entry.url }}">
+                    <i class="fa fa-file-text"></i> {{ entry.title }}
+                </a>
             </p>
-    {% else %}
-
-        <p class="entry">
-        {% if "http://" in entry.url %}
-            <a href="{{ entry.url }}" target="_blank">
-                {{ entry.title }}
-            </a>
         {% else %}
-            <a href="/{{ entry.url }}">
-                <i class="fa fa-file-o fa-lg"></i> {{ entry.title }}
-            </a>
-        {% endif %}
-        {% if entry.description %}
-            <br>{{ entry.description }}
-        {% endif %}
-        </p>
-    {% endif %}
 
-{%- endmacro %}
-
-{% macro render_versions(version_list) -%}
-    {% for version in version_list %}
-        <a class="btn btn-primary bill-version" role="button" target="_blank" href="/{{ version.url }}">
-            <i class="fa fa-file-text"></i> Bill version: {{ version.title }}
-        </a><br>
-    {% endfor %}
+            <p class="entry">
+                {% if "http://" in entry.url %}
+                    <a href="{{ entry.url }}" target="_blank">
+                        {{ entry.title }}
+                    </a>
+                {% else %}
+                    <a href="/{{ entry.url }}">
+                        <i class="fa fa-file-o fa-lg"></i> {{ entry.title }}
+                    </a>
+                {% endif %}
+                {% if entry.description %}
+                    <br>{{ entry.description }}
+                {% endif %}
+            </p>
+        {% endif %}
+    </div>
 {%- endmacro %}
