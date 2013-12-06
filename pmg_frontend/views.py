@@ -28,6 +28,12 @@ def index(year=2013):
     return render_template('index.html', year=year, bills=bills, api_host=API_HOST)
 
 
+@app.route('/bills-explained/')
+def bills_explained():
+
+    return render_template('bills_explained.html')
+
+
 @app.route('/bill/<bill_id>/')
 def detail(bill_id=None):
     """
