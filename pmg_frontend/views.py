@@ -1,4 +1,4 @@
-from flask import request, make_response, url_for, session, render_template, abort, send_from_directory
+from flask import request, make_response, url_for, session, render_template, abort, send_from_directory, redirect
 from pmg_frontend import app
 import requests
 import simplejson
@@ -9,7 +9,12 @@ from pmg_frontend import logger
 API_HOST = app.config['API_HOST']
 
 @app.route('/')
-@app.route('/<year>/')
+def root():
+
+    return redirect('/bills/')
+
+@app.route('/bills/all/')
+@app.route('/bills/<year>/')
 def index(year=2013):
     """
     Display a list of available bills, with some summary info and a link to each bill's detail page.
@@ -28,7 +33,13 @@ def index(year=2013):
     return render_template('index.html', year=year, bills=bills, api_host=API_HOST)
 
 
-@app.route('/bills-explained/')
+@app.route('/bills/')
+def bills():
+
+    return render_template('bills.html')
+
+
+@app.route('/bills/explained/')
 def bills_explained():
 
     return render_template('bills_explained.html')

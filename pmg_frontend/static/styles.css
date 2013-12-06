@@ -149,8 +149,7 @@
     min-width: 140px;
 }
 
-/*.public-hearing{*/
-    /*padding-top: 10px;*/
-    /*padding-bottom: 10px;*/
-    /*background-color: ;*/
-/*}*/
+.tile:hover{
+    background-color: #eeeeee;
+    cursor: pointer;
+}
