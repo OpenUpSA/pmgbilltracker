@@ -118,6 +118,7 @@
                     <a href="{{ entry.url }}" target="_blank">
                         <span class="label label-success pull-right" style="margin-right: 25px;">Public participation</span>
                     </a>
+                    <strong>
                 {% endif %}
                 {% if "http://" in entry.url %}
                     <a href="{{ entry.url }}" target="_blank">
@@ -127,6 +128,9 @@
                     <a href="/{{ entry.url }}">
                         <i class="fa fa-file-o fa-lg" target="_blank"></i> {{ entry.title }}
                     </a>
+                {% endif %}
+                {% if entry.stage.stage_id in [3, 7] %}
+                    </strong>
                 {% endif %}
 
                 {% if entry.description %}
