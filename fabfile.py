@@ -7,8 +7,8 @@ def staging():
     Env parameters for the staging environment.
     """
 
-    # env.hosts = ['54.229.255.34']
-    env.hosts = ['ec2-54-194-122-94.eu-west-1.compute.amazonaws.com']
+    env.hosts = ['54.229.255.34']
+    # env.hosts = ['ec2-54-194-122-94.eu-west-1.compute.amazonaws.com']
     env.envname = 'staging'
     env.user = 'ubuntu'
     env.group = 'ubuntu'
@@ -20,6 +20,7 @@ def staging():
 def restart():
 
     sudo('service nginx restart')
+    sudo('service uwsgi restart')
 
 
 def setup():
@@ -39,14 +40,6 @@ def setup():
 
     # TODO: setup virtualenv
 
-    # create application directory if it doesn't exist yet
-    code_dir = '/var/www/test'
-    with settings(warn_only=True):
-        if run("test -d %s" % code_dir).failed:
-            # create project folder
-            sudo('mkdir -p /var/www/test')
-            sudo('mkdir -p /var/www/test/static')
-
     # clear pip's cache
     with settings(warn_only=True):
         sudo('rm -r /tmp/pip-build-root')
@@ -63,59 +56,20 @@ def setup():
     sudo('service nginx start')
 
 
-def configure():
-    """
-    Upload config files, and restart server.
-    """
-
-    with settings(warn_only=True):
-        sudo('stop uwsgi')
-        sudo('rm /etc/nginx/sites-enabled/default')
-
-    # upload nginx server block (virtualhost)
-    put('test.conf', '/tmp/test.conf')
-    sudo('mv /tmp/test.conf /var/www/test/test.conf')
-    with settings(warn_only=True):
-        sudo('ln -s /var/www/test/test.conf /etc/nginx/conf.d/')
-    sudo('/etc/init.d/nginx restart')
-
-    # upload uwsgi config
-    put('uwsgi.ini', '/tmp/uwsgi.ini')
-    sudo('mv /tmp/uwsgi.ini /var/www/test/uwsgi.ini')
-
-    # make directory for uwsgi's log
-    with settings(warn_only=True):
-        sudo('mkdir -p /var/log/uwsgi')
-
-    # upload upstart configuration for uwsgi 'emperor', which spawns uWSGI processes
-    put('uwsgi.conf', '/tmp/uwsgi.conf')
-    sudo('mv /tmp/uwsgi.conf /etc/init/uwsgi.conf')
-
-    sudo('mkdir -p /etc/uwsgi/vassals')
-    with settings(warn_only=True):
-        # create symlink for emperor to find config file
-        sudo('ln -s /var/www/test/uwsgi.ini /etc/uwsgi/vassals')
-
-    sudo('chown -R www-data:www-data /var/log/uwsgi')
-    sudo('chown -R www-data:www-data /var/www/test')
-
-    sudo('start uwsgi')
-
-
 def deploy():
 
-    put('test.py', '/tmp/test.py')
-    sudo('mv /tmp/test.py /var/www/test/test.py')
-
-    # ensure user www-data has access to the application folder
-    sudo('chown -R www-data:www-data /var/www/test')
-    sudo('chmod -R 775 /var/www/test')
-
+    # create application directory if it doesn't exist yet
+    with settings(warn_only=True):
+        if run("test -d /var/www/pmgbilltracker").failed:
+            # create project folder
+            sudo('mkdir -p /var/www/pmgbilltracker')
+    deploy_backend()
+    deploy_frontend()
 
 
 def deploy_backend():
     """
-    Upload our package to the server, unzip it, and restart apache.
+    Upload our package to the server.
     """
 
     # create a tarball of our package
@@ -137,18 +91,18 @@ def deploy_backend():
     local('rm pmg_backend.tar.gz')
     local('rm uploads.tar.gz')
 
+    sudo('touch /var/www/pmgbilltracker/pmg_backend/uwsgi.sock')
+
     # clean out old logfiles
     with settings(warn_only=True):
         sudo('rm /var/www/pmgbilltracker/pmg_backend/debug.log*')
 
-    # ensure that apache user has access to all files
-    sudo('chmod -R 770 /var/www/pmgbilltracker/pmg_backend')
-    sudo('chmod -R 770 /var/www/pmgbilltracker/instance')
-    sudo('chown -R ' + env.user + ':www-data /var/www/pmgbilltracker/pmg_backend')
-    sudo('chown -R ' + env.user + ':www-data /var/www/pmgbilltracker/instance')
+    # ensure user www-data has access to the application folder
+    sudo('chown -R www-data:www-data /var/www/pmgbilltracker')
+    sudo('chmod -R 775 /var/www/pmgbilltracker')
 
     # and finally reload the application
-    sudo('/etc/init.d/apache2 reload')
+    restart()
 
 
 def deploy_frontend():
@@ -162,10 +116,6 @@ def deploy_frontend():
     # upload the source tarball to the temporary folder on the server
     put('pmg_frontend.tar.gz', '/tmp/pmg_frontend.tar.gz')
 
-    # turn off apache
-    with settings(warn_only=True):
-        sudo('/etc/init.d/apache2 stop')
-
     # enter application directory
     with cd('/var/www/pmgbilltracker'):
         # and unzip new files
@@ -175,13 +125,73 @@ def deploy_frontend():
     sudo('rm /tmp/pmg_frontend.tar.gz')
     local('rm pmg_frontend.tar.gz')
 
+    sudo('touch /var/www/pmgbilltracker/pmg_frontend/uwsgi.sock')
+
     # clean out old logfiles
     with settings(warn_only=True):
         sudo('rm /var/www/pmgbilltracker/pmg_frontend/debug.log*')
 
-    # ensure that apache user has access to all files
-    sudo('chmod -R 770 /var/www/pmgbilltracker/pmg_frontend')
-    sudo('chown -R ' + env.user + ':www-data /var/www/pmgbilltracker/pmg_frontend')
+    # ensure user www-data has access to the application folder
+    sudo('chown -R www-data:www-data /var/www/pmgbilltracker')
+    sudo('chmod -R 775 /var/www/pmgbilltracker')
 
     # and finally reload the application
-    sudo('/etc/init.d/apache2 start')
+    restart()
+
+
+def configure():
+    """
+    Upload config files, and restart server.
+    """
+
+    with settings(warn_only=True):
+        sudo('stop uwsgi')
+
+    with settings(warn_only=True):
+        # disable default site
+        sudo('rm /etc/nginx/sites-enabled/default')
+
+    # upload nginx server blocks (virtualhost)
+    put(env['config_dir'] + '/nginx_backend.conf', '/tmp/nginx_backend.conf')
+    put(env['config_dir'] + '/nginx_frontend.conf', '/tmp/nginx_frontend.conf')
+    sudo('mv /tmp/nginx_backend.conf /var/www/pmgbilltracker/nginx_backend.conf')
+    sudo('mv /tmp/nginx_frontend.conf /var/www/pmgbilltracker/nginx_frontend.conf')
+
+    with settings(warn_only=True):
+        sudo('ln -s /var/www/pmgbilltracker/nginx_backend.conf /etc/nginx/conf.d/')
+        sudo('ln -s /var/www/pmgbilltracker/nginx_frontend.conf /etc/nginx/conf.d/')
+
+    # upload uwsgi config
+    put(env['config_dir'] + '/uwsgi_backend.ini', '/tmp/uwsgi_backend.ini')
+    put(env['config_dir'] + '/uwsgi_frontend.ini', '/tmp/uwsgi_frontend.ini')
+    sudo('mv /tmp/uwsgi_backend.ini /var/www/pmgbilltracker/uwsgi_backend.ini')
+    sudo('mv /tmp/uwsgi_frontend.ini /var/www/pmgbilltracker/uwsgi_frontend.ini')
+
+    # make directory for uwsgi's log
+    with settings(warn_only=True):
+        sudo('mkdir -p /var/log/uwsgi')
+
+    with settings(warn_only=True):
+        sudo('mkdir -p /etc/uwsgi/vassals')
+
+    # upload upstart configuration for uwsgi 'emperor', which spawns uWSGI processes
+    put(env['config_dir'] + '/uwsgi.conf', '/tmp/uwsgi.conf')
+    sudo('mv /tmp/uwsgi.conf /etc/init/uwsgi.conf')
+
+    with settings(warn_only=True):
+        # create symlinks for emperor to find config file
+        sudo('ln -s /var/www/pmgbilltracker/uwsgi_backend.ini /etc/uwsgi/vassals')
+        sudo('ln -s /var/www/pmgbilltracker/uwsgi_frontend.ini /etc/uwsgi/vassals')
+
+    sudo('chown -R www-data:www-data /var/log/uwsgi')
+    sudo('chown -R www-data:www-data /var/www/pmgbilltracker')
+
+    # upload flask config
+    put(env['config_dir'] + '/config_backend.py', '/tmp/config_backend.py')
+    put(env['config_dir'] + '/config_frontend.py', '/tmp/config_frontend.py')
+    sudo('mv /tmp/config_backend.py /var/www/pmgbilltracker/instance/config_backend.py')
+    sudo('mv /tmp/config_frontend.py /var/www/pmgbilltracker/instance/config_frontend.py')
+
+    # sudo('start uwsgi')
+    # sudo('/etc/init.d/nginx restart')
+    restart()
