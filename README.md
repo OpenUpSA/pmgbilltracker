@@ -46,9 +46,8 @@ To deploy this application to an Ubuntu 13.10 instance on AWS EC2:
 
         cd pmgbilltracker
         fab staging setup
+        fab staging deploy
         fab staging configure
-        fab staging deploy_backend
-        fab staging deploy_frontend
 
 More details about setup and deployment can be found in fabfile.py, the script that fabric runs during deployment.
 
@@ -58,7 +57,19 @@ To access this server via SSH:
 
     ssh -v -i ~/.ssh/aws_code4sa.pem ubuntu@54.229.255.34
 
-Error logs can be found at:
+Logs can be found at:
 
-    tail -n 100 /var/log/apache2/error.log
-    tail -n 100 /var/www/pmgbilltracker/debug.log
+* Flask:
+
+        /var/www/pmgbilltracker/debug.log
+
+* Nginx:
+
+        /var/log/nginx/error.log
+        /var/log/nginx/access.log
+
+* uWSGI:
+
+        /var/log/uwsgi/emperor.log
+        /var/log/uwsgi/uwsgi_frontend.log
+        /var/log/uwsgi/uwsgi_backend.log
