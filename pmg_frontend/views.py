@@ -66,7 +66,7 @@ def detail(bill_id=None):
 @app.route('/uploads/<path:file_name>')
 def uploads(file_name):
     """
-    Serve uploaded files from the Flask dev server. On staging or production, these should be served by Apache.
+    Serve uploaded files from the Flask dev server. On staging or production, these should be served by Nginx.
     """
 
     logger.debug("uploads called")
