@@ -39,7 +39,6 @@ class Bill(db.Model):
     introduced_by = db.Column(db.String(500))
     bill_type = db.Column(db.String(100))
     objective = db.Column(db.String(1000))
-    status = db.Column(db.String(100))
 
     white_paper = db.Column(db.String(200))
     green_paper = db.Column(db.String(200))
@@ -66,17 +65,29 @@ class Location(db.Model):
         return '<Location: %r>' % str(self)
 
 
+class Status(db.Model):
+
+    status_id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(100), unique=True, nullable=False)
+
+    def __str__(self):
+        return str(self.status_id) + " - " + self.description
+
+    def __repr__(self):
+        return '<Status: %r>' % str(self)
+
+
 class Stage(db.Model):
 
     stage_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(500), nullable=False)
-    default_status = db.Column(db.String(500))
 
     location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'), nullable=True)
     location = db.relationship('Location')
+    status_id = db.Column(db.Integer, db.ForeignKey('status.status_id'), nullable=True)
+    status = db.relationship('Status')
 
     def __str__(self):
-        return str(self.stage_id) + " - " + self.name
+        return str(self.stage_id) + " - " + self.location.name + " " + self.status.description
 
     def __repr__(self):
         return '<Stage: %r>' % str(self)
