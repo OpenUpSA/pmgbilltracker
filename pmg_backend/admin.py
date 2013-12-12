@@ -11,7 +11,7 @@ upload_path = app.config['UPLOAD_PATH']
 
 class BillView(ModelView):
     form_excluded_columns = ('content', )
-    form_overrides = dict(bill_type=SelectField, objective=TextAreaField)
+    form_overrides = dict(bill_type=SelectField, status=SelectField, objective=TextAreaField)
     form_args = dict(
         # Pass the choices to the `SelectField`
         bill_type=dict(
@@ -19,6 +19,19 @@ class BillView(ModelView):
                 ("Section 75 (Ordinary Bills not affecting the provinces)", "Section 75 (Ordinary Bills not affecting the provinces)"),
                 ("Section 76 (Ordinary Bills affecting the provinces)", "Section 76 (Ordinary Bills affecting the provinces)"),
                 ("Other", "Other"),
+            ]
+        ),
+        status=dict(
+            choices=[
+                (None, "Unknown status"),
+                ("100", "Accepted by NA only"),
+                ("110", "Accepted by NA & NCOP"),
+                ("010", "Accepted by NCOP only"),
+                ("010", "Amended by NCOP, needs NA approval"),
+                ("100", "Amended by NA, needs NCOP approval"),
+                ("111", "Signed into Law"),
+                ("Waiting to be introduced", "Waiting to be introduced"),
+                ("Withdrawn", "Withdrawn"),
             ]
         )
     )
