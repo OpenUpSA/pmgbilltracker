@@ -55,17 +55,49 @@ class ReportParser(object):
             self.state_fn = self.header_state
             return False
 
-class Pager(object):
+
+class ReportPager(object):
+    current_url = None
+    current_page = None
+
+    def __init__(self, start_url):
+        self.current_url = start_url
+        self.current_page = scrapertools.URLFetcher("http://www.pmg.org.za" + self.current_url).html
+
     @property
     def next_page(self):
-        current_year = datetime.now().year
-        for current_year in range(current_year, 2005, -1):
-            url = "http://www.pmg.org.za/print/bill?year=%d" % current_year
-            yield url
+        soup = BeautifulSoup(self.current_page)
+        reports_tab = soup.find(id="quicktabs_tabpage_committees_tabs_1")
+        next_link = reports_tab.find("li", {"class": "pager-next"})
+        if next_link:
+            href = next_link.find('a').attrs[0][1]
+            self.current_url = href
+            self.current_page = scrapertools.URLFetcher("http://www.pmg.org.za" + self.current_url).html
+            return True
+        return False
+
+    @property
+    def next_report(self):
+
+        keep_going = True
+        while keep_going:
+            soup = BeautifulSoup(self.current_page)
+            reports_tab = soup.find(id="quicktabs_tabpage_committees_tabs_1")
+            table_body = reports_tab.find("tbody")
+            rows = table_body.findAll("tr")
+            if not self.next_page:
+                keep_going = False
+            for row in rows:
+                cells = row.findAll('td')
+                date = cells[1].find('span').contents[0]
+                title = cells[2].find('a').contents[0]
+                href = cells[2].find('a').attrs[0][1]
+                yield date, title, href
+
 
 class CommitteePager(object):
     @property
-    def next_page(self):
+    def next_committee(self):
         html = scrapertools.URLFetcher("http://www.pmg.org.za/committees").html
         soup = BeautifulSoup(html)
         container = soup.find(id="committees-all")
@@ -81,23 +113,16 @@ class CommitteePager(object):
 
 
 if __name__ == "__main__":
-    committee_pager = CommitteePager()
-    for (index, (list_name, href, name)) in enumerate(committee_pager.next_page):
-        print("\t" + str(index+1) + ": " + name)
 
-#
-# pager = Pager()
-#
-# bills = []
-# for url in pager.next_page:
-#     print(url, file=sys.stderr)
-#     parser = BillParser()
-#     html = scrapertools.URLFetcher(url).html
-#     soup = BeautifulSoup(html)
-#     rows = soup.findAll("tr")
-#
-#     for row in rows:
-#         while not parser.state_fn(row):
-#             pass
-#     bills.extend(parser.bills)
-# print(json.dumps(bills, indent=4, default=scrapertools.handler))
+    # committee_pager = CommitteePager()
+    # for (index, (list_name, href, name)) in enumerate(committee_pager.next_committee):
+    #     if index == 0:
+    #         sample = list_name, href, name
+    #     print("\t" + str(index+1) + ": " + name)
+
+    list_name, href, name = (u'National Assembly Committees', u'/committees/Agriculture, Forestry and Fisheries', u'Agriculture, Forestry and Fisheries')
+
+    report_pager = ReportPager(href)
+    for report in report_pager.next_report:
+        print(report)
+
