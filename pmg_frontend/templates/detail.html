@@ -49,10 +49,6 @@
                     <i class="fa fa-file-text"></i> Gazette
                 </a>
             {% endif %}
-
-            {% if bill.status -%}
-                <p class="label label-info bill-status">Status: {{ bill.status }}</p>
-            {%- endif %}
         </div>
     </div>
 
@@ -60,9 +56,29 @@
     <div class="row text-center">
         <div class="col col-lg-12">
             <p class="lead">
-                <span class="success">National Assembly <i class="fa fa-chevron-right"></i></span>
-                <span class="pending">National Council of Provinces <i class="fa fa-chevron-right"></i></span>
-                <span class="pending">Presidential Signature</span>
+                {% if bill.status -%}
+                    {% if bill.status == "100" -%}
+                        <span class="success">National Assembly <i class="fa fa-chevron-right"></i></span>
+                        <span class="pending">National Council of Provinces <i class="fa fa-chevron-right"></i></span>
+                        <span class="pending">Presidential Signature</span>
+                    {% elif bill.status == "110" -%}
+                        <span class="success">National Assembly <i class="fa fa-chevron-right"></i></span>
+                        <span class="success">National Council of Provinces <i class="fa fa-chevron-right"></i></span>
+                        <span class="pending">Presidential Signature</span>
+                    {% elif bill.status == "010" -%}
+                        <span class="success">National Council of Provinces <i class="fa fa-chevron-right"></i></span>
+                        <span class="pending">National Assembly <i class="fa fa-chevron-right"></i></span>
+                        <span class="pending">Presidential Signature</span>
+                    {% elif bill.status == "111" -%}
+                        <span class="success">National Assembly <i class="fa fa-chevron-right"></i></span>
+                        <span class="success">National Council of Provinces <i class="fa fa-chevron-right"></i></span>
+                        <span class="success">Presidential Signature</span>
+                    {% else -%}
+                        {{ bill.status }}
+                    {%- endif %}
+                {% else -%}
+                Unknown status
+                {%- endif %}
             </p>
         </div>
     </div>
