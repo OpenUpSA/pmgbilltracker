@@ -152,7 +152,7 @@ def rebuild_db():
         db.session.add(tmp_entry)
 
     for na_report in na_hearings:
-        tmp_entry = new_report(na_report, b1, 1, 2, agents[2], "pmg-meeting-report")
+        tmp_entry = new_report(na_report, b1, 1, 2, agents[2], "public-hearing-report")
         db.session.add(tmp_entry)
 
     for ncop_report in ncop_reports:
@@ -160,7 +160,7 @@ def rebuild_db():
         db.session.add(tmp_entry)
 
     for ncop_report in ncop_hearings:
-        tmp_entry = new_report(ncop_report, b1, 2, 2, agents[3], "pmg-meeting-report")
+        tmp_entry = new_report(ncop_report, b1, 2, 2, agents[3], "public-hearing-report")
         db.session.add(tmp_entry)
 
     db.session.commit()

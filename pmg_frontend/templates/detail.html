@@ -88,7 +88,6 @@
 {% block page %}
 
     {% if bill.entries %}
-        {% set prev_location = bill.entries[0].stage.location.location_id %}
         <h2>Bill history</h2>
         <hr>
         {{ render_entries(bill.entries) }}

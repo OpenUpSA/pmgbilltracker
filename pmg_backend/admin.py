@@ -44,6 +44,7 @@ entry_types = [
         "draft",
         "bill",
         "pmg-meeting-report",
+        "public-hearing-report",
         "committee-report",
         "hansard-minutes",
         "vote-count",
