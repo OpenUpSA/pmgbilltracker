@@ -1,5 +1,5 @@
 import datetime
-from pmg_backend.models import *
+from pmg_backend.models import Bill, Agent, Location, Stage, Entry
 from pmg_backend import db
 import simplejson
 
@@ -123,28 +123,6 @@ def rebuild_db():
         db.session.add(agent)
         agents.append(agent)
 
-    status_details = [
-        (0, "Unknown"),
-        (1, "Passed"),
-        (2, "Withdrawn"),
-        (3, "Introduced"),
-        (4, "Tabled"),
-        (5, "Awaiting signature"),
-        (6, "Assigned to Committee"),
-        (7, "Awaiting approval"),
-        (8, "Mediation"),
-        (9, "Passed with amendments"),
-        (10, "Signed into law"),
-        ]
-
-    statuses = []
-    for id, desc in status_details:
-        status = Status()
-        status.status_id = id
-        status.description = desc
-        db.session.add(status)
-        statuses.append(status)
-
     stage_details = [
         (locations[0], "Introduced to National Assembly", "Waiting to be assigned to a committee"),
         (locations[0], "National Assembly Committee", "Under review by National Assembly Committee"),
@@ -162,7 +140,6 @@ def rebuild_db():
     for tmp in stage_details:
         stage = Stage()
         stage.location = tmp[0]
-        stage.status = statuses[0]
         stage.name = tmp[1]
         stage.default_status = tmp[2]
         db.session.add(stage)
