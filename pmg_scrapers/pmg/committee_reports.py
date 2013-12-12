@@ -34,6 +34,14 @@ class ReportParser(object):
         html = scrapertools.URLFetcher("http://www.pmg.org.za" + self.report_url).html
         for res in re_bill.finditer(html):
             bill_str = res.group(1).replace(" ", "")[1:-1]
+            # disregard different versions of the same bill
+            code, year = bill_str.split("-")
+            code = code[1::]
+            try:
+                tmp = int(code)
+            except ValueError:
+                code = code[0:-1]
+                bill_str = "B" + code + "-" + year
             if not bill_str in self.bills:
                 self.bills.append(bill_str)
         return self.bills
@@ -109,7 +117,7 @@ if __name__ == "__main__":
                 if count != 0:
                     f.write(",\n")
                 count += 1
-                print("\t\t" + str(count) + " - " + str(bills))
+                print("\t\t\tentry #" + str(count) + " - " + str(bills))
                 entry = {
                     "bills": bills,
                     "href": href_report,
