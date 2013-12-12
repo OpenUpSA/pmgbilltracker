@@ -56,11 +56,28 @@ for entry_type in entry_types:
 
 
 class EntryView(ModelView):
-    form_overrides = dict(type=SelectField, notes=TextAreaField)
+    form_overrides = dict(type=SelectField, location=SelectField, stage=SelectField, notes=TextAreaField)
     form_args = dict(
         # Pass the choices to the `SelectField`
         type=dict(
             choices=entry_type_choices
+        ),
+        location=dict(
+            choices=[
+                (None, "Unknown"),
+                (1, "National Assembly (NA)"),
+                (2, "National Council of Provinces (NCOP)"),
+                (3, "President's Office"),
+            ]
+        ),
+        stage=dict(
+            choices=[
+                (None, "Unknown"),
+                (1, "Introduced"),
+                (2, "Before committee"),
+                (3, "Awaiting approval"),
+                (4, "Mediation"),
+            ]
         )
     )
     # TODO: add inline file upload / select existing uploads / paste raw url
@@ -74,7 +91,5 @@ admin.add_view(EntryView(Entry, db.session, name="Entries"))
 
 # views for CRUD admin
 admin.add_view(ModelView(Agent, db.session, name="Agents"))
-admin.add_view(ModelView(Location, db.session, name="Locations"))
-admin.add_view(ModelView(Stage, db.session, name="Stages"))
 
 #admin.add_view(ModelView(Tag, db.session, name="Tags"))

@@ -64,14 +64,6 @@ class BillSerializer(BaseSerializer):
                 entry_dict = BaseSerializer.to_dict(self, entry)
                 if entry.type == "bill":
                     latest_version_dict = entry_dict
-                if entry.stage:
-                    stage_dict = BaseSerializer.to_dict(self, entry.stage)
-                    entry_dict['stage'] = stage_dict
-                    if entry.stage.location:
-                        location_dict = BaseSerializer.to_dict(self, entry.stage.location)
-                        entry_dict['stage']['location'] = location_dict
-                        entry_dict['stage'].pop('location_id')
-                    entry_dict.pop('stage_id')
                 if entry.agent:
                     agent_dict = BaseSerializer.to_dict(self, entry.agent)
                     entry_dict['agent'] = agent_dict
