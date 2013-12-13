@@ -53,35 +53,6 @@ class Bill(db.Model):
         return '<Bill: %r>' % str(self)
 
 
-class Location(db.Model):
-
-    location_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(500), unique=True, nullable=False)
-    short_name = db.Column(db.String(100))
-
-    def __str__(self):
-        return str(self.location_id) + " - " + self.name
-
-    def __repr__(self):
-        return '<Location: %r>' % str(self)
-
-
-class Stage(db.Model):
-
-    stage_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(500), nullable=False)
-    default_status = db.Column(db.String(500))
-
-    location_id = db.Column(db.Integer, db.ForeignKey('location.location_id'), nullable=True)
-    location = db.relationship('Location')
-
-    def __str__(self):
-        return str(self.stage_id) + " - " + self.name
-
-    def __repr__(self):
-        return '<Stage: %r>' % str(self)
-
-
 class Agent(db.Model):
 
     agent_id = db.Column(db.Integer, primary_key=True)
@@ -110,8 +81,9 @@ class Entry(db.Model):
     title = db.Column(db.String(500))
     description = db.Column(db.String(1000))
 
-    stage_id = db.Column(db.Integer, db.ForeignKey('stage.stage_id'), nullable=True)
-    stage = db.relationship('Stage')
+    location = db.Column(db.Integer)
+    stage = db.Column(db.Integer)
+
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'), nullable=True)
     agent = db.relationship('Agent')
     bills = db.relationship('Bill', secondary=entry_bills_table, backref=backref("entries", order_by=date))

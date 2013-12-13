@@ -15,23 +15,18 @@
 
 .bill-index-tile{
     padding-top: 5px;
+    padding-bottom: 5px;
     padding-left: 15px;
     padding-right: 15px;
     cursor: pointer;
 }
 
+.bill-index-tile p{
+    margin-bottom: 0;
+}
+
 .bill-index-tile:hover{
     background-color: #eeeeee;
-}
-
-.bill-index-tile h3{
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
-
-.bill-index-tile hr{
-    margin-top: 5px;
-    margin-bottom: 0;
 }
 
 .jumbotron h1 {
@@ -42,6 +37,7 @@
     font-size: 16px;
     padding-top: 20px;
     padding-bottom: 20px;
+    margin-bottom: 0;
 }
 
 .bill-status{
@@ -122,20 +118,28 @@
     margin-bottom: 10px;
 }
 
-#process-img-container{
-    background-image:url('/static/images/highlight.png');
-    background-repeat:no-repeat;
-    background-size:10%;
-    background-position: 59.7% 23%;
+#status-container{
+    height: 55px;
+    width: 100%;
+    background-color: #e5e5e5;
+    padding-top: 11px;
+    /*border-bottom: 6px solid #eee;*/
 }
 
-#process-img{
-    width: 100%;
+#status-container .pending{
+color: #999999;
+}
+
+.bill-history-entry p{
+    margin-bottom:0;
+    padding-top: 2px;
+    padding-bottom: 3px;
 }
 
 .bill-version{
     margin-right: 15px;
-    margin-bottom: 20px;
+    margin-top: 0;
+    margin-bottom: 10px!important;
 }
 
 .bill-link{
@@ -144,4 +148,9 @@
 
 .entry-date{
     min-width: 140px;
+}
+
+.tile:hover{
+    background-color: #eeeeee;
+    cursor: pointer;
 }

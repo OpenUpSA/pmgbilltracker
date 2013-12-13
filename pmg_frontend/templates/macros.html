@@ -1,44 +1,41 @@
 {% macro render_entries(entries) -%}
 
-    {% set current_location_id = 0 %}
-    {% set current_stage_id = 0 %}
+    {% set current_location = None %}
+    {% set current_stage = None %}
 
     {% for entry in entries %}
         {# Location Container #}
-        {% if entry.stage and entry.stage.location and (entry.stage.location.location_id != current_location_id) %}
-            {% if current_stage_id != 0 %}
+        {% if entry.location and (entry.location != current_location) %}
+            {% if current_stage %}
+                {# close the open stage container #}
                 </div>
-                {% set current_stage_id = 0 %}
             {% endif %}
-            {{ start_location(entry.stage.location, current_location_id) }}
-            {% set current_location_id = entry.stage.location.location_id %}
-        {% elif entry.stage and entry.stage.location and (entry.stage.location.location_id == current_location_id) %}
-            {# do nothing #}
-        {% elif current_location_id != 0 %}
+            {{ start_location(entry.location, current_location) }}
+            {% set current_location = entry.location %}
+            {% set current_stage = None %}
+        {% elif not entry.location %}
             </div>
-            {% set current_location_id = 0 %}
+            {% set current_location = None %}
         {% endif %}
 
         {# Stage Container #}
-        {% if entry.stage and (entry.stage.stage_id != current_stage_id) %}
-            {{ start_stage(entry.stage, current_stage_id) }}
-            {% set current_stage_id = entry.stage.stage_id %}
-        {% elif entry.stage and (entry.stage.stage_id == current_stage_id) %}
-            {# do nothing #}
-        {% elif current_stage_id != 0 %}
+        {% if entry.stage and (entry.stage != current_stage) %}
+            {{ start_stage(entry.stage, current_location, current_stage) }}
+            {% set current_stage = entry.stage %}
+        {% elif not entry.stage %}
             </div>
-            {% set current_stage_id = 0 %}
+            {% set current_stage = None %}
         {% endif %}
 
         {{ render_entry(entry) }}
     {%  endfor %}
 
-    {% if current_stage_id != 0 %}
+    {% if current_stage %}
         {# close last stage div #}
         </div>
     {% endif %}
 
-    {% if current_location != 0 %}
+    {% if current_location %}
         {# close last location div #}
         </div>
     {% endif %}
@@ -63,76 +60,81 @@
 {%- endmacro %}
 
 
-{% macro start_location(location, current_location_id) -%}
-    {% if current_location_id != 0 %}
+{% macro start_location(location, current_location) -%}
+    {% set location_list = ["National Assembly (NA)", "National Council of Provinces (NCOP)", "Office of the President"] %}
+    {% if current_location %}
         </div>
     {% endif %}
-    <div class="location location-{{ location.location_id }}">
-    <div class="location-title location-{{ location.location_id }}">
-        {{ location.name }}
+    <div class="location location-{{ location }}">
+    <div class="location-title location-{{ location }}">
+        {{ location_list[location-1] }}
     </div>
 {%- endmacro %}
 
-{% macro start_stage(stage, current_stage_id) -%}
-    {% if current_stage_id != 0 %}
+{% macro start_stage(stage, current_location, current_stage) -%}
+    {% set
+        stage_list = [[
+            ("Introduced to Parliament", "Bill-Introduced.png"),
+            ("Before Portfolio Committee", "Committee-Discussion.png"),
+            ("Awaiting approval by National Assembly", "House.png"),
+            ("Before Mediation Committee", "Committee-Discussion.png")
+            ],
+            [
+            ("Tabled in NCOP", "Bill-Introduced.png"),
+            ("Before Select Committee", "Committee-Discussion.png"),
+            ("Awaiting approval by NCOP", "House.png"),
+            ],
+            [
+            ("Awaiting the President's signature", "Signed-by-President.png"),
+            ]]
+            %}
+    {% set name, icon = stage_list[current_location-1][stage-1] %}
+    {% if current_stage %}
         </div><hr>
     {% endif %}
     <div class="stage">
-
     <div class="icon-placeholder pull-left">
-        {% set
-                icon_dict = {
-                    1: "Bill-Introduced.png",
-                    2: "Committee-Discussion.png",
-                    3: "Public-Participation.png",
-                    4: "1st-House.png",
-                    5: "Bill-Introduced.png",
-                    6: "Committee-Discussion.png",
-                    7: "Public-Participation.png",
-                    8: "2nd-House.png",
-                    9: "Committee-Discussion.png",
-                    10: "Signed-by-President.png",
-                }
-                %}
-        <img class="stage-icon" src="/static/icons/{{ icon_dict[stage.stage_id] }}"/>
+        <img class="stage-icon" src="/static/icons/{{ icon }}"/>
     </div>
-    <p class="text-muted"><span class="stage-title">Stage: {{ stage.name }}</span></p>
-
+    <p class="text-muted"><span class="stage-title">Stage: {{ name }}</span></p>
 {%- endmacro %}
 
 {% macro render_entry(entry) -%}
-    <p class="entry-date text-muted pull-left">{{ entry.date }}</p>
-    {% if entry.type == "bill" %}
-        <p class="bill-version">
-        New version introduced.
-        <a class="btn btn-primary btn-sm pull-right" role="button" target="_blank" href="/{{ entry.url }}">
-            <i class="fa fa-file-text"></i> {{ entry.title }}
-        </a>
+    <div class="bill-history-entry{% if entry.type == "public-hearing-report" %} public-hearing{% endif %}">
+        <p class="entry-date text-muted pull-left">{{ entry.date }}</p>
+        {% if entry.type == "bill" %}
+            <p class="bill-version">
+                New version introduced.
+                <a class="btn btn-primary btn-sm pull-right" role="button" target="_blank" href="/{{ entry.url }}">
+                    <i class="fa fa-file-text"></i> {{ entry.title }}
+                </a>
             </p>
-    {% else %}
-
-        <p class="entry">
-        {% if "http://" in entry.url %}
-            <a href="{{ entry.url }}" target="_blank">
-                {{ entry.title }}
-            </a>
         {% else %}
-            <a href="/{{ entry.url }}">
-                <i class="fa fa-file-o fa-lg"></i> {{ entry.title }}
-            </a>
-        {% endif %}
-        {% if entry.description %}
-            <br>{{ entry.description }}
-        {% endif %}
-        </p>
-    {% endif %}
 
-{%- endmacro %}
+            <p class="entry">
+                {% if entry.type == "public-hearing-report" %}
+                    <a href="{{ entry.url }}" target="_blank">
+                        <span class="label label-success pull-right" style="margin-right: 25px;">Public participation</span>
+                    </a>
+                    <strong>
+                {% endif %}
+                {% if "http://" in entry.url %}
+                    <a href="{{ entry.url }}" target="_blank">
+                        {{ entry.title }}
+                    </a>
+                {% else %}
+                    <a href="/{{ entry.url }}">
+                        <i class="fa fa-file-o fa-lg" target="_blank"></i> {{ entry.title }}
+                    </a>
+                {% endif %}
+                {% if entry.type == "public-hearing-report" %}
+                    </strong>
+                {% endif %}
 
-{% macro render_versions(version_list) -%}
-    {% for version in version_list %}
-        <a class="btn btn-primary bill-version" role="button" target="_blank" href="/{{ version.url }}">
-            <i class="fa fa-file-text"></i> Bill version: {{ version.title }}
-        </a><br>
-    {% endfor %}
+                {% if entry.description %}
+                    <br>{{ entry.description }}
+                {% endif %}
+            </p>
+        {% endif %}
+    </div>
 {%- endmacro %}
