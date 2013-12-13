@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% from 'macros.html' import render_entries %}
 {% block title %}{{ bill.name }}{% endblock %}
+{% block head %}
+    <link href="/static/progress-dots/progress.css" type="text/css" media="screen, projection" rel="stylesheet" />
+{% endblock %}
 
 {% block page_header %}
     <div class="jumbotron">
@@ -53,35 +56,53 @@
     </div>
 
     <div id="status-container" class="container">
-    <div class="row text-center">
-        <div class="col col-lg-12">
-            <p class="lead">
-                {% if bill.status -%}
-                    {% if bill.status == "100" -%}
-                        <span class="success">National Assembly <i class="fa fa-chevron-right"></i></span>
-                        <span class="pending">National Council of Provinces <i class="fa fa-chevron-right"></i></span>
-                        <span class="pending">Presidential Signature</span>
-                    {% elif bill.status == "110" -%}
-                        <span class="success">National Assembly <i class="fa fa-chevron-right"></i></span>
-                        <span class="success">National Council of Provinces <i class="fa fa-chevron-right"></i></span>
-                        <span class="pending">Presidential Signature</span>
-                    {% elif bill.status == "010" -%}
-                        <span class="success">National Council of Provinces <i class="fa fa-chevron-right"></i></span>
-                        <span class="pending">National Assembly <i class="fa fa-chevron-right"></i></span>
-                        <span class="pending">Presidential Signature</span>
-                    {% elif bill.status == "111" -%}
-                        <span class="success">National Assembly <i class="fa fa-chevron-right"></i></span>
-                        <span class="success">National Council of Provinces <i class="fa fa-chevron-right"></i></span>
-                        <span class="success">Presidential Signature</span>
+        <div class="row text-center">
+            <div class="col col-lg-12">
+                <p class="lead">
+                    {% if bill.status -%}
+
+
+                            <div class="c4sa-container" style="margin-left: auto; margin-right: auto;">
+                                <div class="c4sa-grey c4sa-progress"></div>
+                                <div class="c4sa-stage stage3">
+                                    <div class="c4sa-green c4sa-progress stage"></div>
+                                    <div class="c4sa-dot dot1"></div>
+                                    <div class="c4sa-dot dot2"></div>
+                                    <div class="c4sa-dot dot3"></div>
+                                    <div class="c4sa-dot dot4"></div>
+                                    <div class="process_dot"></div>
+                                    <div class="c4sa-label label1"></div>
+                                    <div class="c4sa-label label2"></div>
+                                    <div class="c4sa-label label3"></div>
+                                    <div class="c4sa-label label4"></div>
+                                </div>
+                            </div>
+
+                        {#                        {% if bill.status == "100" -%}#}
+                        {#                            <span class="success">National Assembly <i class="fa fa-chevron-right"></i></span>#}
+                        {#                            <span class="pending">National Council of Provinces <i class="fa fa-chevron-right"></i></span>#}
+                        {#                            <span class="pending">Presidential Signature</span>#}
+                        {#                        {% elif bill.status == "110" -%}#}
+                        {#                            <span class="success">National Assembly <i class="fa fa-chevron-right"></i></span>#}
+                        {#                            <span class="success">National Council of Provinces <i class="fa fa-chevron-right"></i></span>#}
+                        {#                            <span class="pending">Presidential Signature</span>#}
+                        {#                        {% elif bill.status == "010" -%}#}
+                        {#                            <span class="success">National Council of Provinces <i class="fa fa-chevron-right"></i></span>#}
+                        {#                            <span class="pending">National Assembly <i class="fa fa-chevron-right"></i></span>#}
+                        {#                            <span class="pending">Presidential Signature</span>#}
+                        {#                        {% elif bill.status == "111" -%}#}
+                        {#                            <span class="success">National Assembly <i class="fa fa-chevron-right"></i></span>#}
+                        {#                            <span class="success">National Council of Provinces <i class="fa fa-chevron-right"></i></span>#}
+                        {#                            <span class="success">Presidential Signature</span>#}
+                        {#                        {% else -%}#}
+                        {#                            {{ bill.status }}#}
+                        {#                        {%- endif %}#}
                     {% else -%}
-                        {{ bill.status }}
+                        Unknown status
                     {%- endif %}
-                {% else -%}
-                Unknown status
-                {%- endif %}
-            </p>
+                </p>
+            </div>
         </div>
-    </div>
     </div>
 {%  endblock %}
 

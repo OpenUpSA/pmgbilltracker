@@ -119,11 +119,9 @@
 }
 
 #status-container{
-    height: 55px;
+    min-height: 55px;
     width: 100%;
     background-color: #e5e5e5;
-    padding-top: 11px;
-    /*border-bottom: 6px solid #eee;*/
 }
 
 #status-container .pending{
