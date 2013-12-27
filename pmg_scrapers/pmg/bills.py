@@ -69,7 +69,7 @@ class BillParser(object):
             versions.append({
                 "url" : link["href"],
                 "name" : link.text,
-                "date" : date_parser.parse(fragment.findAll("td")[1].text),
+                "date" : date_parser.parse(fragment.findAll("td")[1].text).date(),
             })
             self.state_fn = self.version_state
             return True
@@ -84,8 +84,8 @@ class Pager(object):
     """
     @property
     def next_page(self):
-        current_year = datetime.now().year
-        for current_year in range(current_year, 2005, -1):
+        current_year = datetime.today().year
+        for current_year in range(current_year, 2011, -1):
             url = "http://www.pmg.org.za/print/bill?year=%d" % current_year
             yield url
 
