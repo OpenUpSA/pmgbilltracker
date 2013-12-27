@@ -10,6 +10,7 @@ from dateutil import parser as date_parser
 from datetime import datetime
 import pmg_scrapers.scrapertools
 
+DEBUG = False
 
 class BillParser(object):
     """
@@ -48,12 +49,21 @@ class BillParser(object):
         self.bills.append(self.current_bill)
 
         text = fragment.text
+
         text = text.replace(u"\u2013", "-")  # TODO: do this for all years
         parts = text.split("-")
         self.current_bill["bill_number"] = parts[0].strip()
         self.current_bill["bill_name"] = parts[1].strip()
         if len(parts) == 3:
             self.current_bill["introduced_by"] = parts[2].strip()
+        if DEBUG:
+            print(text)
+            print("\tbill_number: " + self.current_bill["bill_number"])
+            print("\tbill_name: " + self.current_bill["bill_name"])
+            try:
+                print("\tintroduced_by: " + self.current_bill["introduced_by"])
+            except KeyError:
+                pass
 
         self.state_fn = self.version_state
         return True
@@ -84,13 +94,18 @@ class Pager(object):
     """
     @property
     def next_page(self):
-        current_year = datetime.today().year
-        for current_year in range(current_year, 2011, -1):
-            url = "http://www.pmg.org.za/print/bill?year=%d" % current_year
-            yield url
+        if DEBUG:
+            yield "http://www.pmg.org.za/print/bill?year=2013"
+        else:
+            current_year = datetime.today().year
+            for current_year in range(current_year, 2005, -1):
+                url = "http://www.pmg.org.za/print/bill?year=%d" % current_year
+                yield url
 
 
 if __name__ == "__main__":
+
+    DEBUG = True
 
     pager = Pager()
     bills = []
@@ -113,4 +128,6 @@ if __name__ == "__main__":
         # save extracted content for this page
         bills.extend(parser.bills)
 
-    print(json.dumps(bills, indent=4, default=pmg_scrapers.scrapertools.handler))
+    if not DEBUG:
+        # do something with scraped data
+        print(json.dumps(bills, indent=4, default=pmg_scrapers.scrapertools.handler))
