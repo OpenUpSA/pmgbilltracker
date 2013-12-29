@@ -88,7 +88,7 @@ class BillParser(object):
                 self.current_bill = dict(self.current_bill.items() + info.items())
             version = {
                 "url" : link["href"],
-                "name" : link.text,
+                "title" : link.text,
                 "date" : date_parser.parse(fragment.findAll("td")[1].text).date(),
             }
             versions.append(version)
