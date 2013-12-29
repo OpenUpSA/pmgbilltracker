@@ -65,9 +65,12 @@ class BillParser(object):
 
         text = fragment.text
         parts = text.split("-")
-        self.current_bill["bill_name"] = parts[1].strip()
-        if len(parts) == 3:
-            self.current_bill["introduced_by"] = parts[2].strip()
+        tmp = "-".join(parts[1::]).strip()  # disregards the bill number, just use the rest of the text
+        if "[" in tmp and "]" in tmp:
+            introduced_by = tmp[tmp.find("[")+1:tmp.find("]")]  # extract info in square brackets
+            self.current_bill["introduced_by"] = introduced_by.strip()
+            tmp = tmp[0:tmp.find("[")].strip()  # throw away extracted info
+        self.current_bill["bill_name"] = tmp
 
         self.state_fn = self.version_state
         return True

@@ -13,6 +13,7 @@ def scrape_bills():
 
     # save scraped bills to database
     for bill_id, bill in bill_dict.iteritems():
+
         tmp = Bill()
         tmp.name = bill['bill_name']
         tmp.code = bill_id
@@ -22,7 +23,7 @@ def scrape_bills():
         db.session.add(tmp)
 
     # TODO: save scraped draft bills to database
-    
+
     return
 
 
