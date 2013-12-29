@@ -49,6 +49,7 @@ class BillParser(object):
             raise Exception("Unknown state")
 
         if self.current_bill:
+            # save previously scraped bill
             try:
                 self.bills[self.current_bill["bill_id"]] = self.current_bill
             except KeyError:
@@ -57,7 +58,7 @@ class BillParser(object):
                 else:
                     print("Bill cannot be identified")
                     print(json.dumps(self.current_bill, indent=4, default=pmg_scrapers.scrapertools.handler))
-                    raise
+                    # raise
             if DEBUG:
                 print(json.dumps(self.current_bill, indent=4, default=pmg_scrapers.scrapertools.handler))
             self.current_bill = {}
@@ -121,11 +122,14 @@ def parse_bill_code(code):
     # extract year
     year = None
     for comp in components:
-        try:
-            year = int(comp)
-            break
-        except (IndexError, ValueError) as e:
-            pass
+        subcomps = comp.split(" ")
+        for subcomp in subcomps:
+            if len(subcomp.strip()) == 4:
+                try:
+                    year = int(subcomp)
+                    break
+                except (IndexError, ValueError) as e:
+                    pass
     out["year"] = year
 
     # extract bill number
@@ -133,9 +137,7 @@ def parse_bill_code(code):
     tmp = ""
     tmp_str = components[0].strip()
     for i in range(len(tmp_str)):
-        if tmp_str[i] in string.ascii_letters + " ":
-            pass
-        else:
+        if tmp_str[i].isdigit():
             tmp += tmp_str[i]
     if len(tmp) > 0:
         bill_number = int(tmp)
@@ -176,7 +178,7 @@ class Pager(object):
     @property
     def next_page(self):
         if DEBUG:
-            yield "http://www.pmg.org.za/print/bill?year=2013"
+            yield "http://www.pmg.org.za/print/bill?year=2007"
         else:
             current_year = datetime.today().year
             for current_year in range(current_year, 2005, -1):
@@ -184,16 +186,11 @@ class Pager(object):
                 yield url
 
 
-if __name__ == "__main__":
-
-    DEBUG = True
-
-    # for code in ["B6-2010", "B6F-2010", "B4-2010 - as enacted", "B - 2010", "PMB5-2013"]:
-    #     print(code)
-    #     print(parse_bill_code(code))
+def run_scraper():
 
     pager = Pager()
-    bills = []
+    bills = {}
+    drafts = []
 
     # iterate through bill pages
     for url in pager.next_page:
@@ -211,7 +208,20 @@ if __name__ == "__main__":
                 pass
 
         # save extracted content for this page
-        bills.extend(parser.bills)
+        bills = dict(bills.items() + parser.bills.items())
+        drafts.extend(parser.drafts)
+    return bills, drafts
+
+
+if __name__ == "__main__":
+
+    DEBUG = True
+
+    # for code in ["B6-2010", "B6F-2010", "B4-2010 - as enacted", "B - 2010", "PMB5-2013", "B78-2008 as enacted"]:
+    #     print(code)
+    #     print(parse_bill_code(code))
+
+    run_scraper()
 
     # # do something with scraped data
     # print(json.dumps(bills, indent=4, default=pmg_scrapers.scrapertools.handler))
