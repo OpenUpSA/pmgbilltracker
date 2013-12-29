@@ -11,8 +11,6 @@ from datetime import datetime
 import pmg_scrapers.scrapertools
 import string
 
-DEBUG = False
-
 class BillParser(object):
     """
     State machine for extracting a list of bills from an html table. It operates on a list of table rows, extracting
@@ -25,7 +23,8 @@ class BillParser(object):
     <tr class="odd"><td colspan="2"><strong>Bill 30 - Marine Living Resources Amendment Bill</strong></td> </tr>
     <tr class="even"><td>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/bill/20131029-marine-living-resources-amendment-bill-b30b-2013">B30B-2013</a></td><td>29 Oct, 2013</td> </tr>
     """
-    def __init__(self):
+    def __init__(self, DEBUG):
+        self.DEBUG = DEBUG
         self.state_fn = self.start_state
         self.bills = {}
         self.drafts = []
@@ -51,7 +50,7 @@ class BillParser(object):
         if self.current_bill:
             # save previously scraped bill
             try:
-                self.bills[self.current_bill["bill_id"]] = self.current_bill
+                self.bills[self.current_bill["bill_code"]] = self.current_bill
             except KeyError:
                 if self.current_bill['bill_type'] == "Draft":
                     self.drafts.append(self.current_bill)
@@ -59,7 +58,7 @@ class BillParser(object):
                     print("Bill cannot be identified")
                     print(json.dumps(self.current_bill, indent=4, default=pmg_scrapers.scrapertools.handler))
                     # raise
-            if DEBUG:
+            if self.DEBUG:
                 print(json.dumps(self.current_bill, indent=4, default=pmg_scrapers.scrapertools.handler))
             self.current_bill = {}
 
@@ -168,8 +167,8 @@ def parse_bill_code(code):
         prefix = "B"
         if bill_type == "PMB":
             prefix = "PMB"
-        bill_id = prefix + str(bill_number) + "-" + str(year)
-        out["bill_id"] = bill_id
+        bill_code = prefix + str(bill_number) + "-" + str(year)
+        out["bill_code"] = bill_code
     return out
 
 
@@ -177,10 +176,14 @@ class Pager(object):
     """
     Return an iterable containing URLs to each of the available bills pages.
     """
+
+    def __init__(self, DEBUG):
+        self.DEBUG = DEBUG
+
     @property
     def next_page(self):
-        if DEBUG:
-            yield "http://www.pmg.org.za/print/bill?year=2007"
+        if self.DEBUG:
+            yield "http://www.pmg.org.za/print/bill?year=2010"
         else:
             current_year = datetime.today().year
             for current_year in range(current_year, 2005, -1):
@@ -188,9 +191,9 @@ class Pager(object):
                 yield url
 
 
-def run_scraper():
+def run_scraper(DEBUG):
 
-    pager = Pager()
+    pager = Pager(DEBUG)
     bills = {}
     drafts = []
 
@@ -199,7 +202,7 @@ def run_scraper():
         print(url, file=sys.stderr)
 
         # initiate parser for this page
-        parser = BillParser()
+        parser = BillParser(DEBUG)
         html = pmg_scrapers.scrapertools.URLFetcher(url).html
         soup = BeautifulSoup(html)
         rows = soup.findAll("tr")
@@ -223,7 +226,11 @@ if __name__ == "__main__":
     #     print(code)
     #     print(parse_bill_code(code))
 
-    run_scraper()
+    bills, drafts = run_scraper(DEBUG)
+    from operator import itemgetter
+    newlist = sorted(drafts, key=itemgetter('bill_name'))
+    for draft in newlist:
+        print(draft['bill_name'])
 
     # # do something with scraped data
     # print(json.dumps(bills, indent=4, default=pmg_scrapers.scrapertools.handler))
