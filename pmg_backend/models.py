@@ -38,6 +38,7 @@ class Bill(db.Model):
     year = db.Column(db.Integer)
     introduced_by = db.Column(db.String(500))
     bill_type = db.Column(db.String(100))
+
     objective = db.Column(db.String(1000))
     status = db.Column(db.String(100))
 

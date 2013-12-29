@@ -13,13 +13,15 @@ def scrape_bills():
 
     # save scraped bills to database
     for bill_id, bill in bill_dict.iteritems():
-
-        tmp = Bill()
+        tmp = Bill.query.filter(Bill.code==bill_id).first()
+        if tmp is None:
+            tmp = Bill()
+            tmp.code = bill_id
         tmp.name = bill['bill_name']
-        tmp.code = bill_id
         if bill.get('introduced_by'):
             tmp.introduced_by = bill['introduced_by']
         tmp.year = bill['year']
+        tmp.bill_type = bill['bill_type']
         db.session.add(tmp)
 
     # TODO: save scraped draft bills to database
@@ -39,8 +41,8 @@ def scrape_committees():
 
 if __name__ == "__main__":
 
-    db.drop_all()
-    db.create_all()
+    # db.drop_all()
+    # db.create_all()
 
     scrape_bills()
 

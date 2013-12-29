@@ -144,7 +144,6 @@ def parse_bill_code(code):
             tmp += tmp_str[i]
     if len(tmp) > 0:
         bill_number = int(tmp)
-    out["bill_number"] = bill_number
 
     # extract bill type
     bill_type = None
