@@ -49,15 +49,14 @@ class BillParser(object):
 
         if self.current_bill:
             # save previously scraped bill
-            try:
-                self.bills[self.current_bill["bill_code"]] = self.current_bill
-            except KeyError:
-                if self.current_bill['bill_type'] == "Draft":
-                    self.drafts.append(self.current_bill)
-                else:
+            if self.current_bill.get('status') and self.current_bill['status'] == "Draft":
+                self.drafts.append(self.current_bill)
+            else:
+                try:
+                    self.bills[self.current_bill["code"]] = self.current_bill
+                except KeyError:
                     print("Bill cannot be identified")
                     print(json.dumps(self.current_bill, indent=4, default=pmg_scrapers.scrapertools.handler))
-                    # raise
             if self.DEBUG:
                 print(json.dumps(self.current_bill, indent=4, default=pmg_scrapers.scrapertools.handler))
             self.current_bill = {}
@@ -82,14 +81,18 @@ class BillParser(object):
         if link: 
             versions = self.current_bill.setdefault("versions", [])
             url = link["href"]
-            if not self.current_bill.get("bill_type"):
+            if not self.current_bill.get("code"):
                 tmp = link.text
-                info = parse_bill_code(tmp)
-                self.current_bill = dict(self.current_bill.items() + info.items())
+                info = pmg_scrapers.scrapertools.analyze_bill_code(tmp)
+                if info:
+                    self.current_bill = dict(self.current_bill.items() + info.items())
+                else:
+                    print("No bill found in string: " + tmp)
+
             version = {
-                "url" : link["href"],
-                "title" : link.text,
-                "date" : date_parser.parse(fragment.findAll("td")[1].text).date(),
+                "url": link["href"],
+                "title": link.text,
+                "date": date_parser.parse(fragment.findAll("td")[1].text).date(),
             }
             versions.append(version)
             self.state_fn = self.version_state
@@ -99,77 +102,77 @@ class BillParser(object):
             return False
 
 
-def parse_bill_code(code):
-    """
-    Extract information about a bill, from codes such as:
-        B6-2010
-        B6F-2010
-        B4-2010 - as enacted
-        B - 2010
-        PMB5-2013
-    """
-
-    code = code.strip()
-    out = {}
-
-    if not "-" in code:
-        if code[-4::].isdigit():
-            code = code[0:-4] + "-" + code[-4::]
-        else:
-            print("Error parsing code: " + code)
-            raise ValueError
-
-    components = code.split("-")
-
-    # extract year
-    year = None
-    for comp in components:
-        subcomps = comp.split(" ")
-        for subcomp in subcomps:
-            if len(subcomp.strip()) == 4:
-                try:
-                    year = int(subcomp)
-                    break
-                except (IndexError, ValueError) as e:
-                    pass
-    out["year"] = year
-
-    # extract bill number
-    bill_number = None
-    tmp = ""
-    tmp_str = components[0].strip()
-    for i in range(len(tmp_str)):
-        if tmp_str[i].isdigit():
-            tmp += tmp_str[i]
-    if len(tmp) > 0:
-        bill_number = int(tmp)
-
-    # extract bill type
-    bill_type = None
-    if code.startswith("PMB"):
-        bill_type = "PMB"
-    elif code.startswith("B"):
-        bill_type = "B"
-    if "as enacted" in code:
-        bill_type = "Act"
-    if not bill_number:
-        bill_type = "Draft"
-    out['bill_type'] = bill_type
-
-    # extract version
-    version = None
-    tmp = components[0]
-    if bill_number and bill_number != "X":
-        version = tmp.split(str(bill_number))[-1]
-
-    # assemble id string
-    if bill_type and bill_number and year:
-        prefix = "B"
-        if bill_type == "PMB":
-            prefix = "PMB"
-        bill_code = prefix + str(bill_number) + "-" + str(year)
-        out["bill_code"] = bill_code
-    return out
+# def parse_bill_code(code):
+#     """
+#     Extract information about a bill, from codes such as:
+#         B6-2010
+#         B6F-2010
+#         B4-2010 - as enacted
+#         B - 2010
+#         PMB5-2013
+#     """
+#
+#     code = code.strip()
+#     out = {}
+#
+#     if not "-" in code:
+#         if code[-4::].isdigit():
+#             code = code[0:-4] + "-" + code[-4::]
+#         else:
+#             print("Error parsing code: " + code)
+#             raise ValueError
+#
+#     components = code.split("-")
+#
+#     # extract year
+#     year = None
+#     for comp in components:
+#         subcomps = comp.split(" ")
+#         for subcomp in subcomps:
+#             if len(subcomp.strip()) == 4:
+#                 try:
+#                     year = int(subcomp)
+#                     break
+#                 except (IndexError, ValueError) as e:
+#                     pass
+#     out["year"] = year
+#
+#     # extract bill number
+#     bill_number = None
+#     tmp = ""
+#     tmp_str = components[0].strip()
+#     for i in range(len(tmp_str)):
+#         if tmp_str[i].isdigit():
+#             tmp += tmp_str[i]
+#     if len(tmp) > 0:
+#         bill_number = int(tmp)
+#
+#     # extract bill type
+#     bill_type = None
+#     if code.startswith("PMB"):
+#         bill_type = "PMB"
+#     elif code.startswith("B"):
+#         bill_type = "B"
+#     if "as enacted" in code:
+#         bill_type = "Act"
+#     if not bill_number:
+#         bill_type = "Draft"
+#     out['bill_type'] = bill_type
+#
+#     # extract version
+#     version = None
+#     tmp = components[0]
+#     if bill_number and bill_number != "X":
+#         version = tmp.split(str(bill_number))[-1]
+#
+#     # assemble id string
+#     if bill_type and bill_number and year:
+#         prefix = "B"
+#         if bill_type == "PMB":
+#             prefix = "PMB"
+#         bill_code = prefix + str(bill_number) + "-" + str(year)
+#         out["bill_code"] = bill_code
+#     return out
 
 
 class Pager(object):
@@ -222,9 +225,9 @@ if __name__ == "__main__":
 
     DEBUG = True
 
-    # for code in ["B6-2010", "B6F-2010", "B4-2010 - as enacted", "B - 2010", "PMB5-2013", "B78-2008 as enacted"]:
-    #     print(code)
-    #     print(parse_bill_code(code))
+    # for text in ["B6-2010", "B6F-2010", "B4-2010 - as enacted", "B - 2010", "PMB5-2013", "B78-2008 as enacted"]:
+    #     print(text)
+    #     print(pmg_scrapers.scrapertools.analyze_bill_code(text))
 
     bills, drafts = run_scraper(DEBUG)
     from operator import itemgetter
@@ -232,5 +235,5 @@ if __name__ == "__main__":
     for draft in newlist:
         print(draft['bill_name'])
 
-    # # do something with scraped data
-    # print(json.dumps(bills, indent=4, default=pmg_scrapers.scrapertools.handler))
+    # do something with scraped data
+    print(json.dumps(bills, indent=4, default=pmg_scrapers.scrapertools.handler))

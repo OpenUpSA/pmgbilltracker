@@ -46,7 +46,7 @@ def scrape_bills(DEBUG):
         if bill_data.get('introduced_by'):
             bill.introduced_by = bill_data['introduced_by']
         bill.year = bill_data['year']
-        bill.bill_type = bill_data['bill_type']
+        bill.bill_type = bill_data['type']
         db.session.add(bill)
         db.session.commit()
         # save related bill versions
@@ -54,7 +54,7 @@ def scrape_bills(DEBUG):
             entry = Entry.query.filter(Entry.url==entry_data['url']).first()  # Look for pre-existing entry.
             if entry is None:
                 entry = Entry()  # Create new entry.
-            entry_data["entry_type"] = "bill_version"
+            entry_data["entry_type"] = "version"
             entry = populate_entry(entry, entry_data, [bill_code, ])
             db.session.add(entry)
             db.session.commit()
@@ -66,7 +66,7 @@ def scrape_bills(DEBUG):
             bill = Bill()
             bill.name = draft['bill_name']
             bill.year = draft['year']
-        bill.bill_type = draft['bill_type']
+        bill.bill_type = draft['type']
         if draft.get('introduced_by'):
             bill.introduced_by = draft['introduced_by']
         db.session.add(bill)
@@ -81,13 +81,28 @@ def scrape_hansards():
 
 
 def scrape_committees():
+    """
+    Scrape list of committees from PMG.
+    """
+    from pmg import committees
+    committee_list = committees.run_scraper(DEBUG)
+
+    return
+
+
+def scrape_committee_reports():
+
+    return
+
+
+def scrape_pmg_meeting_reports():
 
     return
 
 
 if __name__ == "__main__":
 
-    DEBUG = True
+    DEBUG = False
 
     # db.drop_all()
     # db.create_all()
