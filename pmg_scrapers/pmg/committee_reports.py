@@ -15,10 +15,10 @@ re_bill = re.compile("""
                      # Match a bill code that looks something like [B9B - 2004]
         \[           # Match the first bracket
         \s*          # White space after the bracket
-        B            # Bills start with a B
+        [PM]*B       # Bills start with a B, or a PMB.
         \s*          # More whitespace after the B
         [0-9]+[A-Z]* # Bill number e.g. 10A (the letter might be missing)
-        \s*-\s*      # The hyphen might be surrounded by whitespaced
+        \s*-\s*      # The hyphen might be surrounded by whitespace
         [0-9]{4}     # Search for a 4 digit year
         \s*\]        # Round off by finding a closing square bracket preceeded by optional spaces
         )            # close the capture
