@@ -3,7 +3,8 @@ Scrapes committee reports from PMG e.g.
 http://www.pmg.org.za/committees
 """
 from __future__ import print_function
-from BeautifulSoup import BeautifulSoup
+# from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from dateutil import parser as dateparser
 from datetime import datetime
 from pmg_scrapers import scrapertools

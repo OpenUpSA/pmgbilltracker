@@ -24,10 +24,29 @@ class FileFetcher(object):
         return open(FileFetcher.filename).read()
 
 
-# RE-pattern for finding bill instances
-# (bracket / space) (type) (number) (version) - (year) (bracket / space)
-bill_pattern_1 = r'(^|[\s\[])(PMB|B)\s*([0-9]+)([A-Z])*\s*-\s*([0-9]{4})($|[\s\]])'  # doesn't match draft bills
-bill_pattern_2 = r'(PMB|B)\s*([0-9]+|X+)*([A-Z])*\s*-\s*([0-9]{4})'  # matches draft bills
+# RE-patterns for finding bill instances
+
+# 1.    Match bills occurring within arbitrary text files. Disregard draft bills.
+#       Require brackets/space around bill code.
+re_bill_1 = re.compile("""
+    (^|[\s\[])      # Opening bracket / space.
+    (PMB|B)         # Type of bill (ordinary or Private Member Bill).
+    \s*
+    ([0-9]+)        # Bill number
+    ([A-Z])*        # Bill version
+    \s*-\s*
+    ([0-9]{4})      # The year of introduction.
+    ($|[\s\]])      # Closing bracket / space.
+""", re.IGNORECASE | re.MULTILINE)
+
+# 2.    Match bills and draft bills, without requiring brackets / spaces around the bill code.
+re_bill_2 = re.compile("""
+    (PMB|B)\s*      # Type of bill (ordinary or Private Member Bill).
+    ([0-9]+|X+)*    # Bill number
+    ([A-Z])*        # Bill version
+    \s*-\s*
+    ([0-9]{4})      # The year of introduction.
+""", re.IGNORECASE | re.VERBOSE)
 
 
 def find_bills(text, include_versions=False):
@@ -35,7 +54,7 @@ def find_bills(text, include_versions=False):
     Find the reference code for each bill mentioned in the given text.
     """
 
-    matches = re.findall(bill_pattern_1, text, re.IGNORECASE|re.MULTILINE)
+    matches = re_bill_1.findall(text)
     if not matches:
         return None
 
@@ -62,7 +81,7 @@ def analyze_bill_code(text):
     Extract components of the information contained in a code that references a particular bill, eg. "[PMB15C - 2013]".
     """
 
-    match = re.match(bill_pattern_2, text, re.IGNORECASE)
+    match = re_bill_2.match(text)
     if not match:
         return None
 
