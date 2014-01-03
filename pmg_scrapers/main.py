@@ -29,12 +29,12 @@ def populate_entry(entry, data, bill_codes):
     return entry
 
 
-def scrape_bills(DEBUG):
+def scrape_bills(DEBUG=True):
     from pmg import bills
     bill_dict, draft_list = bills.run_scraper(DEBUG)
 
-    print str(len(bill_dict)) + " bills scraped"
-    print str(len(draft_list)) + " draft bills scraped"
+    print str(len(bill_dict)) + " Bills scraped"
+    print str(len(draft_list)) + " Draft bills scraped"
 
     # save scraped bills to database
     for bill_code, bill_data in bill_dict.iteritems():
@@ -75,27 +75,38 @@ def scrape_bills(DEBUG):
     return
 
 
-def scrape_hansards():
+def scrape_hansards(DEBUG=True):
 
     return
 
 
-def scrape_committees():
+def scrape_committees(DEBUG=True):
     """
     Scrape list of committees from PMG.
     """
     from pmg import committees
     committee_list = committees.run_scraper(DEBUG)
+    print str(len(committee_list)) + " Committees scraped"
+
+    # save committees to database
+    for committee in committee_list:
+        agent = Agent.query.filter(Agent.name==committee['name']).filter(Agent.type==committee['type']).first()
+        if agent is None:
+            agent = Agent()
+            agent.name = committee['name']
+            agent.type = committee['type']
+        agent.url = committee['url']
+        db.session.add(agent)
+        db.session.commit()
+    return
+
+
+def scrape_committee_reports(DEBUG=True):
 
     return
 
 
-def scrape_committee_reports():
-
-    return
-
-
-def scrape_pmg_meeting_reports():
+def scrape_pmg_meeting_reports(DEBUG=True):
 
     return
 
@@ -104,9 +115,11 @@ if __name__ == "__main__":
 
     DEBUG = False
 
-    # db.drop_all()
-    # db.create_all()
+    db.drop_all()
+    db.create_all()
 
     scrape_bills(DEBUG)
+    scrape_committees(DEBUG)
+    # scrape_committee_reports(DEBUG)
 
     db.session.commit()

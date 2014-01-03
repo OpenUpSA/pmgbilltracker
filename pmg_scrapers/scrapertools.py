@@ -1,11 +1,13 @@
 import requests
 import re
 
+
 def handler(obj):
     if hasattr(obj, 'isoformat'):
         return obj.isoformat()
     else:
         raise TypeError, 'Object of type %s with value of %s is not JSON serializable' % (type(obj), repr(obj))
+
 
 class URLFetcher(object):
     def __init__(self, url):
@@ -15,6 +17,7 @@ class URLFetcher(object):
     def html(self):
         r = requests.get(self.url)
         return r.content
+
 
 class FileFetcher(object):
     filename = "bill"
@@ -28,16 +31,16 @@ class FileFetcher(object):
 
 # 1.    Match bills occurring within arbitrary text files. Disregard draft bills.
 #       Require brackets/space around bill code.
+
 re_bill_1 = re.compile("""
     (^|[\s\[])      # Opening bracket / space.
-    (PMB|B)         # Type of bill (ordinary or Private Member Bill).
-    \s*
+    (PMB|B)\s*      # Type of bill (ordinary or Private Member Bill).
     ([0-9]+)        # Bill number
     ([A-Z])*        # Bill version
     \s*-\s*
     ([0-9]{4})      # The year of introduction.
     ($|[\s\]])      # Closing bracket / space.
-""", re.IGNORECASE | re.MULTILINE)
+""", re.IGNORECASE | re.VERBOSE | re.MULTILINE)
 
 # 2.    Match bills and draft bills, without requiring brackets / spaces around the bill code.
 re_bill_2 = re.compile("""
@@ -110,3 +113,9 @@ def analyze_bill_code(text):
         'version': version if version else None,
     }
     return out
+
+if __name__ == "__main__":
+
+    for text in [" B6C-2010 ", "B6F-2010", "B4-2010 - as enacted", "B - 2010", "PMB5-2013", "B78-2008 as enacted", "16 Oct 2013 - Marine Living Resources Amendment Bill [B30-2013]: Public hearings Day 2"]:
+        print(text)
+        print(find_bills(text, True))
