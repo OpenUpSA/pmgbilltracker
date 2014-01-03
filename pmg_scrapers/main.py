@@ -2,6 +2,7 @@ import datetime
 from pmg_backend.models import *
 from pmg_backend import db
 import simplejson
+from random import shuffle
 
 
 def populate_entry(entry, data, bill_codes):
@@ -11,8 +12,9 @@ def populate_entry(entry, data, bill_codes):
         if tmp_bill:
             entry.bills.append(tmp_bill)
         else:
-            print("Could not find related bill.")
-            raise Exception
+            print("Could not find related bill: " + code)
+            print("Entry: " + data['title'])
+            pass
     # populate required fields
     entry.type = data['entry_type']
     entry.date = data['date']
@@ -102,7 +104,35 @@ def scrape_committees(DEBUG=True):
 
 
 def scrape_committee_reports(DEBUG=True):
+    """
+    Scrape meeting reports from each committee's page.
+    """
+    from pmg import committee_reports
 
+    count_reports = 0
+    count_tags = 0
+    committees = Agent.query.all()  # TODO: narrow this down to committees only
+    shuffle(committees)
+    for committee in committees:
+        reports = committee_reports.run_scraper(DEBUG, committee.url)
+        count_reports += 1
+        if DEBUG:
+            print committee.name
+            print str(len(reports)) + " reports"
+        for data in reports:
+            data['entry_type'] = "committee_meeting"
+            bills = []
+            if data.get('bills'):
+                bills = data["bills"]
+                count_tags += len(bills)
+            # TODO: filter by date
+            report = Entry.query.filter(Entry.agent_id==committee.agent_id).filter(Entry.title==data['title']).first()
+            if report is None:
+                report = Entry()
+                report.agent = committee
+            report = populate_entry(report, data, bills)
+        print str(count_reports) + " Committee meeting reports scraped"
+        print str(count_tags) + " Committee meeting reports tagged to bills"
     return
 
 
@@ -115,11 +145,9 @@ if __name__ == "__main__":
 
     DEBUG = False
 
-    db.drop_all()
-    db.create_all()
-
-    scrape_bills(DEBUG)
-    scrape_committees(DEBUG)
-    # scrape_committee_reports(DEBUG)
-
-    db.session.commit()
+    # db.drop_all()
+    # db.create_all()
+    #
+    # scrape_bills(DEBUG)
+    # scrape_committees(DEBUG)
+    scrape_committee_reports(DEBUG)

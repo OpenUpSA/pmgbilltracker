@@ -29,7 +29,7 @@ class CommitteePager(object):
                 print("\n" + list_name + ":")
             committees = committee_list.findAll('li')
             for committee in committees:
-                href = committee.find('a').attrs[0][1]
+                href = "http://www.pmg.org.za" + committee.find('a').attrs[0][1]
                 name = committee.find('a').contents[0]
                 if self.DEBUG:
                     print("\t" + name)

@@ -11,16 +11,10 @@ import simplejson
 import re
 
 
-class ReportParser(object):
-    def __init__(self, report_url):
-        self.report_url = report_url
-        self.bills = []
-
-
 class ReportPager(object):
     def __init__(self, start_url):
         self.current_url = start_url
-        self.current_page = scrapertools.URLFetcher("http://www.pmg.org.za" + self.current_url).html
+        self.current_page = scrapertools.URLFetcher(self.current_url).html
 
     @property
     def next_page(self):
@@ -28,9 +22,9 @@ class ReportPager(object):
         reports_tab = soup.find(id="quicktabs_tabpage_committees_tabs_1")
         next_link = reports_tab.find("li", {"class": "pager-next"})
         if next_link:
-            href = next_link.find('a').attrs[0][1]
+            href = "http://www.pmg.org.za" + next_link.find('a').attrs[0][1]
             self.current_url = href
-            self.current_page = scrapertools.URLFetcher("http://www.pmg.org.za" + self.current_url).html
+            self.current_page = scrapertools.URLFetcher(self.current_url).html
             return True
         return False
 
@@ -42,55 +36,53 @@ class ReportPager(object):
             soup = BeautifulSoup(self.current_page)
             reports_tab = soup.find(id="quicktabs_tabpage_committees_tabs_1")
             table_body = reports_tab.find("tbody")
-            rows = table_body.findAll("tr")
             if not self.next_page:
                 keep_going = False
-            for row in rows:
-                cells = row.findAll('td')
-                date = cells[1].find('span').contents[0]
-                title = cells[2].find('a').contents[0]
-                href = cells[2].find('a').attrs[0][1]
-                yield date, title, href
+            if table_body:
+                rows = table_body.findAll("tr")
+                for row in rows:
+                    cells = row.findAll('td')
+                    date = cells[1].find('span').contents[0]
+                    title = cells[2].find('a').contents[0]
+                    href = "http://www.pmg.org.za" + cells[2].find('a').attrs[0][1]
+                    yield date, title, href
 
 
-class CommitteePager(object):
-    @property
-    def next_committee(self):
-        html = scrapertools.URLFetcher("http://www.pmg.org.za/committees").html
-        soup = BeautifulSoup(html)
-        container = soup.find(id="committees-all")
-        committee_lists = container.findAll("div", {"class": "item-list"})
-        for committee_list in committee_lists:
-            list_name = committee_list.find('h3').contents[0]
-            print("\n" + list_name + ":")
-            committees = committee_list.findAll('li')
-            for committee in committees:
-                href = committee.find('a').attrs[0][1]
-                name = committee.find('a').contents[0]
-                yield list_name, href, name
+def run_scraper(DEBUG, committee_url):
+
+    count = 0
+    report_list = []
+    report_pager = ReportPager(committee_url)
+    for (j, (date, title, href_report)) in enumerate(report_pager.next_report):
+        if DEBUG:
+            print("\t\t" + date + " - " + title)
+        tmp_url = href_report
+        html = scrapertools.URLFetcher(tmp_url).html
+        bills = scrapertools.find_bills(html)
+        if bills:
+            count += 1
+            entry = {
+                "bills": bills,
+                "href": tmp_url,
+                "date": date,
+                "title": title,
+                }
+            if DEBUG:
+                print("\t\t\tentry #" + str(count) + " - " + str(bills))
+                print(simplejson.dumps(entry, indent=4))
+            report_list.append(entry)
+    return report_list
 
 
 if __name__ == "__main__":
 
-    count = 0
-    committee_pager = CommitteePager()
-    for (i, (list_name, href_committee, name)) in enumerate(committee_pager.next_committee):
-        print("\t" + str(i+1) + ": " + name)
-        report_pager = ReportPager(href_committee)
-        for (j, (date, title, href_report)) in enumerate(report_pager.next_report):
-            print("\t\t" + date + " - " + title)
-            report_parser = ReportParser(href_report)
-            html = scrapertools.URLFetcher("http://www.pmg.org.za" + href_report).html
-            bills = scrapertools.find_bills(html)
-            if bills:
-                count += 1
-                print("\t\t\tentry #" + str(count) + " - " + str(bills))
-                entry = {
-                    "bills": bills,
-                    "href": href_report,
-                    "date": date,
-                    "title": title,
-                    "location": list_name,
-                    "committee": name,
-                    }
-                print(simplejson.dumps(entry, indent=4))
+    DEBUG = True
+    tmp = [
+        "http://www.pmg.org.za/committees/Ad Hoc Committee on Protection of State Information Bill (NA)",
+        "http://www.pmg.org.za/committees/Reparation Committee",
+        "http://www.pmg.org.za/committees/committees/Ad Hoc Committee on Protection of State Information Bill (NCOP)",
+    ]
+    for url in tmp:
+        reports = run_scraper(DEBUG, url)
+
+
