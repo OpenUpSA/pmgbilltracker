@@ -37,6 +37,7 @@ class ReportPager(object):
             reports_tab = soup.find(id="quicktabs_tabpage_committees_tabs_1")
             if reports_tab is None:
                 print("No reports tab for this committee.")
+                print(self.current_url)
                 break
             table_body = reports_tab.find("tbody")
             if not self.next_page:
@@ -58,7 +59,7 @@ def run_scraper(DEBUG, committee_url):
     report_pager = ReportPager(committee_url)
     for (j, (date, title, href_report)) in enumerate(report_pager.next_report):
         if DEBUG:
-            print("\t\t" + date + " - " + title)
+            print("\t\t" + str(date) + " - " + title)
         tmp_url = href_report
         html = scrapertools.URLFetcher(tmp_url).html
         bills = scrapertools.find_bills(html)
@@ -72,7 +73,7 @@ def run_scraper(DEBUG, committee_url):
                 }
             if DEBUG:
                 print("\t\t\tentry #" + str(count) + " - " + str(bills))
-                print(simplejson.dumps(entry, indent=4))
+                print(simplejson.dumps(entry, indent=4, default=scrapertools.handler))
             report_list.append(entry)
     return report_list
 
