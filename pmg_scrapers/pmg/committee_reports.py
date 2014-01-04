@@ -4,7 +4,7 @@ http://www.pmg.org.za/committees
 """
 from __future__ import print_function
 from BeautifulSoup import BeautifulSoup
-from dateutil import parser as dateparser
+from dateutil import parser as date_parser
 from datetime import datetime
 from pmg_scrapers import scrapertools
 import simplejson
@@ -35,6 +35,9 @@ class ReportPager(object):
         while keep_going:
             soup = BeautifulSoup(self.current_page)
             reports_tab = soup.find(id="quicktabs_tabpage_committees_tabs_1")
+            if reports_tab is None:
+                print("No reports tab for this committee.")
+                break
             table_body = reports_tab.find("tbody")
             if not self.next_page:
                 keep_going = False
@@ -42,7 +45,7 @@ class ReportPager(object):
                 rows = table_body.findAll("tr")
                 for row in rows:
                     cells = row.findAll('td')
-                    date = cells[1].find('span').contents[0]
+                    date = date_parser.parse(cells[1].find('span').contents[0]).date()
                     title = cells[2].find('a').contents[0]
                     href = "http://www.pmg.org.za" + cells[2].find('a').attrs[0][1]
                     yield date, title, href

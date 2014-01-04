@@ -115,11 +115,11 @@ def scrape_committee_reports(DEBUG=True):
     shuffle(committees)
     for committee in committees:
         reports = committee_reports.run_scraper(DEBUG, committee.url)
-        count_reports += 1
         if DEBUG:
             print committee.name
             print str(len(reports)) + " reports"
         for data in reports:
+            count_reports += 1
             data['entry_type'] = "committee_meeting"
             bills = []
             if data.get('bills'):
@@ -131,6 +131,8 @@ def scrape_committee_reports(DEBUG=True):
                 report = Entry()
                 report.agent = committee
             report = populate_entry(report, data, bills)
+            db.session.add(report)
+            db.session.commit()
         print str(count_reports) + " Committee meeting reports scraped"
         print str(count_tags) + " Committee meeting reports tagged to bills"
     return
