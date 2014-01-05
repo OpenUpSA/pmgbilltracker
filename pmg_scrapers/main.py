@@ -163,10 +163,10 @@ if __name__ == "__main__":
 
     DEBUG = False
 
-    # db.drop_all()
-    # db.create_all()
-    #
-    # scrape_bills(DEBUG)
-    # scrape_committees(DEBUG)
-    # scrape_committee_reports(DEBUG)
+    db.drop_all()
+    db.create_all()
+
+    scrape_bills(DEBUG)
     scrape_hansards(DEBUG)
+    scrape_committees(DEBUG)
+    scrape_committee_reports(DEBUG)

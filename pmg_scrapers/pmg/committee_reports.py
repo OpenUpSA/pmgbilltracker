@@ -45,11 +45,15 @@ class ReportPager(object):
             if table_body:
                 rows = table_body.findAll("tr")
                 for row in rows:
-                    cells = row.findAll('td')
-                    date = date_parser.parse(cells[1].find('span').contents[0]).date()
-                    title = cells[2].find('a').contents[0]
-                    href = "http://www.pmg.org.za" + cells[2].find('a').attrs[0][1]
-                    yield date, title, href
+                    try:
+                        cells = row.findAll('td')
+                        date = date_parser.parse(cells[1].find('span').contents[0]).date()
+                        title = cells[2].find('a').contents[0]
+                        href = "http://www.pmg.org.za" + cells[2].find('a').attrs[0][1]
+                        yield date, title, href
+                    except Exception:
+                        print("Error reading committee report details from table row")
+                        pass
 
 
 def run_scraper(DEBUG, committee_url):
