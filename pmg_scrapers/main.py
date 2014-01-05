@@ -73,6 +73,15 @@ def scrape_bills(DEBUG=True):
             bill.introduced_by = draft['introduced_by']
         db.session.add(bill)
         db.session.commit()
+        # save related bill versions
+        for entry_data in draft['versions']:
+            entry = Entry.query.filter(Entry.url==entry_data['url']).first()  # Look for pre-existing entry.
+            if entry is None:
+                entry = Entry()  # Create new entry.
+            entry_data["entry_type"] = "version"
+            entry = populate_entry(entry, entry_data, [bill_code, ])
+            db.session.add(entry)
+            db.session.commit()
 
     return
 
