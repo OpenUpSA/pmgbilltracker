@@ -71,7 +71,7 @@ def run_scraper(DEBUG, committee_url):
             count += 1
             entry = {
                 "bills": bills,
-                "href": tmp_url,
+                "url": tmp_url,
                 "date": date,
                 "title": title,
                 }
