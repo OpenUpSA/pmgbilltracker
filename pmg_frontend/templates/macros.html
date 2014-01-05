@@ -118,7 +118,7 @@
                     </a>
                     <strong>
                 {% endif %}
-                {% if "http://" in entry.url %}
+                {% if entry.url and "http://" in entry.url %}
                     <a href="{{ entry.url }}" target="_blank">
                         {{ entry.title }}
                     </a>

@@ -23,7 +23,7 @@
     <hr>
     {% for bill in bills %}
         <div class="bill-index-tile" data-bill-id="{{ bill.bill_id }}">
-            <p><strong>{{ bill.name }}</strong> <span class="pull-right">[{{ bill.code }}-{{ bill.year }}]</span></p>
+            <p><strong>{{ bill.name }}</strong> <span class="pull-right">[{{ bill.code }}]</span></p>
         </div>
     {% endfor %}
 {% endblock page %}
