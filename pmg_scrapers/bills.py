@@ -9,7 +9,7 @@ from BeautifulSoup import BeautifulSoup
 from dateutil import parser as date_parser
 from datetime import datetime
 import scrapertools
-import string
+import time
 
 class BillParser(object):
     """

@@ -13,7 +13,6 @@ def populate_entry(entry, data, bill_codes=None):
             entry.bills.append(tmp_bill)
         else:
             print("Could not find related bill: " + code)
-            print("Entry: " + data['title'])
             pass
     # populate required fields
     entry.type = data['entry_type']
@@ -33,8 +32,9 @@ def populate_entry(entry, data, bill_codes=None):
 
 def scrape_bills(DEBUG=True):
     import bills
-    bill_dict, draft_list = bills.run_scraper(DEBUG)
 
+    print "\n ----------- SCRAPING BILLS ---------------"
+    bill_dict, draft_list = bills.run_scraper(DEBUG)
     print str(len(bill_dict)) + " Bills scraped"
     print str(len(draft_list)) + " Draft bills scraped"
 
@@ -89,6 +89,7 @@ def scrape_bills(DEBUG=True):
 def scrape_hansards(DEBUG=True):
 
     import hansards
+    print "\n ----------- SCRAPING HANSARDS ---------------"
 
     count_tags = 0
 
@@ -116,7 +117,9 @@ def scrape_committees(DEBUG=True):
     """
     Scrape list of committees from PMG.
     """
+
     import committees
+    print "\n ----------- SCRAPING COMMITTEES ---------------"
     committee_list = committees.run_scraper(DEBUG)
     print str(len(committee_list)) + " Committees scraped"
 
@@ -137,8 +140,9 @@ def scrape_committee_reports(DEBUG=True):
     """
     Scrape meeting reports from each committee's page.
     """
-    import committee_reports
 
+    import committee_reports
+    print "\n ----------- SCRAPING COMMITTEE REPORTS ---------------"
     count_reports = 0
     count_tags = 0
     committees = Agent.query.all()  # TODO: narrow this down to committees only

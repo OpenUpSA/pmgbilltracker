@@ -5,10 +5,9 @@ http://www.pmg.org.za/hansard
 from __future__ import print_function
 from BeautifulSoup import BeautifulSoup
 from dateutil import parser as date_parser
-from datetime import datetime
 import scrapertools
 import simplejson
-import re
+import time
 
 
 class HansardPager(object):
@@ -63,6 +62,7 @@ def run_scraper(DEBUG):
     for (j, (date, title, href_hansard)) in enumerate(hansard_pager.next_hansard):
         if DEBUG:
             print("\t\t" + str(date) + " - " + title)
+        time.sleep(0.5)
         tmp_url = href_hansard
         html = scrapertools.URLFetcher(tmp_url).html
         # TODO: extract location
