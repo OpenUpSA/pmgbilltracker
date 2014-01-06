@@ -56,7 +56,7 @@ class ReportPager(object):
                         pass
 
 
-def run_scraper(DEBUG, committee_url):
+def run_scraper(DEBUG, committee_url, location=None):
 
     count = 0
     report_list = []
@@ -74,6 +74,7 @@ def run_scraper(DEBUG, committee_url):
                 "url": tmp_url,
                 "date": date,
                 "title": title,
+                "location": location
                 }
             if DEBUG:
                 print("\t\t\tentry #" + str(count) + " - " + str(bills))

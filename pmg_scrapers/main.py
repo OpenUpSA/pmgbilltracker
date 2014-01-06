@@ -144,7 +144,7 @@ def scrape_committee_reports(DEBUG=True):
     committees = Agent.query.all()  # TODO: narrow this down to committees only
     shuffle(committees)
     for committee in committees:
-        reports = committee_reports.run_scraper(DEBUG, committee.url)
+        reports = committee_reports.run_scraper(DEBUG, committee.url, committee.location)
         if DEBUG:
             print committee.name
             print str(len(reports)) + " reports"
@@ -179,7 +179,8 @@ if __name__ == "__main__":
     #     (None, "Unknown"),
     #     (1, "National Assembly (NA)"),
     #     (2, "National Council of Provinces (NCOP)"),
-    #     (3, "President's Office"),
+    #     (3, "Under joint consideration, NA + NCOP"),
+    #     (4, "President's Office"),
     #     ]
     #
     # stages = [
