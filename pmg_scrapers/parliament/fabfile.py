@@ -90,3 +90,5 @@ def clear():
 ## run spider with:
 #    cd parliament
 #    sudo nohup python spider.py &
+
+# rsync --progress --partial --rsh="ssh -i /Users/petrus/.ssh/aws_code4sa.pem" ubuntu@54.194.55.6:/home/ubuntu/archive.tar.gz /Users/petrus/Desktop/archive.tar.gz

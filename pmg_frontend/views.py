@@ -15,7 +15,9 @@ def root():
 
 @app.route('/bills/all/')
 @app.route('/bills/<year>/')
-def index(year=2013):
+@app.route('/bills/<bill_type>/all/')
+@app.route('/bills/<bill_type>/<year>/')
+def index(year=2013, bill_type=None):
     """
     Display a list of available bills, with some summary info and a link to each bill's detail page.
     """
@@ -26,11 +28,20 @@ def index(year=2013):
         logger.debug(e)
         abort(400)
 
+    tmp = "bill"
+    page_title = "All bills"
+    if bill_type and bill_type.lower() in ["pmb", "draft"]:
+        tmp = bill_type.lower()
+        if bill_type.lower() == "pmb":
+            page_title = "Private Member Bills"
+        elif bill_type.lower() == "draft":
+            page_title = "Draft Bills"
+
     logger.debug("landing page called")
-    r = requests.get("http://" + API_HOST + "/bill/year/" + str(year) + "/")
+    r = requests.get("http://" + API_HOST + "/" + tmp + "/year/" + str(year) + "/")
     bills = r.json()
 
-    return render_template('index.html', year=year, bills=bills, api_host=API_HOST)
+    return render_template('index.html', title=page_title, bill_type=bill_type, year=year, bills=bills, api_host=API_HOST)
 
 
 @app.route('/bills/')

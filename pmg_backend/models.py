@@ -31,13 +31,15 @@ entry_bills_table = db.Table('entry_bills', db.Model.metadata,
 
 class Bill(db.Model):
 
-    __table_args__ = ( db.UniqueConstraint('code', 'year'), { } )
+    __table_args__ = ( db.UniqueConstraint('code', 'year', 'name'), { } )
     bill_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(500), nullable=False)
     code = db.Column(db.String(100))
-    year = db.Column(db.Integer)
-    introduced_by = db.Column(db.String(500))
     bill_type = db.Column(db.String(100))
+    year = db.Column(db.Integer)
+    # number = db.Column(db.Integer)
+    introduced_by = db.Column(db.String(500))
+
     objective = db.Column(db.String(1000))
     status = db.Column(db.String(100))
 
