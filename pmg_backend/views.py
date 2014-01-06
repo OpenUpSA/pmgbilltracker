@@ -35,24 +35,6 @@ def bill_list(year=None):
     return response
 
 
-@app.route('/draft/')
-@app.route('/draft/year/<year>/')
-def draft_list(year=None):
-
-    logger.debug("Draft list endpoint called")
-    # TODO: order by Bill number
-    # TODO: set "draft" as a special bill_type
-    if year:
-        tmp = Bill.query.filter(Bill.year==int(year)).filter(Bill.code==None).order_by(Bill.bill_id.desc()).all()
-        response = make_response(bill_serializer.serialize(tmp))
-    else:
-        tmp = Bill.query.filter(Bill.code.is_(None)).order_by(Bill.year.desc()).all()
-        response = make_response(bill_serializer.serialize(tmp))
-    response.mimetype = "application/json"
-    response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend
-    return response
-
-
 @app.route('/pmb/')
 @app.route('/pmb/year/<year>/')
 def pmb_list(year=None):
@@ -64,6 +46,41 @@ def pmb_list(year=None):
         response = make_response(bill_serializer.serialize(tmp))
     else:
         tmp = Bill.query.filter(Bill.bill_type=="PMB").order_by(Bill.year.desc()).all()
+        response = make_response(bill_serializer.serialize(tmp))
+    response.mimetype = "application/json"
+    response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend
+    return response
+
+
+@app.route('/draft/')
+@app.route('/draft/year/<year>/')
+def draft_list(year=None):
+
+    logger.debug("Draft list endpoint called")
+    # TODO: order by Bill number
+    # TODO: set "draft" as a special bill_type
+    if year:
+        tmp = Bill.query.filter(Bill.year==int(year)).filter(Bill.code==None).order_by(Bill.bill_id.desc()).all()
+        response = make_response(bill_serializer.serialize(tmp))
+    else:
+        tmp = Bill.query.filter(Bill.code==None).order_by(Bill.year.desc()).all()
+        response = make_response(bill_serializer.serialize(tmp))
+    response.mimetype = "application/json"
+    response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend
+    return response
+
+
+@app.route('/current/')
+@app.route('/current/year/<year>/')
+def current_list(year=None):
+
+    logger.debug("Current list endpoint called")
+    # TODO: order by Bill number
+    if year:
+        tmp = Bill.query.filter(Bill.year==int(year)).filter(Bill.status != "enacted").filter(Bill.status != "withdrawn").filter(Bill.status != "expired").filter(Bill.status != None).order_by(Bill.bill_id.desc()).all()
+        response = make_response(bill_serializer.serialize(tmp))
+    else:
+        tmp = Bill.query.filter(Bill.status != "enacted").filter(Bill.status != "withdrawn").filter(Bill.status != "expired").filter(Bill.status != None).order_by(Bill.year.desc()).all()
         response = make_response(bill_serializer.serialize(tmp))
     response.mimetype = "application/json"
     response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend
