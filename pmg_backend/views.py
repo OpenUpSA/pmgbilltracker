@@ -23,11 +23,47 @@ def autodiscover():
 def bill_list(year=None):
 
     logger.debug("Bill list endpoint called")
+    # TODO: order by Bill number
     if year:
-        tmp = Bill.query.filter(Bill.year==int(year)).all()
+        tmp = Bill.query.filter(Bill.year==int(year)).filter(Bill.bill_type=="B").filter(Bill.code.isnot(None)).order_by(Bill.bill_id.desc()).all()
         response = make_response(bill_serializer.serialize(tmp))
     else:
-        tmp = Bill.query.order_by(Bill.year.desc()).all()
+        tmp = Bill.query.filter(Bill.bill_type=="B").order_by(Bill.year.desc()).all()
+        response = make_response(bill_serializer.serialize(tmp))
+    response.mimetype = "application/json"
+    response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend
+    return response
+
+
+@app.route('/draft/')
+@app.route('/draft/year/<year>/')
+def draft_list(year=None):
+
+    logger.debug("Draft list endpoint called")
+    # TODO: order by Bill number
+    # TODO: set "draft" as a special bill_type
+    if year:
+        tmp = Bill.query.filter(Bill.year==int(year)).filter(Bill.code==None).order_by(Bill.bill_id.desc()).all()
+        response = make_response(bill_serializer.serialize(tmp))
+    else:
+        tmp = Bill.query.filter(Bill.code.is_(None)).order_by(Bill.year.desc()).all()
+        response = make_response(bill_serializer.serialize(tmp))
+    response.mimetype = "application/json"
+    response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend
+    return response
+
+
+@app.route('/pmb/')
+@app.route('/pmb/year/<year>/')
+def pmb_list(year=None):
+
+    logger.debug("PMB list endpoint called")
+    # TODO: order by Bill number
+    if year:
+        tmp = Bill.query.filter(Bill.year==int(year)).filter(Bill.bill_type=="PMB").order_by(Bill.bill_id.desc()).all()
+        response = make_response(bill_serializer.serialize(tmp))
+    else:
+        tmp = Bill.query.filter(Bill.bill_type=="PMB").order_by(Bill.year.desc()).all()
         response = make_response(bill_serializer.serialize(tmp))
     response.mimetype = "application/json"
     response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend

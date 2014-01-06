@@ -35,9 +35,10 @@ class Bill(db.Model):
     bill_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(500), nullable=False)
     code = db.Column(db.String(100))
-    year = db.Column(db.Integer)
-    introduced_by = db.Column(db.String(500))
     bill_type = db.Column(db.String(100))
+    year = db.Column(db.Integer)
+    # number = db.Column(db.Integer)
+    introduced_by = db.Column(db.String(500))
 
     objective = db.Column(db.String(1000))
     status = db.Column(db.String(100))
