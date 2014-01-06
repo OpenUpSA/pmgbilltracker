@@ -7,7 +7,7 @@ from BeautifulSoup import BeautifulSoup
 # from bs4 import BeautifulSoup
 from dateutil import parser as dateparser
 from datetime import datetime
-from pmg_scrapers import scrapertools
+import scrapertools
 import simplejson
 import re
 

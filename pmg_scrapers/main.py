@@ -32,7 +32,7 @@ def populate_entry(entry, data, bill_codes):
 
 
 def scrape_bills(DEBUG=True):
-    from pmg import bills
+    import bills
     bill_dict, draft_list = bills.run_scraper(DEBUG)
 
     print str(len(bill_dict)) + " Bills scraped"
@@ -88,7 +88,7 @@ def scrape_bills(DEBUG=True):
 
 def scrape_hansards(DEBUG=True):
 
-    from pmg import hansards
+    import hansards
 
     count_tags = 0
 
@@ -116,7 +116,7 @@ def scrape_committees(DEBUG=True):
     """
     Scrape list of committees from PMG.
     """
-    from pmg import committees
+    import committees
     committee_list = committees.run_scraper(DEBUG)
     print str(len(committee_list)) + " Committees scraped"
 
@@ -137,7 +137,7 @@ def scrape_committee_reports(DEBUG=True):
     """
     Scrape meeting reports from each committee's page.
     """
-    from pmg import committee_reports
+    import committee_reports
 
     count_reports = 0
     count_tags = 0
@@ -174,6 +174,21 @@ if __name__ == "__main__":
 
     db.drop_all()
     db.create_all()
+
+    # locations = [
+    #     (None, "Unknown"),
+    #     (1, "National Assembly (NA)"),
+    #     (2, "National Council of Provinces (NCOP)"),
+    #     (3, "President's Office"),
+    #     ]
+    #
+    # stages = [
+    #     (None, "Unknown"),
+    #     (1, "Introduced"),
+    #     (2, "Before committee"),
+    #     (3, "Awaiting approval"),
+    #     (4, "Mediation"),
+    #     ]
 
     scrape_bills(DEBUG)
     scrape_hansards(DEBUG)
