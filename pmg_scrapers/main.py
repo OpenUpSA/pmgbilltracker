@@ -49,6 +49,7 @@ def scrape_bills(DEBUG=True):
             bill.introduced_by = bill_data['introduced_by']
         bill.year = bill_data['year']
         bill.bill_type = bill_data['type']
+        bill.number = bill_data['number']
         db.session.add(bill)
         # save related bill versions
         for entry_data in bill_data['versions']:

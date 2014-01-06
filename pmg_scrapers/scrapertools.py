@@ -108,6 +108,7 @@ def analyze_bill_code(text):
     out = {
         'code': code,
         'type': bill_type,
+        'number': number,
         'status': status,
         'year': year,
         'version': version if version else None,
