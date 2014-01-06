@@ -5,7 +5,7 @@ import simplejson
 from random import shuffle
 
 
-def populate_entry(entry, data, bill_codes):
+def populate_entry(entry, data, bill_codes=None):
     # populate bill relations
     for code in bill_codes:
         tmp_bill = Bill.query.filter(Bill.code==code).first()
@@ -50,16 +50,16 @@ def scrape_bills(DEBUG=True):
         bill.year = bill_data['year']
         bill.bill_type = bill_data['type']
         db.session.add(bill)
-        db.session.commit()
         # save related bill versions
         for entry_data in bill_data['versions']:
             entry = Entry.query.filter(Entry.url==entry_data['url']).first()  # Look for pre-existing entry.
             if entry is None:
                 entry = Entry()  # Create new entry.
             entry_data["entry_type"] = "version"
-            entry = populate_entry(entry, entry_data, [bill_code, ])
+            entry = populate_entry(entry, entry_data)
+            entry.bills.append(bill)
             db.session.add(entry)
-            db.session.commit()
+    db.session.commit()
 
     # save scraped draft bills to database
     for draft in draft_list:
@@ -72,17 +72,16 @@ def scrape_bills(DEBUG=True):
         if draft.get('introduced_by'):
             bill.introduced_by = draft['introduced_by']
         db.session.add(bill)
-        db.session.commit()
         # save related bill versions
         for entry_data in draft['versions']:
             entry = Entry.query.filter(Entry.url==entry_data['url']).first()  # Look for pre-existing entry.
             if entry is None:
                 entry = Entry()  # Create new entry.
             entry_data["entry_type"] = "version"
-            entry = populate_entry(entry, entry_data, [bill_code, ])
+            entry = populate_entry(entry, entry_data)
+            entry.bills.append(bill)
             db.session.add(entry)
-            db.session.commit()
-
+    db.session.commit()
     return
 
 
@@ -106,7 +105,7 @@ def scrape_hansards(DEBUG=True):
             hansard = Entry()
         hansard = populate_entry(hansard, data, bills)
         db.session.add(hansard)
-        db.session.commit()
+    db.session.commit()
     print str(len(hansard_list)) + " Hansards scraped"
     print str(count_tags) + " Hansards tagged to bills"
     return
@@ -129,7 +128,7 @@ def scrape_committees(DEBUG=True):
             agent.type = committee['type']
         agent.url = committee['url']
         db.session.add(agent)
-        db.session.commit()
+    db.session.commit()
     return
 
 
@@ -162,7 +161,7 @@ def scrape_committee_reports(DEBUG=True):
                 report.agent = committee
             report = populate_entry(report, data, bills)
             db.session.add(report)
-            db.session.commit()
+        db.session.commit()
         print str(count_reports) + " Committee meeting reports scraped"
         print str(count_tags) + " Committee meeting reports tagged to bills"
     return
