@@ -69,11 +69,19 @@ def run_scraper(DEBUG):
         bills = scrapertools.find_bills(html)
         if bills:
             count += 1
+            # infer location from title
+            # TODO: convince them to make this check easier, because many entries won't be tagged correctly
+            location = None
+            if title.startswith("NA:"):
+                location = 1
+            elif title.startswith("NCOP:"):
+                location = 2
             entry = {
                 "bills": bills,
-                "href": tmp_url,
+                "url": tmp_url,
                 "date": date,
                 "title": title,
+                "location": location
                 }
             if DEBUG:
                 print("\t\t\tentry #" + str(count) + " - " + str(bills))
