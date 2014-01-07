@@ -22,9 +22,15 @@
 
     <hr>
     {% for bill in bills %}
+        {% if bill_type == "draft" %}
+            <div class="bill-index-tile" data-draft-url="{{ bill.entries[0].url }}">
+            <p><strong>{{ bill.name }}</strong></p>
+        </div>
+        {% else %}
         <div class="bill-index-tile" data-bill-id="{{ bill.bill_id }}">
             <p><strong>{{ bill.name }}</strong> <span class="pull-right">[{{ bill.code }}]</span></p>
         </div>
+        {% endif %}
     {% endfor %}
 {% endblock page %}
 
@@ -33,7 +39,11 @@
     <script type="text/javascript">
         $(function(){
             $(".bill-index-tile").on('click', function(){
+                {% if bill_type == "draft" %}
+                window.location = $(this).attr('data-draft-url')
+                {% else %}
                 window.location = "/bill/" + $(this).attr('data-bill-id') + "/"
+                {% endif %}
             })
 
             autocomplete_data = []

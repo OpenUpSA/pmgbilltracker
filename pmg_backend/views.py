@@ -23,7 +23,6 @@ def autodiscover():
 def bill_list(year=None):
 
     logger.debug("Bill list endpoint called")
-    # TODO: order by Bill number
     if year:
         tmp = Bill.query.filter(Bill.year==int(year)).filter(Bill.bill_type=="B").filter(Bill.code.isnot(None)).order_by(Bill.number.desc()).all()
         response = make_response(bill_serializer.serialize(tmp))
@@ -40,7 +39,6 @@ def bill_list(year=None):
 def pmb_list(year=None):
 
     logger.debug("PMB list endpoint called")
-    # TODO: order by Bill number
     if year:
         tmp = Bill.query.filter(Bill.year==int(year)).filter(Bill.bill_type=="PMB").order_by(Bill.number.desc()).all()
         response = make_response(bill_serializer.serialize(tmp))
@@ -57,11 +55,10 @@ def pmb_list(year=None):
 def draft_list(year=None):
 
     logger.debug("Draft list endpoint called")
-    # TODO: order by Bill number
     # TODO: set "draft" as a special bill_type
     if year:
         tmp = Bill.query.filter(Bill.year==int(year)).filter(Bill.code==None).order_by(Bill.number.desc()).all()
-        response = make_response(bill_serializer.serialize(tmp))
+        response = make_response(bill_serializer.serialize(tmp, include_related=True))
     else:
         tmp = Bill.query.filter(Bill.code==None).order_by(Bill.year.desc(), Bill.number.desc()).all()
         response = make_response(bill_serializer.serialize(tmp))
@@ -75,7 +72,6 @@ def draft_list(year=None):
 def current_list(year=None):
 
     logger.debug("Current list endpoint called")
-    # TODO: order by Bill number
     if year:
         tmp = Bill.query.filter(Bill.year==int(year)).filter(Bill.status != "enacted").filter(Bill.status != "withdrawn").filter(Bill.status != "expired").filter(Bill.status != None).order_by(Bill.number.desc()).all()
         response = make_response(bill_serializer.serialize(tmp))
