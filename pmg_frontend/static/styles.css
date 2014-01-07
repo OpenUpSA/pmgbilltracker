@@ -15,6 +15,10 @@
     background-color: #0178d8;
 }
 
+#page-container{
+    min-height: 500px;
+}
+
 .bill-index-tile{
     padding-top: 5px;
     padding-bottom: 5px;
@@ -153,6 +157,10 @@ color: #999999;
 .tile:hover{
     background-color: #eeeeee;
     cursor: pointer;
+}
+
+#status-text{
+    margin-top: 15px;
 }
 
 #footer{
