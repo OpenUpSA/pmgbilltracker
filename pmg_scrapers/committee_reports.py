@@ -5,10 +5,9 @@ http://www.pmg.org.za/committees
 from __future__ import print_function
 from BeautifulSoup import BeautifulSoup
 from dateutil import parser as date_parser
-from datetime import datetime
-from pmg_scrapers import scrapertools
+import scrapertools
 import simplejson
-import re
+import time
 
 
 class ReportPager(object):
@@ -56,7 +55,7 @@ class ReportPager(object):
                         pass
 
 
-def run_scraper(DEBUG, committee_url):
+def run_scraper(DEBUG, committee_url, location=None):
 
     count = 0
     report_list = []
@@ -64,9 +63,12 @@ def run_scraper(DEBUG, committee_url):
     for (j, (date, title, href_report)) in enumerate(report_pager.next_report):
         if DEBUG:
             print("\t\t" + str(date) + " - " + title)
+        time.sleep(0.5)
         tmp_url = href_report
         html = scrapertools.URLFetcher(tmp_url).html
-        bills = scrapertools.find_bills(html)
+        soup = BeautifulSoup(html)
+        content = soup.find(id="content")
+        bills = scrapertools.find_bills(str(content))
         if bills:
             count += 1
             entry = {
@@ -74,6 +76,7 @@ def run_scraper(DEBUG, committee_url):
                 "url": tmp_url,
                 "date": date,
                 "title": title,
+                "location": location
                 }
             if DEBUG:
                 print("\t\t\tentry #" + str(count) + " - " + str(bills))

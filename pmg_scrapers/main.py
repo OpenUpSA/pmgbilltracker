@@ -5,16 +5,16 @@ import simplejson
 from random import shuffle
 
 
-def populate_entry(entry, data, bill_codes):
+def populate_entry(entry, data, bill_codes=None):
     # populate bill relations
-    for code in bill_codes:
-        tmp_bill = Bill.query.filter(Bill.code==code).first()
-        if tmp_bill:
-            entry.bills.append(tmp_bill)
-        else:
-            print("Could not find related bill: " + code)
-            print("Entry: " + data['title'])
-            pass
+    if bill_codes:
+        for code in bill_codes:
+            tmp_bill = Bill.query.filter(Bill.code==code).first()
+            if tmp_bill:
+                entry.bills.append(tmp_bill)
+            else:
+                print("Could not find related bill: " + code)
+                pass
     # populate required fields
     entry.type = data['entry_type']
     entry.date = data['date']
@@ -32,9 +32,10 @@ def populate_entry(entry, data, bill_codes):
 
 
 def scrape_bills(DEBUG=True):
-    from pmg import bills
-    bill_dict, draft_list = bills.run_scraper(DEBUG)
+    import bills
 
+    print "\n ----------- SCRAPING BILLS ---------------"
+    bill_dict, draft_list = bills.run_scraper(DEBUG)
     print str(len(bill_dict)) + " Bills scraped"
     print str(len(draft_list)) + " Draft bills scraped"
 
@@ -49,17 +50,17 @@ def scrape_bills(DEBUG=True):
             bill.introduced_by = bill_data['introduced_by']
         bill.year = bill_data['year']
         bill.bill_type = bill_data['type']
+        bill.number = bill_data['number']
         db.session.add(bill)
-        db.session.commit()
         # save related bill versions
         for entry_data in bill_data['versions']:
             entry = Entry.query.filter(Entry.url==entry_data['url']).first()  # Look for pre-existing entry.
             if entry is None:
                 entry = Entry()  # Create new entry.
-            entry_data["entry_type"] = "version"
-            entry = populate_entry(entry, entry_data, [bill_code, ])
+            entry = populate_entry(entry, entry_data)
+            entry.bills.append(bill)
             db.session.add(entry)
-            db.session.commit()
+    db.session.commit()
 
     # save scraped draft bills to database
     for draft in draft_list:
@@ -72,23 +73,22 @@ def scrape_bills(DEBUG=True):
         if draft.get('introduced_by'):
             bill.introduced_by = draft['introduced_by']
         db.session.add(bill)
-        db.session.commit()
         # save related bill versions
         for entry_data in draft['versions']:
             entry = Entry.query.filter(Entry.url==entry_data['url']).first()  # Look for pre-existing entry.
             if entry is None:
                 entry = Entry()  # Create new entry.
-            entry_data["entry_type"] = "version"
-            entry = populate_entry(entry, entry_data, [bill_code, ])
+            entry = populate_entry(entry, entry_data)
+            entry.bills.append(bill)
             db.session.add(entry)
-            db.session.commit()
-
+    db.session.commit()
     return
 
 
 def scrape_hansards(DEBUG=True):
 
-    from pmg import hansards
+    import hansards
+    print "\n ----------- SCRAPING HANSARDS ---------------"
 
     count_tags = 0
 
@@ -106,7 +106,7 @@ def scrape_hansards(DEBUG=True):
             hansard = Entry()
         hansard = populate_entry(hansard, data, bills)
         db.session.add(hansard)
-        db.session.commit()
+    db.session.commit()
     print str(len(hansard_list)) + " Hansards scraped"
     print str(count_tags) + " Hansards tagged to bills"
     return
@@ -116,7 +116,9 @@ def scrape_committees(DEBUG=True):
     """
     Scrape list of committees from PMG.
     """
-    from pmg import committees
+
+    import committees
+    print "\n ----------- SCRAPING COMMITTEES ---------------"
     committee_list = committees.run_scraper(DEBUG)
     print str(len(committee_list)) + " Committees scraped"
 
@@ -127,9 +129,10 @@ def scrape_committees(DEBUG=True):
             agent = Agent()
             agent.name = committee['name']
             agent.type = committee['type']
+            agent.location = committee['location']
         agent.url = committee['url']
         db.session.add(agent)
-        db.session.commit()
+    db.session.commit()
     return
 
 
@@ -137,14 +140,15 @@ def scrape_committee_reports(DEBUG=True):
     """
     Scrape meeting reports from each committee's page.
     """
-    from pmg import committee_reports
 
+    import committee_reports
+    print "\n ----------- SCRAPING COMMITTEE REPORTS ---------------"
     count_reports = 0
     count_tags = 0
     committees = Agent.query.all()  # TODO: narrow this down to committees only
     shuffle(committees)
     for committee in committees:
-        reports = committee_reports.run_scraper(DEBUG, committee.url)
+        reports = committee_reports.run_scraper(DEBUG, committee.url, committee.location)
         if DEBUG:
             print committee.name
             print str(len(reports)) + " reports"
@@ -162,7 +166,7 @@ def scrape_committee_reports(DEBUG=True):
                 report.agent = committee
             report = populate_entry(report, data, bills)
             db.session.add(report)
-            db.session.commit()
+        db.session.commit()
         print str(count_reports) + " Committee meeting reports scraped"
         print str(count_tags) + " Committee meeting reports tagged to bills"
     return
@@ -175,7 +179,27 @@ if __name__ == "__main__":
     db.drop_all()
     db.create_all()
 
+    # locations = [
+    #     (None, "Unknown"),
+    #     (1, "National Assembly (NA)"),
+    #     (2, "National Council of Provinces (NCOP)"),
+    #     (3, "Under joint consideration, NA + NCOP"),
+    #     (4, "President's Office"),
+    #     ]
+    #
+    # stages = [
+    #     (None, "Unknown"),
+    #     (1, "Introduced"),
+    #     (2, "Before committee"),
+    #     (3, "Awaiting approval"),
+    #     (4, "Mediation"),
+    #     ]
+
     scrape_bills(DEBUG)
     scrape_hansards(DEBUG)
     scrape_committees(DEBUG)
     scrape_committee_reports(DEBUG)
+
+    import bill_status
+    bill_status.find_current_bills()
+    bill_status.find_enacted_bills()

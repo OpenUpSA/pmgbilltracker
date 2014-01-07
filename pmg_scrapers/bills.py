@@ -8,8 +8,8 @@ import json
 from BeautifulSoup import BeautifulSoup
 from dateutil import parser as date_parser
 from datetime import datetime
-import pmg_scrapers.scrapertools
-import string
+import scrapertools
+import time
 
 class BillParser(object):
     """
@@ -56,9 +56,9 @@ class BillParser(object):
                     self.bills[self.current_bill["code"]] = self.current_bill
                 except KeyError:
                     print("Bill cannot be identified")
-                    print(json.dumps(self.current_bill, indent=4, default=pmg_scrapers.scrapertools.handler))
+                    print(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
             if self.DEBUG:
-                print(json.dumps(self.current_bill, indent=4, default=pmg_scrapers.scrapertools.handler))
+                print(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
             self.current_bill = {}
 
         text = fragment.text
@@ -83,7 +83,7 @@ class BillParser(object):
             url = link["href"]
             if not self.current_bill.get("code"):
                 tmp = link.text
-                info = pmg_scrapers.scrapertools.analyze_bill_code(tmp)
+                info = scrapertools.analyze_bill_code(tmp)
                 if info:
                     self.current_bill = dict(self.current_bill.items() + info.items())
                 else:
@@ -93,7 +93,11 @@ class BillParser(object):
                 "url": link["href"],
                 "title": link.text,
                 "date": date_parser.parse(fragment.findAll("td")[1].text).date(),
+                "entry_type": "version",
             }
+            # set entry_type appropriately if this bill has already been enacted
+            if "as enacted" in link.text:
+                version['entry_type'] = "act"
             versions.append(version)
             self.state_fn = self.version_state
             return True
@@ -133,7 +137,7 @@ def run_scraper(DEBUG):
 
         # initiate parser for this page
         parser = BillParser(DEBUG)
-        html = pmg_scrapers.scrapertools.URLFetcher(url).html
+        html = scrapertools.URLFetcher(url).html
         soup = BeautifulSoup(html)
         rows = soup.findAll("tr")
 
@@ -154,7 +158,7 @@ if __name__ == "__main__":
 
     # for text in ["B6-2010", "B6F-2010", "B4-2010 - as enacted", "B - 2010", "PMB5-2013", "B78-2008 as enacted"]:
     #     print(text)
-    #     print(pmg_scrapers.scrapertools.analyze_bill_code(text))
+    #     print(scrapertools.analyze_bill_code(text))
 
     bills, drafts = run_scraper(DEBUG)
     from operator import itemgetter
@@ -163,4 +167,4 @@ if __name__ == "__main__":
         print(draft['bill_name'])
 
     # do something with scraped data
-    print(json.dumps(bills, indent=4, default=pmg_scrapers.scrapertools.handler))
+    print(json.dumps(bills, indent=4, default=scrapertools.handler))

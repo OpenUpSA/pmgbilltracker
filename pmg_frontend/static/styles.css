@@ -4,13 +4,19 @@
 /*orange: 247, 147, 29*/
 
 #pmg-logo{
-    margin: 5px;
+    margin-left: 130px;
+    margin-right: 5px;
+    margin-bottom: 10px;
 }
 
 #banner-hr{
-    height: 15px;
+    height: 26px;
     width: 100%;
-    background-color: cornflowerblue;
+    background-color: #0178d8;
+}
+
+#page-container{
+    min-height: 500px;
 }
 
 .bill-index-tile{
@@ -151,4 +157,16 @@ color: #999999;
 .tile:hover{
     background-color: #eeeeee;
     cursor: pointer;
+}
+
+#status-text{
+    margin-top: 15px;
+}
+
+#footer{
+    width: 100%;
+    height: 50px;
+    background-color: #eee;
+    padding-top: 15px;
+    margin-top: 10px;
 }

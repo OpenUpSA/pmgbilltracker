@@ -37,7 +37,7 @@ class Bill(db.Model):
     code = db.Column(db.String(100))
     bill_type = db.Column(db.String(100))
     year = db.Column(db.Integer)
-    # number = db.Column(db.Integer)
+    number = db.Column(db.Integer)
     introduced_by = db.Column(db.String(500))
 
     objective = db.Column(db.String(1000))
@@ -62,6 +62,7 @@ class Agent(db.Model):
     name = db.Column(db.String(500))
     short_name = db.Column(db.String(100))
     url = db.Column(db.String(500))
+    location = db.Column(db.Integer)
 
     def __str__(self):
         tmp = str(self.agent_id) + " - (" + self.type + ")"

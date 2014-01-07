@@ -13,7 +13,7 @@
             {{ start_location(entry.location, current_location) }}
             {% set current_location = entry.location %}
             {% set current_stage = None %}
-        {% elif not entry.location %}
+        {% elif not entry.location and current_location %}
             </div>
             {% set current_location = None %}
         {% endif %}
@@ -22,7 +22,7 @@
         {% if entry.stage and (entry.stage != current_stage) %}
             {{ start_stage(entry.stage, current_location, current_stage) }}
             {% set current_stage = entry.stage %}
-        {% elif not entry.stage %}
+        {% elif not entry.stage and current_stage %}
             </div>
             {% set current_stage = None %}
         {% endif %}

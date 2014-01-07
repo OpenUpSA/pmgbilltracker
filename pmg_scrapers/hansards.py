@@ -5,10 +5,9 @@ http://www.pmg.org.za/hansard
 from __future__ import print_function
 from BeautifulSoup import BeautifulSoup
 from dateutil import parser as date_parser
-from datetime import datetime
-from pmg_scrapers import scrapertools
+import scrapertools
 import simplejson
-import re
+import time
 
 
 class HansardPager(object):
@@ -63,17 +62,27 @@ def run_scraper(DEBUG):
     for (j, (date, title, href_hansard)) in enumerate(hansard_pager.next_hansard):
         if DEBUG:
             print("\t\t" + str(date) + " - " + title)
+        time.sleep(0.5)
         tmp_url = href_hansard
         html = scrapertools.URLFetcher(tmp_url).html
-        # TODO: extract location
-        bills = scrapertools.find_bills(html)
+        soup = BeautifulSoup(html)
+        content = soup.find(id="content")
+        bills = scrapertools.find_bills(str(content))
         if bills:
             count += 1
+            # infer location from title
+            # TODO: convince them to make this check easier, because many entries won't be tagged correctly
+            location = None
+            if title.startswith("NA:"):
+                location = 1
+            elif title.startswith("NCOP:"):
+                location = 2
             entry = {
                 "bills": bills,
-                "href": tmp_url,
+                "url": tmp_url,
                 "date": date,
                 "title": title,
+                "location": location
                 }
             if DEBUG:
                 print("\t\t\tentry #" + str(count) + " - " + str(bills))
