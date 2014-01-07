@@ -66,7 +66,9 @@ def run_scraper(DEBUG, committee_url, location=None):
         time.sleep(0.5)
         tmp_url = href_report
         html = scrapertools.URLFetcher(tmp_url).html
-        bills = scrapertools.find_bills(html)
+        soup = BeautifulSoup(html)
+        content = soup.find(id="content")
+        bills = scrapertools.find_bills(str(content))
         if bills:
             count += 1
             entry = {
