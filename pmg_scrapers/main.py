@@ -177,8 +177,8 @@ if __name__ == "__main__":
 
     DEBUG = False
 
-    # db.drop_all()
-    # db.create_all()
+    db.drop_all()
+    db.create_all()
 
     # locations = [
     #     (None, "Unknown"),
@@ -196,7 +196,11 @@ if __name__ == "__main__":
     #     (4, "Mediation"),
     #     ]
 
-    # scrape_bills(DEBUG)
-    # scrape_hansards(DEBUG)
-    # scrape_committees(DEBUG)
+    scrape_bills(DEBUG)
+    scrape_hansards(DEBUG)
+    scrape_committees(DEBUG)
     scrape_committee_reports(DEBUG)
+
+    import bill_status
+    bill_status.find_current_bills()
+    bill_status.find_enacted_bills()
