@@ -62,7 +62,6 @@ def run_scraper(DEBUG):
             "name": name,
             "location": location
         }
-        print(location)
         committees.append(tmp)
     return committees
 

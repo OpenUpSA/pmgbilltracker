@@ -145,9 +145,24 @@ def scrape_committee_reports(DEBUG=True):
     print "\n ----------- SCRAPING COMMITTEE REPORTS ---------------"
     count_reports = 0
     count_tags = 0
-    committees = Agent.query.all()  # TODO: narrow this down to committees only
-    shuffle(committees)
+
+
+    try:
+        state = open('tmp_state.json', 'r')
+        current_agent_id = int(simplejson.loads(state.read())['current_agent_id'])
+        state.close()
+    except Exception:
+        print "Starting from scratch."
+        current_agent_id = 0
+        pass
+
+    committees = Agent.query.filter(Agent.agent_id >= current_agent_id).order_by(Agent.agent_id)  # TODO: narrow this down to committees only
+    # shuffle(committees)
     for committee in committees:
+        print "agent_id: " + str(committee.agent_id)
+        state = open('tmp_state.json', 'w')
+        state.write('{"current_agent_id": ' + str(committee.agent_id) + '}')
+        state.close()
         reports = committee_reports.run_scraper(DEBUG, committee.url, committee.location)
         if DEBUG:
             print committee.name
@@ -176,9 +191,6 @@ if __name__ == "__main__":
 
     DEBUG = False
 
-    db.drop_all()
-    db.create_all()
-
     # locations = [
     #     (None, "Unknown"),
     #     (1, "National Assembly (NA)"),
@@ -194,6 +206,9 @@ if __name__ == "__main__":
     #     (3, "Awaiting approval"),
     #     (4, "Mediation"),
     #     ]
+
+    db.drop_all()
+    db.create_all()
 
     scrape_bills(DEBUG)
     scrape_hansards(DEBUG)

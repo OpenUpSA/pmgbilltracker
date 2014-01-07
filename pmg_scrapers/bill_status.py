@@ -43,9 +43,9 @@ def find_current_bills():
         available_status = {
             "act": "enacted",
             "unknown": None,
-            "pc": "na_committee",
-            "sc": "ncop_committee",
-            "intro": "na-introduced",
+            "pc": "na",
+            "sc": "ncop",
+            "intro": "na",
         }
 
         if available_status.get(tmp_status):
