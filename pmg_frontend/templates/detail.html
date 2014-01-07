@@ -59,12 +59,20 @@
         <div class="row text-center">
             <div class="col col-lg-12">
                 <p id="status-text" class="lead">
-                    {% if bill.status -%}
-
-
+                    {% if bill.status in ["enacted", "assent", "ncop", "na", "introduced"] -%}
                             <div class="c4sa-container" style="margin-left: auto; margin-right: auto;">
                                 <div class="c4sa-grey c4sa-progress"></div>
+                                {% if bill.status == "enacted" %}
+                                <div class="c4sa-stage stage5">
+                                {% elif bill.status == "assent" %}
+                                <div class="c4sa-stage stage4">
+                                {% elif bill.status == "ncop" %}
                                 <div class="c4sa-stage stage3">
+                                {% elif bill.status == "na" %}
+                                <div class="c4sa-stage stage2">
+                                {% elif bill.status == "introduced" %}
+                                <div class="c4sa-stage stage1">
+                                {% endif %}
                                     <div class="c4sa-green c4sa-progress stage"></div>
                                     <div class="c4sa-dot dot1"></div>
                                     <div class="c4sa-dot dot2"></div>
@@ -77,26 +85,6 @@
                                     <div class="c4sa-label label4"></div>
                                 </div>
                             </div>
-
-                        {#                        {% if bill.status == "100" -%}#}
-                        {#                            <span class="success">National Assembly <i class="fa fa-chevron-right"></i></span>#}
-                        {#                            <span class="pending">National Council of Provinces <i class="fa fa-chevron-right"></i></span>#}
-                        {#                            <span class="pending">Presidential Signature</span>#}
-                        {#                        {% elif bill.status == "110" -%}#}
-                        {#                            <span class="success">National Assembly <i class="fa fa-chevron-right"></i></span>#}
-                        {#                            <span class="success">National Council of Provinces <i class="fa fa-chevron-right"></i></span>#}
-                        {#                            <span class="pending">Presidential Signature</span>#}
-                        {#                        {% elif bill.status == "010" -%}#}
-                        {#                            <span class="success">National Council of Provinces <i class="fa fa-chevron-right"></i></span>#}
-                        {#                            <span class="pending">National Assembly <i class="fa fa-chevron-right"></i></span>#}
-                        {#                            <span class="pending">Presidential Signature</span>#}
-                        {#                        {% elif bill.status == "111" -%}#}
-                        {#                            <span class="success">National Assembly <i class="fa fa-chevron-right"></i></span>#}
-                        {#                            <span class="success">National Council of Provinces <i class="fa fa-chevron-right"></i></span>#}
-                        {#                            <span class="success">Presidential Signature</span>#}
-                        {#                        {% else -%}#}
-                        {#                            {{ bill.status }}#}
-                        {#                        {%- endif %}#}
                     {% else -%}
                         Unknown status
                     {%- endif %}
