@@ -7,13 +7,14 @@ from random import shuffle
 
 def populate_entry(entry, data, bill_codes=None):
     # populate bill relations
-    for code in bill_codes:
-        tmp_bill = Bill.query.filter(Bill.code==code).first()
-        if tmp_bill:
-            entry.bills.append(tmp_bill)
-        else:
-            print("Could not find related bill: " + code)
-            pass
+    if bill_codes:
+        for code in bill_codes:
+            tmp_bill = Bill.query.filter(Bill.code==code).first()
+            if tmp_bill:
+                entry.bills.append(tmp_bill)
+            else:
+                print("Could not find related bill: " + code)
+                pass
     # populate required fields
     entry.type = data['entry_type']
     entry.date = data['date']
@@ -176,8 +177,8 @@ if __name__ == "__main__":
 
     DEBUG = False
 
-    db.drop_all()
-    db.create_all()
+    # db.drop_all()
+    # db.create_all()
 
     # locations = [
     #     (None, "Unknown"),
@@ -195,7 +196,7 @@ if __name__ == "__main__":
     #     (4, "Mediation"),
     #     ]
 
-    scrape_bills(DEBUG)
-    scrape_hansards(DEBUG)
-    scrape_committees(DEBUG)
+    # scrape_bills(DEBUG)
+    # scrape_hansards(DEBUG)
+    # scrape_committees(DEBUG)
     scrape_committee_reports(DEBUG)
