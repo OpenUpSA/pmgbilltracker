@@ -57,7 +57,6 @@ def scrape_bills(DEBUG=True):
             entry = Entry.query.filter(Entry.url==entry_data['url']).first()  # Look for pre-existing entry.
             if entry is None:
                 entry = Entry()  # Create new entry.
-            entry_data["entry_type"] = "version"
             entry = populate_entry(entry, entry_data)
             entry.bills.append(bill)
             db.session.add(entry)
@@ -79,7 +78,6 @@ def scrape_bills(DEBUG=True):
             entry = Entry.query.filter(Entry.url==entry_data['url']).first()  # Look for pre-existing entry.
             if entry is None:
                 entry = Entry()  # Create new entry.
-            entry_data["entry_type"] = "version"
             entry = populate_entry(entry, entry_data)
             entry.bills.append(bill)
             db.session.add(entry)

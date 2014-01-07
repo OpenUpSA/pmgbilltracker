@@ -93,7 +93,11 @@ class BillParser(object):
                 "url": link["href"],
                 "title": link.text,
                 "date": date_parser.parse(fragment.findAll("td")[1].text).date(),
+                "entry_type": "version",
             }
+            # set entry_type appropriately if this bill has already been enacted
+            if "as enacted" in link.text:
+                version['entry_type'] = "act"
             versions.append(version)
             self.state_fn = self.version_state
             return True
