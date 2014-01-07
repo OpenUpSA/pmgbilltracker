@@ -129,6 +129,7 @@ def scrape_committees(DEBUG=True):
             agent = Agent()
             agent.name = committee['name']
             agent.type = committee['type']
+            agent.location = committee['location']
         agent.url = committee['url']
         db.session.add(agent)
     db.session.commit()
