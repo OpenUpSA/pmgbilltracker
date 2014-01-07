@@ -65,8 +65,9 @@ def run_scraper(DEBUG):
         time.sleep(0.5)
         tmp_url = href_hansard
         html = scrapertools.URLFetcher(tmp_url).html
-        # TODO: extract location
-        bills = scrapertools.find_bills(html)
+        soup = BeautifulSoup(html)
+        content = soup.find(id="content")
+        bills = scrapertools.find_bills(str(content))
         if bills:
             count += 1
             # infer location from title
