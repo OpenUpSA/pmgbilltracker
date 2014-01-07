@@ -66,6 +66,10 @@
 }
 
 .location.location-3{
+    border-color: lightgray;
+}
+
+.location.location-4{
     border-color: greenyellow;
 }
 
@@ -90,6 +94,10 @@
 }
 
 .location-title.location-3{
+    background-color: lightgray;
+}
+
+.location-title.location-4{
     background-color: greenyellow;
 }
 
