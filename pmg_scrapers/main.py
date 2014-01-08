@@ -218,3 +218,4 @@ if __name__ == "__main__":
     import bill_status
     bill_status.find_current_bills()
     bill_status.find_enacted_bills()
+    handle_assent()

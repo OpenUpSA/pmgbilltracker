@@ -10,20 +10,9 @@
         <div class="container">
             <h1>{{ bill.name }}</h1>
 
-            <div id="version-container" class="pull-right">
-            {% for entry in bill.entries %}
-            {% if entry.type in ["version", "act"] -%}
-                    {% if loop.first %}Bill versions:<br>{% endif %}
-                    <a target="_blank" href="/{{ entry.url }}">
-                        <i class="fa fa-file-text"></i> {{ entry.title }}
-                    </a><br>
-            {%- endif %}
-            {% endfor %}
-            </div>
-
-{#            {% if bill.bill_type -%}#}
-{#                <p>{{ bill.bill_type }}</p>#}
-{#            {%- endif %}#}
+            {#            {% if bill.bill_type -%}#}
+            {#                <p>{{ bill.bill_type }}</p>#}
+            {#            {%- endif %}#}
 
             {% if bill.introduced_by -%}
                 <p>Introduced by: {{ bill.introduced_by }}</p>
@@ -49,11 +38,22 @@
                     <i class="fa fa-file-text"></i> Draft
                 </a>
             {% endif %}
-            {% if bill.gazette %}
-                <a class="btn btn-sm btn-default pull-right bill-link" role="button" target="_blank" href="/{{ bill.gazette }}">
-                    <i class="fa fa-file-text"></i> Gazette
-                </a>
-            {% endif %}
+            {#            {% if bill.gazette %}#}
+            {#                <a class="btn btn-sm btn-default pull-right bill-link" role="button" target="_blank" href="/{{ bill.gazette }}">#}
+            {#                    <i class="fa fa-file-text"></i> Gazette#}
+            {#                </a>#}
+            {#            {% endif %}#}
+
+            <div id="version-container" class="pull-right">
+                {% for entry in bill.entries %}
+                    {% if entry.type in ["version", "act"] -%}
+                        {% if loop.first %}Bill versions:<br>{% endif %}
+                        <a target="_blank" href="/{{ entry.url }}">
+                            <i class="fa fa-file-text"></i> {{ entry.title }}
+                        </a><br>
+                    {%- endif %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 
@@ -62,31 +62,31 @@
             <div class="col col-lg-12">
                 <p id="status-text" class="lead">
                     {% if bill.status in ["enacted", "assent", "ncop", "na", "introduced"] -%}
-                            <div class="c4sa-container" style="margin-left: auto; margin-right: auto;">
-                                <div class="c4sa-grey c4sa-progress"></div>
-                                {% if bill.status == "enacted" %}
-                                <div class="c4sa-stage stage5">
-                                {% elif bill.status == "assent" %}
-                                <div class="c4sa-stage stage4">
-                                {% elif bill.status == "ncop" %}
-                                <div class="c4sa-stage stage3">
-                                {% elif bill.status == "na" %}
-                                <div class="c4sa-stage stage2">
-                                {% elif bill.status == "introduced" %}
-                                <div class="c4sa-stage stage1">
-                                {% endif %}
-                                    <div class="c4sa-green c4sa-progress stage"></div>
-                                    <div class="c4sa-dot dot1"></div>
-                                    <div class="c4sa-dot dot2"></div>
-                                    <div class="c4sa-dot dot3"></div>
-                                    <div class="c4sa-dot dot4"></div>
-                                    <div class="process_dot"></div>
-                                    <div class="c4sa-label label1"></div>
-                                    <div class="c4sa-label label2"></div>
-                                    <div class="c4sa-label label3"></div>
-                                    <div class="c4sa-label label4"></div>
-                                </div>
-                            </div>
+                        <div class="c4sa-container" style="margin-left: auto; margin-right: auto;">
+                        <div class="c4sa-grey c4sa-progress"></div>
+                        {% if bill.status == "enacted" %}
+                            <div class="c4sa-stage stage5">
+                        {% elif bill.status == "assent" %}
+                            <div class="c4sa-stage stage4">
+                        {% elif bill.status == "ncop" %}
+                            <div class="c4sa-stage stage3">
+                        {% elif bill.status == "na" %}
+                            <div class="c4sa-stage stage2">
+                        {% elif bill.status == "introduced" %}
+                            <div class="c4sa-stage stage1">
+                        {% endif %}
+                    <div class="c4sa-green c4sa-progress stage"></div>
+                    <div class="c4sa-dot dot1"></div>
+                    <div class="c4sa-dot dot2"></div>
+                    <div class="c4sa-dot dot3"></div>
+                    <div class="c4sa-dot dot4"></div>
+                    <div class="process_dot"></div>
+                    <div class="c4sa-label label1"></div>
+                    <div class="c4sa-label label2"></div>
+                    <div class="c4sa-label label3"></div>
+                    <div class="c4sa-label label4"></div>
+                    </div>
+                    </div>
                     {% elif bill.status == "withdrawn" %}
                         This Bill has been withdrawn.
                     {% else -%}
