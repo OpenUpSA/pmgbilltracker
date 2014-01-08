@@ -102,15 +102,14 @@
 {% macro render_entry(entry) -%}
     <div class="bill-history-entry{% if entry.type == "public-hearing-report" %} public-hearing{% endif %}">
         <p class="entry-date text-muted pull-left">{{ entry.date }}</p>
-        {% if entry.type == "bill" %}
+        {% if entry.type in ["version", "act"] -%}
             <p class="bill-version">
                 New version introduced.
-                <a class="btn btn-primary btn-sm pull-right" role="button" target="_blank" href="/{{ entry.url }}">
+                <a class="btn btn-primary btn-sm pull-right" role="button" target="_blank" href="{{ entry.url }}">
                     <i class="fa fa-file-text"></i> {{ entry.title }}
                 </a>
             </p>
-        {% else %}
-
+        {%- else %}
             <p class="entry">
                 {% if entry.type == "public-hearing-report" %}
                     <a href="{{ entry.url }}" target="_blank">
@@ -118,24 +117,14 @@
                     </a>
                     <strong>
                 {% endif %}
-
-
-                <a href="{{ entry.url }}" target="_blank">
-                {% if entry.type in ["version", "act"] %}
-                    <strong><i class="fa fa-file-text"></i> {{ entry.title }}</strong>
-                {% else %}
-                    {{ entry.title }}
-                {% endif %}
-                </a>
-
+                <a href="{{ entry.url }}" target="_blank">{{ entry.title }}</a>
                 {% if entry.type == "public-hearing-report" %}
                     </strong>
                 {% endif %}
-
                 {% if entry.description %}
                     <br>{{ entry.description }}
                 {% endif %}
             </p>
-        {% endif %}
+        {%- endif %}
     </div>
 {%- endmacro %}

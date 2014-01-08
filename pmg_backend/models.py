@@ -89,7 +89,7 @@ class Entry(db.Model):
 
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'), nullable=True)
     agent = db.relationship('Agent')
-    bills = db.relationship('Bill', secondary=entry_bills_table, backref=backref("entries", order_by=date))
+    bills = db.relationship('Bill', secondary=entry_bills_table, backref=backref("entries", order_by=(date, title)))
 
     def __str__(self):
         return str(self.entry_id) + " - (" + str(self.stage) + ") " + str(self.agent)
