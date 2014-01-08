@@ -6,18 +6,20 @@
 {% endblock %}
 
 {% block page_header %}
-    <div class="jumbotron">
+    <div class="bill-detail-header">
         <div class="container">
             <h1>{{ bill.name }}</h1>
 
-            {% if bill.latest_version -%}
-                <div class="pull-right">
-                    Latest version:
-                    <a class="btn btn-sm btn-primary" role="button" target="_blank" href="/{{ bill.latest_version.url }}">
-                        <i class="fa fa-file-text"></i> {{ bill.latest_version.title }}
+            <div id="version-container" class="pull-right">
+            {% for entry in bill.entries %}
+            {% if entry.type in ["version", "act"] -%}
+                    {% if loop.first %}Bill versions:<br>{% endif %}
+                    <a target="_blank" href="/{{ entry.url }}">
+                        <i class="fa fa-file-text"></i> {{ entry.title }}
                     </a><br>
-                </div>
             {%- endif %}
+            {% endfor %}
+            </div>
 
 {#            {% if bill.bill_type -%}#}
 {#                <p>{{ bill.bill_type }}</p>#}

@@ -35,16 +35,18 @@
     background-color: #eeeeee;
 }
 
-.jumbotron h1 {
+.bill-detail-header h1 {
     font-size: 45px;
 }
 
-.jumbotron{
-    font-size: 16px;
+.bill-detail-header{
     padding-top: 20px;
     padding-bottom: 20px;
     margin-bottom: 0;
+    background-color: #eee;
 }
+
+
 
 .bill-status{
     margin-bottom: 10px;
