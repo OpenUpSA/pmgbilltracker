@@ -56,7 +56,9 @@
     border-radius: 15px;
     border-width: 2px;
     border-style: solid;
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
 }
 
 .location.location-1{
@@ -142,6 +144,11 @@
 
 #status-container .pending{
 color: #999999;
+}
+
+.bill-history-entry{
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .bill-history-entry p{
