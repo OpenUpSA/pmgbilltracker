@@ -135,9 +135,10 @@ def handle_assent():
         db.session.add(bill)
 
         # add relevant entry in bill history
-
-        tmp_entry = Entry()
-        tmp_entry.bills.append(bill)
+        tmp_entry = Entry.query.join(Entry.bills).filter(Bill.code==code).filter(Entry.type=="assent").first()
+        if not tmp_entry:
+            tmp_entry = Entry()
+            tmp_entry.bills.append(bill)
         tmp_entry.date = assent_date
         tmp_entry.type = "assent"
         tmp_entry.location = 4
@@ -152,8 +153,7 @@ if __name__ == "__main__":
 
     find_current_bills()
     find_enacted_bills()
-    # TODO: make this function call idempotent.
-    # handle_assent()
+    handle_assent()
 
     # tmp_entries = Entry.query.filter(Entry.type=="assent").all()
     # for entry in tmp_entries:
