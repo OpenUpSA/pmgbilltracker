@@ -47,13 +47,20 @@ def index(year=date.today().year, bill_type=None):
             year_list = []
 
     logger.debug("landing page called")
+    status_dict = {
+        "na": ("in progress", "label-primary"),
+        "ncop": ("in progress", "label-primary"),
+        "assent": ("sent to the president", "label-warning"),
+        "enacted": ("signed into law", "label-success"),
+        "withdrawn": ("withdrawn", "label-default"),
+        }
     if year:
         r = requests.get("http://" + API_HOST + "/" + tmp + "/year/" + str(year) + "/")
     else:
         r = requests.get("http://" + API_HOST + "/" + tmp + "/")
     bills = r.json()
 
-    return render_template('index.html', title=page_title, bill_type=bill_type, year_list=year_list, year=year, bills=bills, api_host=API_HOST)
+    return render_template('index.html', title=page_title, bill_type=bill_type, year_list=year_list, year=year, bills=bills, status_dict=status_dict, api_host=API_HOST)
 
 
 @app.route('/bills/')

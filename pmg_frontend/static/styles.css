@@ -180,3 +180,8 @@ color: #999999;
     padding-top: 15px;
     margin-top: 10px;
 }
+
+.bill-status-label{
+    margin-left: 20px;
+    width: 120px;
+}

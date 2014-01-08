@@ -24,12 +24,30 @@
     {% for bill in bills %}
         {% if bill_type == "draft" %}
             <div class="bill-index-tile" data-draft-url="{{ bill.entries[0].url }}">
-            <p><strong>{{ bill.name }}</strong></p>
-        </div>
+                <p><strong>{{ bill.name }}</strong></p>
+            </div>
         {% else %}
-        <div class="bill-index-tile" data-bill-id="{{ bill.bill_id }}">
-            <p><strong>{{ bill.name }}</strong> <span class="pull-right">[{{ bill.code }}]</span></p>
-        </div>
+            <div class="bill-index-tile" data-bill-id="{{ bill.bill_id }}">
+                <div>
+                    <strong>{{ bill.name }}</strong>
+
+                    <div class="bill-status-label pull-right">
+                        {% if bill.status %}
+
+                            {% if status_dict[bill.status] %}
+                                <span class="label {{ status_dict[bill.status][1] }}">{{ status_dict[bill.status][0] }}</span>
+                            {% else %}
+                                <span class="label label-default">{{ bill.status }}</span>
+                            {% endif %}
+                        </span>
+                        {% else %}
+                            <p>&nbsp</p>
+                        {% endif %}
+
+                    </div>
+                    <span class="pull-right">[{{ bill.code }}]</span>
+                </div>
+            </div>
         {% endif %}
     {% endfor %}
 {% endblock page %}
@@ -40,9 +58,9 @@
         $(function(){
             $(".bill-index-tile").on('click', function(){
                 {% if bill_type == "draft" %}
-                window.location = $(this).attr('data-draft-url')
+                    window.location = $(this).attr('data-draft-url')
                 {% else %}
-                window.location = "/bill/" + $(this).attr('data-bill-id') + "/"
+                    window.location = "/bill/" + $(this).attr('data-bill-id') + "/"
                 {% endif %}
             })
 
