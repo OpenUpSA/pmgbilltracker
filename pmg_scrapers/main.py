@@ -24,8 +24,6 @@ def populate_entry(entry, data, bill_codes=None):
         entry.description = data['description']
     if data.get("location"):
         entry.location = data['location']
-    if data.get("stage"):
-        entry.stage = data['stage']
     if data.get("url"):
         entry.url = data['url']
     return entry
@@ -197,14 +195,6 @@ if __name__ == "__main__":
     #     (2, "National Council of Provinces (NCOP)"),
     #     (3, "Under joint consideration, NA + NCOP"),
     #     (4, "President's Office"),
-    #     ]
-    #
-    # stages = [
-    #     (None, "Unknown"),
-    #     (1, "Introduced"),
-    #     (2, "Before committee"),
-    #     (3, "Awaiting approval"),
-    #     (4, "Mediation"),
     #     ]
 
     db.drop_all()

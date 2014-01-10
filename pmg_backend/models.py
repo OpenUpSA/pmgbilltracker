@@ -85,14 +85,13 @@ class Entry(db.Model):
     description = db.Column(db.String(1000))
 
     location = db.Column(db.Integer)
-    stage = db.Column(db.Integer)
 
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'), nullable=True)
     agent = db.relationship('Agent')
     bills = db.relationship('Bill', secondary=entry_bills_table, backref=backref("entries", order_by=(date, title)))
 
     def __str__(self):
-        return str(self.entry_id) + " - (" + str(self.stage) + ") " + str(self.agent)
+        return str(self.entry_id) + " - " + str(self.title)
 
     def __repr__(self):
         return '<Entry: %r>' % str(self)

@@ -105,15 +105,21 @@
     background-color: greenyellow;
 }
 
-.stage-title{
-    text-transform:uppercase;
-    font-weight: bold;
-}
-
 .stage{
     position: relative;
     padding-left: 95px;
     min-height: 85px;
+}
+
+.stage-title{
+    text-transform:uppercase;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stage-icon{
+    width: 55px;
+    margin: 10px;
 }
 
 .icon-placeholder{
@@ -125,11 +131,6 @@
     margin-top: 5px;
     background-color: lightgrey;
     border-radius: 5px;
-}
-
-.stage-icon{
-    width: 55px;
-    margin: 10px;
 }
 
 .version{

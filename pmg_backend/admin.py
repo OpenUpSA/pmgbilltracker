@@ -54,7 +54,7 @@ for entry_type in entry_types:
 
 
 class EntryView(ModelView):
-    form_overrides = dict(type=SelectField, location=SelectField, stage=SelectField, notes=TextAreaField)
+    form_overrides = dict(type=SelectField, location=SelectField, notes=TextAreaField)
     form_args = dict(
         # Pass the choices to the `SelectField`
         type=dict(
@@ -66,15 +66,6 @@ class EntryView(ModelView):
                 (1, "National Assembly (NA)"),
                 (2, "National Council of Provinces (NCOP)"),
                 (3, "President's Office"),
-            ]
-        ),
-        stage=dict(
-            choices=[
-                (None, "Unknown"),
-                (1, "Introduced"),
-                (2, "Before committee"),
-                (3, "Awaiting approval"),
-                (4, "Mediation"),
             ]
         )
     )
