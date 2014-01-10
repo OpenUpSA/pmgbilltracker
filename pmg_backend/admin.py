@@ -7,7 +7,10 @@ from wtforms.fields import SelectField, TextAreaField
 
 
 class BillView(ModelView):
-    form_excluded_columns = ('content', )
+    column_list = ('name', 'code', 'bill_type', 'status')
+    column_searchable_list = ('code', 'name')
+    page_size = 50
+    form_excluded_columns = ('entries', )
     form_overrides = dict(bill_type=SelectField, status=SelectField, objective=TextAreaField)
     form_args = dict(
         # Pass the choices to the `SelectField`
@@ -20,15 +23,12 @@ class BillView(ModelView):
         ),
         status=dict(
             choices=[
-                (None, "Unknown status"),
-                ("100", "Accepted by NA only"),
-                ("110", "Accepted by NA & NCOP"),
-                ("010", "Accepted by NCOP only"),
-                ("010", "Amended by NCOP, needs NA approval"),
-                ("100", "Amended by NA, needs NCOP approval"),
-                ("111", "Signed into Law"),
-                ("Waiting to be introduced", "Waiting to be introduced"),
-                ("Withdrawn", "Withdrawn"),
+                (None, "Unknown"),
+                ("na", "In progress - NA"),
+                ("ncop", "In progress - NCOP"),
+                ("assent", "Sent to the President"),
+                ("enacted", "Enacted"),
+                ("withdrawn", "Withdrawn")
             ]
         )
     )
