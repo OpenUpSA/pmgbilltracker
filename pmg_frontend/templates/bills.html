@@ -9,14 +9,18 @@
     <div class="row" style="margin-top: 25px;">
         <div class="col-lg-2">
         </div>
-        <div class="col-lg-4 tile" data-link="/bills/current/all/">
-            <h3>Current bills</h3>
-            <p class="lead">See which bills are currently making their way through Parliament.</p>
-        </div>
-        <div class="col-lg-4 tile" data-link="/bills/all/">
-            <h3>All Bills</h3>
-            <p class="lead">Find bills from our archive.</p>
-        </div>
+        <a class="tile-anchor" href="/bills/current/all/">
+            <div class="col-lg-4 tile" data-link="/bills/current/all/">
+                <h3>Current bills</h3>
+                <p class="lead">See which bills are currently making their way through Parliament.</p>
+            </div>
+        </a>
+        <a class="tile-anchor" href="/bills/all/">
+            <div class="col-lg-4 tile" data-link="/bills/all/">
+                <h3>All Bills</h3>
+                <p class="lead">Find bills from our archive.</p>
+            </div>
+        </a>
         <div class="col-lg-2">
         </div>
     </div>
@@ -24,14 +28,18 @@
     <div class="row">
         <div class="col-lg-2">
         </div>
-        <div class="col-lg-4 tile" data-link="/bills/pmb/all/">
-            <h3>Private Member Bills</h3>
-            <p class="lead">Bills introduced by individual Members of Parliament.</p>
-        </div>
-        <div class="col-lg-4 tile" data-link="/bills/explained/">
-            <h3>Bills Explained</h3>
-            <p class="lead">Find out more about the legislative process.</p>
-        </div>
+        <a class="tile-anchor" href="/bills/pmb/all/">
+            <div class="col-lg-4 tile" data-link="/bills/pmb/all/">
+                <h3>Private Member Bills</h3>
+                <p class="lead">Bills introduced by individual Members of Parliament.</p>
+            </div>
+        </a>
+        <a class="tile-anchor" href="/bills/explained/">
+            <div class="col-lg-4 tile" data-link="/bills/explained/">
+                <h3>Bills Explained</h3>
+                <p class="lead">Find out more about the legislative process.</p>
+            </div>
+        </a>
         <div class="col-lg-2">
         </div>
     </div>
@@ -39,10 +47,12 @@
     <div class="row">
         <div class="col-lg-2">
         </div>
-        <div class="col-lg-4 tile" data-link="/bills/draft/all/">
-            <h3>Draft Bills</h3>
-            <p class="lead">See which bills are waiting to be introduced.</p>
-        </div>
+        <a class="tile-anchor" href="/bills/draft/all/">
+            <div class="col-lg-4 tile" data-link="/bills/draft/all/">
+                <h3>Draft Bills</h3>
+                <p class="lead">See which bills are waiting to be introduced.</p>
+            </div>
+        </a>
         <div class="col-lg-4">
         </div>
         <div class="col-lg-2">
@@ -54,9 +64,9 @@
 {% block javascript %}
     <script type="text/javascript">
         $(function(){
-            $(".tile").on("click", function(){
-                window.location.href=$(this).attr("data-link");
-            })
+{#            $(".tile").on("click", function(){#}
+{#                window.location.href=$(this).attr("data-link");#}
+{#            })#}
         })
     </script>
 {% endblock %}

@@ -172,6 +172,15 @@ color: #999999;
     min-width: 140px;
 }
 
+.tile-anchor{
+    color: inherit;
+}
+
+.tile-anchor:hover{
+    color: inherit;
+    text-decoration: none;
+}
+
 .tile:hover{
     background-color: #eeeeee;
     cursor: pointer;
