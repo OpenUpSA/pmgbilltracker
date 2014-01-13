@@ -12,6 +12,7 @@ import scrapertools
 import time
 from pmg_scrapers import logger
 
+
 class BillParser(object):
     """
     State machine for extracting a list of bills from an html table. It operates on a list of table rows, extracting

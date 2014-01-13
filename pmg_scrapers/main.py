@@ -38,7 +38,7 @@ class PMGScraper(object):
     def __init__(self):
         self.stats = {}
 
-    def scrape_bills():
+    def scrape_bills(self):
 
         logger.info("\n ----------- SCRAPING BILLS ---------------")
         bill_dict, draft_list = bills.run_scraper()
@@ -91,7 +91,7 @@ class PMGScraper(object):
         return
 
 
-    def scrape_hansards():
+    def scrape_hansards(self):
 
         logger.info("\n ----------- SCRAPING HANSARDS ---------------")
 
@@ -117,7 +117,7 @@ class PMGScraper(object):
         return
 
 
-    def scrape_committees():
+    def scrape_committees(self):
         """
         Scrape list of committees from PMG.
         """
@@ -140,7 +140,7 @@ class PMGScraper(object):
         return
 
 
-    def scrape_committee_reports(DEBUG=True):
+    def scrape_committee_reports(self):
         """
         Scrape meeting reports from each committee's page.
         """
@@ -148,7 +148,6 @@ class PMGScraper(object):
         logger.info("\n ----------- SCRAPING COMMITTEE REPORTS ---------------")
         count_reports = 0
         count_tags = 0
-
 
         try:
             state = open('tmp_state.json', 'r')
@@ -199,8 +198,8 @@ if __name__ == "__main__":
     #     (4, "President's Office"),
     #     ]
 
-    db.drop_all()
-    db.create_all()
+    # db.drop_all()
+    # db.create_all()
 
     scraper = PMGScraper()
     scraper.scrape_bills()
