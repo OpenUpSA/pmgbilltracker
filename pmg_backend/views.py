@@ -68,16 +68,11 @@ def draft_list(year=None):
 
 
 @app.route('/current/')
-@app.route('/current/year/<year>/')
 def current_list(year=None):
 
     logger.debug("Current list endpoint called")
-    if year:
-        tmp = Bill.query.filter(Bill.year==int(year)).filter(Bill.status != "enacted").filter(Bill.status != "withdrawn").filter(Bill.status != "expired").filter(Bill.status != None).order_by(Bill.number.desc()).all()
-        response = make_response(bill_serializer.serialize(tmp))
-    else:
-        tmp = Bill.query.filter(Bill.status != "enacted").filter(Bill.status != "withdrawn").filter(Bill.status != "expired").filter(Bill.status != None).order_by(Bill.year.desc(), Bill.number.desc()).all()
-        response = make_response(bill_serializer.serialize(tmp))
+    tmp = Bill.query.filter(Bill.status != "enacted").filter(Bill.status != "withdrawn").filter(Bill.status != "expired").filter(Bill.status != None).order_by(Bill.year.desc(), Bill.number.desc()).all()
+    response = make_response(bill_serializer.serialize(tmp))
     response.mimetype = "application/json"
     response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend
     return response

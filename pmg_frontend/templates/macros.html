@@ -1,62 +1,55 @@
 {% macro render_entries(entries) -%}
 
     {% set current_location = None %}
-    {% set current_stage = None %}
+    {% set current_agent = None %}
 
     {% for entry in entries %}
         {# Location Container #}
         {% if entry.location and (entry.location != current_location) %}
-            {% if current_stage %}
-                {# close the open stage container #}
-                </div>
-            {% endif %}
             {{ start_location(entry.location, current_location) }}
             {% set current_location = entry.location %}
-            {% set current_stage = None %}
-        {% elif not entry.location and current_location %}
+            {% set current_agent = None %}
+        {% elif current_location and not entry.location %}
             </div>
             {% set current_location = None %}
         {% endif %}
 
-        {# Stage Container #}
-        {% if entry.stage and (entry.stage != current_stage) %}
-            {{ start_stage(entry.stage, current_location, current_stage) }}
-            {% set current_stage = entry.stage %}
-        {% elif not entry.stage and current_stage %}
-            </div>
-            {% set current_stage = None %}
+        {# Agent Header #}
+        {% if entry.agent and (entry.agent.agent_id != current_agent) %}
+            {% set current_agent = entry.agent.agent_id %}
+            {{ render_agent(entry.agent) }}
+        {% elif not entry.agent and current_agent %}
+            {% set current_agent = None %}
         {% endif %}
 
         {{ render_entry(entry) }}
+
+        {% if loop.last and current_location %}
+            </div>
+        {% endif %}
     {%  endfor %}
 
-    {% if current_stage %}
-        {# close last stage div #}
-        </div>
-    {% endif %}
 
-    {% if current_location %}
-        {# close last location div #}
-        </div>
-    {% endif %}
 
 {%- endmacro %}
 
 {% macro render_agent(agent) -%}
-    <p>
-        {% if agent.type in ["minister", "president", "mp"] -%}
-            <i class="fa fa-user"></i>
-        {% elif agent.type == "house" -%}
-            <i class="fa fa-gavel"></i>
-        {% else -%}
-            <i class="fa fa-group"></i>
-        {%- endif %}
-        {% if agent.name -%}
-            {{ agent.name }}
-        {% else -%}
-            {{ agent.type }}
-        {%- endif %}
-    </p>
+    {% set
+        icons = {
+                "mp": "Bill-Introduced.png",
+                "minister": "Bill-Introduced.png",
+                "committee": "Committee-Discussion.png",
+                "house": "House.png",
+                "president": "Signed-by-President.png",
+                }
+            %}
+    <div class="stage">
+        <div class="icon-placeholder pull-left">
+            <img class="stage-icon" src="/static/icons/{{ icons[agent.type] }}"/>
+        </div>
+        <p class="stage-title"><a href="{{ agent.url }}" target="_blank">{{ agent.name }}</a></p>
+    </div>
+
 {%- endmacro %}
 
 
@@ -69,34 +62,6 @@
     <div class="location-title location-{{ location }}">
         {{ location_list[location-1] }}
     </div>
-{%- endmacro %}
-
-{% macro start_stage(stage, current_location, current_stage) -%}
-    {% set
-        stage_list = [[
-            ("Introduced to Parliament", "Bill-Introduced.png"),
-            ("Before Portfolio Committee", "Committee-Discussion.png"),
-            ("Awaiting approval by National Assembly", "House.png"),
-            ("Before Mediation Committee", "Committee-Discussion.png")
-            ],
-            [
-            ("Tabled in NCOP", "Bill-Introduced.png"),
-            ("Before Select Committee", "Committee-Discussion.png"),
-            ("Awaiting approval by NCOP", "House.png"),
-            ],
-            [
-            ("Awaiting the President's signature", "Signed-by-President.png"),
-            ]]
-            %}
-    {% set name, icon = stage_list[current_location-1][stage-1] %}
-    {% if current_stage %}
-        </div><hr>
-    {% endif %}
-    <div class="stage">
-    <div class="icon-placeholder pull-left">
-        <img class="stage-icon" src="/static/icons/{{ icon }}"/>
-    </div>
-    <p class="text-muted"><span class="stage-title">Stage: {{ name }}</span></p>
 {%- endmacro %}
 
 {% macro render_entry(entry) -%}

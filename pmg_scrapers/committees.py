@@ -57,7 +57,7 @@ def run_scraper(DEBUG):
                 location = 2
         # populate entry
         tmp = {
-            "type": list_name,
+            "type": "committee",
             "url": href_committee,
             "name": name,
             "location": location
