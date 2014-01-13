@@ -1,0 +1,41 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+    {{ super() }}
+    <div class="row-fluid">
+        <h1>PMG Bill Tracker ADMIN</h1>
+        <p class="lead">Allow people to keep track of a bill's history as it moves through parliament.</p>
+        <p>This Admin interface lets you manage the information related to the bills going through parliament.</p>
+        <p>To get started, <a href="billview/new/">add a new bill</a> and then start <a href="entryview/new/">adding entries</a> related to that bill.</p>
+    </div>
+
+    <div class="row-fluid">
+        <h1>Scraping </h1>
+        <h2>Last successful scrape</h2>
+        <p><strong>Date: </strong> {{ stats.date }}</p>
+        <p><strong>Start Time: </strong> {{ stats.start_time }}</p>
+        <p><strong>Duration: </strong> {{ stats.duration }}</p>
+
+        <p>{{ stats.bills.total }} Bills scraped, of which <strong>{{ stats.bills.new }} bill(s)</strong> were new.</p>
+        <p>{{ stats.committees.total }} Committees scraped, of which <strong>{{ stats.committees.new }} committee(s)</strong> were new.</p>
+        <p>{{ stats.committee_meeting_reports.total }} Committee Meeting Reports scraped, of which <strong>{{ stats.committee_meeting_reports.new }} reports(s)</strong> were new.</p>
+        <p>{{ stats.hansards.total }} Hansards scraped, of which <strong>{{ stats.hansards.new }} hansard(s)</strong> were new.</p>
+
+        <h2>Errors</h2>
+        <h3>Bills</h3>
+        {% for error in stats.bills.errors %}
+            {{ error }}
+        {% endfor %}
+        <h3>Committees</h3>
+        {% for error in stats.committees.errors %}
+            {{ error }}
+        {% endfor %}
+        <h3>Committee Meeting Reports</h3>
+        {% for error in stats.committee_meeting_reports.errors %}
+            {{ error }}
+        {% endfor %}
+        <h3>Hansards</h3>
+        {% for error in stats.hansards.errors %}
+            {{ error }}
+        {% endfor %}
+    </div>
+{% endblock body %}
