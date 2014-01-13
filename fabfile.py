@@ -15,12 +15,14 @@ def staging():
     env.key_filename = '~/.ssh/aws_code4sa.pem'
     env['config_dir'] = 'config_staging'
     print("STAGING ENVIRONMENT\n")
+    return
 
 
 def restart():
 
     sudo('service nginx restart')
     sudo('service uwsgi restart')
+    return
 
 
 def setup():
@@ -54,6 +56,7 @@ def setup():
     # restart nginx after reboot
     sudo('update-rc.d nginx defaults')
     sudo('service nginx start')
+    return
 
 
 def deploy():
@@ -65,6 +68,8 @@ def deploy():
             sudo('mkdir -p /var/www/pmgbilltracker')
     deploy_backend()
     deploy_frontend()
+    deploy_scraper()
+    return
 
 
 def deploy_backend():
@@ -98,6 +103,7 @@ def deploy_backend():
 
     # and finally reload the application
     restart()
+    return
 
 
 def deploy_frontend():
@@ -132,6 +138,37 @@ def deploy_frontend():
 
     # and finally reload the application
     restart()
+    return
+
+
+def deploy_scraper():
+    """
+    Upload the scraper to the server.
+    """
+
+    # create a tarball of our package
+    local('tar -czf pmg_scrapers.tar.gz pmg_scrapers/', capture=False)
+
+    # upload the source tarball to the temporary folder on the server
+    put('pmg_scrapers.tar.gz', '/tmp/pmg_scrapers.tar.gz')
+
+    # enter application directory
+    with cd('/var/www/pmgbilltracker'):
+        # and unzip new files
+        sudo('tar xzf /tmp/pmg_scrapers.tar.gz')
+
+    # now that all is set up, delete the tarball again
+    sudo('rm /tmp/pmg_scrapers.tar.gz')
+    local('rm pmg_scrapers.tar.gz')
+
+    # clean out old logfiles
+    with settings(warn_only=True):
+        sudo('rm /var/www/pmgbilltracker/pmg_scrapers/debug.log*')
+
+    # ensure user www-data has access to the application folder
+    sudo('chown -R www-data:www-data /var/www/pmgbilltracker')
+    sudo('chmod -R 775 /var/www/pmgbilltracker')
+    return
 
 
 def configure():
@@ -187,6 +224,10 @@ def configure():
     sudo('mv /tmp/config_backend.py /var/www/pmgbilltracker/instance/config_backend.py')
     sudo('mv /tmp/config_frontend.py /var/www/pmgbilltracker/instance/config_frontend.py')
 
+    # append project folder to PATH
+    sudo("export PATH=$PATH:/var/www/pmgbilltracker")
+
     # sudo('start uwsgi')
     # sudo('/etc/init.d/nginx restart')
     restart()
+    return

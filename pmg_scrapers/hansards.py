@@ -61,7 +61,7 @@ def run_scraper():
     hansard_pager = HansardPager()
     for (j, (date, title, href_hansard)) in enumerate(hansard_pager.next_hansard):
         logger.debug("\t\t" + str(date) + " - " + title)
-        time.sleep(0.5)
+        time.sleep(0.25)
         tmp_url = href_hansard
         html = scrapertools.URLFetcher(tmp_url).html
         soup = BeautifulSoup(html)

@@ -63,7 +63,7 @@ def run_scraper(committee_url, location=None):
     report_pager = ReportPager(committee_url)
     for (j, (date, title, href_report)) in enumerate(report_pager.next_report):
         logger.debug("\t\t" + str(date) + " - " + title)
-        time.sleep(0.5)
+        time.sleep(0.25)
         tmp_url = href_report
         html = scrapertools.URLFetcher(tmp_url).html
         soup = BeautifulSoup(html)
