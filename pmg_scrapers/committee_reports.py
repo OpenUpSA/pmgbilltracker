@@ -8,6 +8,7 @@ from dateutil import parser as date_parser
 import scrapertools
 import simplejson
 import time
+from pmg_scrapers import logger
 
 
 class ReportPager(object):
@@ -55,14 +56,13 @@ class ReportPager(object):
                         pass
 
 
-def run_scraper(DEBUG, committee_url, location=None):
+def run_scraper(committee_url, location=None):
 
     count = 0
     report_list = []
     report_pager = ReportPager(committee_url)
     for (j, (date, title, href_report)) in enumerate(report_pager.next_report):
-        if DEBUG:
-            print("\t\t" + str(date) + " - " + title)
+        logger.debug("\t\t" + str(date) + " - " + title)
         time.sleep(0.5)
         tmp_url = href_report
         html = scrapertools.URLFetcher(tmp_url).html
@@ -78,22 +78,20 @@ def run_scraper(DEBUG, committee_url, location=None):
                 "title": title,
                 "location": location
                 }
-            if DEBUG:
-                print("\t\t\tentry #" + str(count) + " - " + str(bills))
-                print(simplejson.dumps(entry, indent=4, default=scrapertools.handler))
+            logger.debug("\t\t\tentry #" + str(count) + " - " + str(bills))
+            logger.debug(simplejson.dumps(entry, indent=4, default=scrapertools.handler))
             report_list.append(entry)
     return report_list
 
 
 if __name__ == "__main__":
 
-    DEBUG = True
     tmp = [
         "http://www.pmg.org.za/committees/Ad Hoc Committee on Protection of State Information Bill (NA)",
         "http://www.pmg.org.za/committees/Reparation Committee",
         "http://www.pmg.org.za/committees/committees/Ad Hoc Committee on Protection of State Information Bill (NCOP)",
     ]
     for url in tmp:
-        reports = run_scraper(DEBUG, url)
+        reports = run_scraper(url)
 
 

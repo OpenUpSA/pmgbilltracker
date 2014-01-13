@@ -5,8 +5,8 @@ import simplejson
 from random import shuffle
 from scrapertools import analyze_bill_code
 from dateutil import parser as date_parser
-
 import csv
+from pmg_scrapers import logger
 
 
 def find_current_bills():

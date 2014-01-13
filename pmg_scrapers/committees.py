@@ -10,12 +10,10 @@ from datetime import datetime
 import scrapertools
 import simplejson
 import re
+from pmg_scrapers import logger
 
 
 class CommitteePager(object):
-
-    def __init__(self, DEBUG):
-        self.DEBUG = DEBUG
 
     @property
     def next_committee(self):
@@ -25,20 +23,18 @@ class CommitteePager(object):
         committee_lists = container.findAll("div", {"class": "item-list"})
         for committee_list in committee_lists:
             list_name = committee_list.find('h3').contents[0]
-            if self.DEBUG:
-                print("\n" + list_name + ":")
+            logger.debug("\n" + list_name + ":")
             committees = committee_list.findAll('li')
             for committee in committees:
                 href = "http://www.pmg.org.za" + committee.find('a').attrs[0][1]
                 name = committee.find('a').contents[0]
-                if self.DEBUG:
-                    print("\t" + name)
+                logger.debug("\t" + name)
                 yield list_name, href, name
 
 
-def run_scraper(DEBUG):
+def run_scraper():
 
-    committee_pager = CommitteePager(DEBUG)
+    committee_pager = CommitteePager()
     committees = []
 
     for (i, (list_name, href_committee, name)) in enumerate(committee_pager.next_committee):
@@ -68,5 +64,4 @@ def run_scraper(DEBUG):
 
 if __name__ == "__main__":
 
-    DEBUG = True
-    run_scraper(DEBUG)
+    run_scraper()

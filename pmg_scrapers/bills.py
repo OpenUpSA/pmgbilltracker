@@ -10,6 +10,7 @@ from dateutil import parser as date_parser
 from datetime import datetime
 import scrapertools
 import time
+from pmg_scrapers import logger
 
 class BillParser(object):
     """
@@ -23,8 +24,7 @@ class BillParser(object):
     <tr class="odd"><td colspan="2"><strong>Bill 30 - Marine Living Resources Amendment Bill</strong></td> </tr>
     <tr class="even"><td>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/bill/20131029-marine-living-resources-amendment-bill-b30b-2013">B30B-2013</a></td><td>29 Oct, 2013</td> </tr>
     """
-    def __init__(self, DEBUG):
-        self.DEBUG = DEBUG
+    def __init__(self):
         self.state_fn = self.start_state
         self.bills = {}
         self.drafts = []
@@ -55,10 +55,9 @@ class BillParser(object):
                 try:
                     self.bills[self.current_bill["code"]] = self.current_bill
                 except KeyError:
-                    print("Bill cannot be identified")
-                    print(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
-            if self.DEBUG:
-                print(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
+                    logger.error("Bill cannot be identified")
+                    logger.error(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
+            logger.debug(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
             self.current_bill = {}
 
         text = fragment.text
@@ -87,7 +86,7 @@ class BillParser(object):
                 if info:
                     self.current_bill = dict(self.current_bill.items() + info.items())
                 else:
-                    print("No bill found in string: " + tmp)
+                    logger.error("No bill found in string: " + tmp)
 
             version = {
                 "url": link["href"],
@@ -111,32 +110,26 @@ class Pager(object):
     Return an iterable containing URLs to each of the available bills pages.
     """
 
-    def __init__(self, DEBUG):
-        self.DEBUG = DEBUG
-
     @property
     def next_page(self):
-        if self.DEBUG:
-            yield "http://www.pmg.org.za/print/bill?year=2010"
-        else:
-            current_year = datetime.today().year
-            for current_year in range(current_year, 2005, -1):
-                url = "http://www.pmg.org.za/print/bill?year=%d" % current_year
-                yield url
+        current_year = datetime.today().year
+        for current_year in range(current_year, 2005, -1):
+            url = "http://www.pmg.org.za/print/bill?year=%d" % current_year
+            yield url
 
 
-def run_scraper(DEBUG):
+def run_scraper():
 
-    pager = Pager(DEBUG)
+    pager = Pager()
     bills = {}
     drafts = []
 
     # iterate through bill pages
     for url in pager.next_page:
-        print(url, file=sys.stderr)
+        logger.info(url)
 
         # initiate parser for this page
-        parser = BillParser(DEBUG)
+        parser = BillParser()
         html = scrapertools.URLFetcher(url).html
         soup = BeautifulSoup(html)
         rows = soup.findAll("tr")
@@ -154,16 +147,14 @@ def run_scraper(DEBUG):
 
 if __name__ == "__main__":
 
-    DEBUG = True
-
     # for text in ["B6-2010", "B6F-2010", "B4-2010 - as enacted", "B - 2010", "PMB5-2013", "B78-2008 as enacted"]:
     #     print(text)
     #     print(scrapertools.analyze_bill_code(text))
 
-    bills, drafts = run_scraper(DEBUG)
+    bills, drafts = run_scraper()
     from operator import itemgetter
-    newlist = sorted(drafts, key=itemgetter('bill_name'))
-    for draft in newlist:
+    new_list = sorted(drafts, key=itemgetter('bill_name'))
+    for draft in new_list:
         print(draft['bill_name'])
 
     # do something with scraped data

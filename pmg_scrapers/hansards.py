@@ -8,11 +8,11 @@ from dateutil import parser as date_parser
 import scrapertools
 import simplejson
 import time
+from pmg_scrapers import logger
 
 
 class HansardPager(object):
-    def __init__(self, DEBUG):
-        self.DEBUG = DEBUG
+    def __init__(self):
         self.current_url = "http://www.pmg.org.za/hansard"
         self.current_page = scrapertools.URLFetcher(self.current_url).html
 
@@ -54,14 +54,13 @@ class HansardPager(object):
                         pass
 
 
-def run_scraper(DEBUG):
+def run_scraper():
 
     count = 0
     hansard_list = []
-    hansard_pager = HansardPager(DEBUG)
+    hansard_pager = HansardPager()
     for (j, (date, title, href_hansard)) in enumerate(hansard_pager.next_hansard):
-        if DEBUG:
-            print("\t\t" + str(date) + " - " + title)
+        logger.debug("\t\t" + str(date) + " - " + title)
         time.sleep(0.5)
         tmp_url = href_hansard
         html = scrapertools.URLFetcher(tmp_url).html
@@ -84,16 +83,14 @@ def run_scraper(DEBUG):
                 "title": title,
                 "location": location
                 }
-            if DEBUG:
-                print("\t\t\tentry #" + str(count) + " - " + str(bills))
-                print(simplejson.dumps(entry, indent=4, default=scrapertools.handler))
+            logger.debug("\t\t\tentry #" + str(count) + " - " + str(bills))
+            logger.debug(simplejson.dumps(entry, indent=4, default=scrapertools.handler))
             hansard_list.append(entry)
     return hansard_list
 
 
 if __name__ == "__main__":
 
-    DEBUG = True
-    hansards = run_scraper(DEBUG)
+    hansards = run_scraper()
 
 
