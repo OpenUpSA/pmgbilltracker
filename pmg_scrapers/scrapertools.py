@@ -1,8 +1,7 @@
 from __future__ import print_function
 import requests
 import re
-from pmg_backend.models import *
-from pmg_backend import db
+from pmg_backend.models import Bill
 
 
 def handler(obj):

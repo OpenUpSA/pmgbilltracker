@@ -32,55 +32,13 @@ class PMGScraper(object):
 
         bill_parser = bills.BillScraper()
         bill_parser.run_scraper()
-        draft_list = bill_parser.drafts
-        bill_dict = bill_parser.bills
+        # draft_list = bill_parser.drafts
+        # bill_dict = bill_parser.bills
+        #
+        # logger.info(str(len(bill_dict)) + " Bills scraped")
+        # logger.info(str(len(draft_list)) + " Draft bills scraped")
 
-        logger.info(str(len(bill_dict)) + " Bills scraped")
-        logger.info(str(len(draft_list)) + " Draft bills scraped")
 
-        # save scraped bills to database
-        for bill_code, bill_data in bill_dict.iteritems():
-            bill = Bill.query.filter(Bill.code==bill_code).first()
-            if bill is None:
-                bill = Bill()
-                bill.code = bill_code
-            bill.name = bill_data['bill_name']
-            if bill_data.get('introduced_by'):
-                bill.introduced_by = bill_data['introduced_by']
-            bill.year = bill_data['year']
-            bill.bill_type = bill_data['type']
-            bill.number = bill_data['number']
-            db.session.add(bill)
-            # save related bill versions
-            for entry_data in bill_data['versions']:
-                entry = Entry.query.filter(Entry.url==entry_data['url']).first()  # Look for pre-existing entry.
-                if entry is None:
-                    entry = Entry()  # Create new entry.
-                entry = populate_entry(entry, entry_data)
-                entry.bills.append(bill)
-                db.session.add(entry)
-        db.session.commit()
-
-        # save scraped draft bills to database
-        for draft in draft_list:
-            bill = Bill.query.filter(Bill.name==draft['bill_name']).filter(Bill.year==draft['year']).first()
-            if bill is None:
-                bill = Bill()
-                bill.name = draft['bill_name']
-                bill.year = draft['year']
-            bill.bill_type = draft['type']
-            if draft.get('introduced_by'):
-                bill.introduced_by = draft['introduced_by']
-            db.session.add(bill)
-            # save related bill versions
-            for entry_data in draft['versions']:
-                entry = Entry.query.filter(Entry.url==entry_data['url']).first()  # Look for pre-existing entry.
-                if entry is None:
-                    entry = Entry()  # Create new entry.
-                entry = populate_entry(entry, entry_data)
-                entry.bills.append(bill)
-                db.session.add(entry)
-        db.session.commit()
         return
 
 
