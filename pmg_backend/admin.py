@@ -81,8 +81,10 @@ class HomeView(AdminIndexView):
             "start_time": datetime.time(hour=1, minute=0),
             "duration": datetime.timedelta(hours=1, minutes=23),
             "bills": {
-                "total": 111,
-                "new": 1,
+                "total_bills": 111,
+                "total_drafts": 34,
+                "new_bills": 1,
+                "new_drafts": 3,
                 "errors": [
                     "one",
                     "two",

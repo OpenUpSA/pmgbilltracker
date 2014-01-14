@@ -52,7 +52,12 @@ class PMGScraper(object):
     def scrape_bills(self):
 
         logger.info("\n ----------- SCRAPING BILLS ---------------")
-        bill_dict, draft_list = bills.run_scraper()
+
+        bill_parser = bills.BillScraper()
+        bill_parser.run_scraper()
+        draft_list = bill_parser.drafts
+        bill_dict = bill_parser.bills
+
         logger.info(str(len(bill_dict)) + " Bills scraped")
         logger.info(str(len(draft_list)) + " Draft bills scraped")
 

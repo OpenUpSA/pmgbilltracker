@@ -13,7 +13,7 @@ import time
 from pmg_scrapers import logger
 
 
-class BillParser(object):
+class BillScraper(object):
     """
     State machine for extracting a list of bills from an html table. It operates on a list of table rows, extracting
     one bill at a time.
@@ -30,10 +30,36 @@ class BillParser(object):
         self.bills = {}
         self.drafts = []
         self.current_bill = {}
+        self.stats = {
+            "total_bills": 0,
+            "total_drafts": 0,
+            "new_bills": 0,
+            "new_drafts": 0,
+            "errors": []
+        }
+
+    def run_scraper(self):
+        pager = Pager()
+
+        # iterate through bill pages
+        for url in pager.next_page:
+            logger.info(url)
+
+            # initiate parser for this page
+            self.state_fn = self.start_state
+            html = scrapertools.URLFetcher(url).html
+            soup = BeautifulSoup(html)
+            rows = soup.findAll("tr")
+
+            # feed rows into state machine
+            for row in rows:
+                while not self.state_fn(row):
+                    pass
+        return
 
     def start_state(self, fragment):
         """
-        Inititialize State Machine
+        Inititialize State Machine for a particular page.
         """
         if not fragment.find("strong"):
             return True
@@ -52,12 +78,17 @@ class BillParser(object):
             # save previously scraped bill
             if self.current_bill.get('status') and self.current_bill['status'] == "Draft":
                 self.drafts.append(self.current_bill)
+                self.stats['total_drafts'] += 1
             else:
                 try:
                     self.bills[self.current_bill["code"]] = self.current_bill
                 except KeyError:
-                    logger.error("Bill cannot be identified")
-                    logger.error(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
+                    error_msg = "Bill cannot be identified: " + \
+                                self.current_bill['bill_name'] + " - " + self.current_bill['versions'][0]['title']
+                    logger.error(error_msg)
+                    self.stats['errors'].append(error_msg)
+                    # logger.error(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
+                self.stats['total_bills'] += 1
             logger.debug(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
             self.current_bill = {}
 
@@ -78,7 +109,7 @@ class BillParser(object):
         Extract available versions from second row.
         """
         link = fragment.find("a")
-        if link: 
+        if link:
             versions = self.current_bill.setdefault("versions", [])
             url = link["href"]
             if not self.current_bill.get("code"):
@@ -94,7 +125,7 @@ class BillParser(object):
                 "title": link.text,
                 "date": date_parser.parse(fragment.findAll("td")[1].text).date(),
                 "entry_type": "version",
-            }
+                }
             # set entry_type appropriately if this bill has already been enacted
             if "as enacted" in link.text:
                 version['entry_type'] = "act"
@@ -119,44 +150,23 @@ class Pager(object):
             yield url
 
 
-def run_scraper():
-
-    pager = Pager()
-    bills = {}
-    drafts = []
-
-    # iterate through bill pages
-    for url in pager.next_page:
-        logger.info(url)
-
-        # initiate parser for this page
-        parser = BillParser()
-        html = scrapertools.URLFetcher(url).html
-        soup = BeautifulSoup(html)
-        rows = soup.findAll("tr")
-
-        # feed rows into state machine
-        for row in rows:
-            while not parser.state_fn(row):
-                pass
-
-        # save extracted content for this page
-        bills = dict(bills.items() + parser.bills.items())
-        drafts.extend(parser.drafts)
-    return bills, drafts
-
-
 if __name__ == "__main__":
 
     # for text in ["B6-2010", "B6F-2010", "B4-2010 - as enacted", "B - 2010", "PMB5-2013", "B78-2008 as enacted"]:
     #     print(text)
     #     print(scrapertools.analyze_bill_code(text))
 
-    bills, drafts = run_scraper()
+    bill_parser = BillScraper()
+    bill_parser.run_scraper()
+    drafts = bill_parser.drafts
+    bills = bill_parser.bills
     from operator import itemgetter
     new_list = sorted(drafts, key=itemgetter('bill_name'))
     for draft in new_list:
         print(draft['bill_name'])
 
     # do something with scraped data
-    print(json.dumps(bills, indent=4, default=scrapertools.handler))
+    # print(json.dumps(bills, indent=4, default=scrapertools.handler))
+    print(len(bills))
+    print(len(drafts))
+    print(json.dumps(bill_parser.stats, indent=4))
