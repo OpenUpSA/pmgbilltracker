@@ -21,30 +21,6 @@ import committees
 import committee_reports
 
 
-def populate_entry(entry, data, bill_codes=None):
-    # populate bill relations
-    if bill_codes:
-        for code in bill_codes:
-            tmp_bill = Bill.query.filter(Bill.code==code).first()
-            if tmp_bill:
-                entry.bills.append(tmp_bill)
-            else:
-                print("Could not find related bill: " + code)
-                pass
-    # populate required fields
-    entry.type = data['entry_type']
-    entry.date = data['date']
-    entry.title = data['title']
-    # populate optional fields
-    if data.get("description"):
-        entry.description = data['description']
-    if data.get("location"):
-        entry.location = data['location']
-    if data.get("url"):
-        entry.url = data['url']
-    return entry
-
-
 class PMGScraper(object):
 
     def __init__(self):
