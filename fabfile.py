@@ -49,7 +49,9 @@ def setup():
     # install the necessary Python packages
     put('requirements/base.txt', '/tmp/base.txt')
     put('requirements/production.txt', '/tmp/production.txt')
+    put('requirements/scrapers.txt', '/tmp/scrapers.txt')
     sudo('pip install -r /tmp/production.txt')
+    sudo('pip install -r /tmp/scrapers.txt')
 
     # install nginx
     sudo('apt-get install nginx')
@@ -223,9 +225,6 @@ def configure():
     put(env['config_dir'] + '/config_frontend.py', '/tmp/config_frontend.py')
     sudo('mv /tmp/config_backend.py /var/www/pmgbilltracker/instance/config_backend.py')
     sudo('mv /tmp/config_frontend.py /var/www/pmgbilltracker/instance/config_frontend.py')
-
-    # append project folder to PATH
-    sudo("export PATH=$PATH:/var/www/pmgbilltracker")
 
     # sudo('start uwsgi')
     # sudo('/etc/init.d/nginx restart')

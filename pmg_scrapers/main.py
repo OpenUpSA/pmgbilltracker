@@ -1,13 +1,24 @@
 import datetime
-from pmg_backend.models import *
-from pmg_backend import db
 import simplejson
 from random import shuffle
+import os
+import sys
+
+# Add the parent folder path to the sys.path list
+path = os.getcwd()
+tmp = path.split("/")[0:-1]
+parent_path = "/".join(tmp)
+sys.path.append(parent_path)
+
+from pmg_backend.models import *
+from pmg_backend import db
+from pmg_scrapers import logger
+
 import bills
 import hansards
 import committees
 import committee_reports
-from pmg_scrapers import logger
+
 
 def populate_entry(entry, data, bill_codes=None):
     # populate bill relations
