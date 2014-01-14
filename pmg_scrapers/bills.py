@@ -70,22 +70,23 @@ class BillScraper(object):
 
         # TODO: clean up the Draft vs. Bill logic below
         bill_data = self.current_bill
-        if self.current_bill.get('status') and self.current_bill['status'] == "Draft":
-            # save scraped draft bill to database
-            bill = Bill.query.filter(Bill.name==bill_data['bill_name']).filter(Bill.year==bill_data['year']).first()
-            if bill is None:
-                bill = Bill()
-                bill.name = bill_data['bill_name']
-                bill.year = bill_data['year']
-                self.stats['new_bills'] += 1
-            bill.bill_type = bill_data['type']
-            if bill_data.get('introduced_by'):
-                bill.introduced_by = bill_data['introduced_by']
-            db.session.add(bill)
-            self.stats['total_bills'] += 1
 
-        else:
-            try:  # TODO: improve error handling
+        try:
+            if self.current_bill.get('status') and self.current_bill['status'] == "Draft":
+                # save scraped draft bill to database
+                bill = Bill.query.filter(Bill.name==bill_data['bill_name']).filter(Bill.year==bill_data['year']).first()
+                if bill is None:
+                    bill = Bill()
+                    bill.name = bill_data['bill_name']
+                    bill.year = bill_data['year']
+                    self.stats['new_bills'] += 1
+                bill.bill_type = bill_data['type']
+                if bill_data.get('introduced_by'):
+                    bill.introduced_by = bill_data['introduced_by']
+                db.session.add(bill)
+                self.stats['total_bills'] += 1
+
+            else:
                 # save scraped bills to database
                 bill_code = self.current_bill["code"]
                 bill = Bill.query.filter(Bill.code==bill_code).first()
@@ -101,23 +102,24 @@ class BillScraper(object):
                 bill.number = bill_data['number']
                 db.session.add(bill)
                 self.stats['total_drafts'] += 1
-            except KeyError:
-                error_msg = "Bill cannot be identified: " + \
-                            self.current_bill['bill_name'] + " - " + self.current_bill['versions'][0]['title']
-                logger.error(error_msg)
-                self.stats['errors'].append(error_msg)
-                # logger.error(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
 
-        # save related bill versions
-        for entry_data in bill_data['versions']:
-            entry = Entry.query.filter(Entry.url==entry_data['url']).first()  # Look for pre-existing entry.
-            if entry is None:
-                entry = Entry()  # Create new entry.
-                self.stats['new_bill_versions'] += 1
-            entry = scrapertools.populate_entry(entry, entry_data)
-            entry.bills.append(bill)
-            db.session.add(entry)
-            self.stats['total_bill_versions'] += 1
+            # save related bill versions
+            for entry_data in bill_data['versions']:
+                entry = Entry.query.filter(Entry.url==entry_data['url']).first()  # Look for pre-existing entry.
+                if entry is None:
+                    entry = Entry()  # Create new entry.
+                    self.stats['new_bill_versions'] += 1
+                entry = scrapertools.populate_entry(entry, entry_data)
+                entry.bills.append(bill)
+                db.session.add(entry)
+                self.stats['total_bill_versions'] += 1
+
+        except Exception:
+            error_msg = "Error saving bill: " + \
+                        self.current_bill['bill_name'] + " - " + self.current_bill['versions'][0]['title']
+            logger.error(error_msg)
+            self.stats['errors'].append(error_msg)
+            # logger.error(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
 
         logger.debug(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
         self.current_bill = {}
