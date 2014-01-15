@@ -1,8 +1,14 @@
 import logging
+import sys
 
-logging.basicConfig(filename="debug.log",
-                    filemode='w',
-                    format='%(asctime)s, %(levelname)s [%(name)s] %(message)s',
-                    datefmt='%H:%M:%S',
-                    level=logging.INFO)
+file_handler = logging.FileHandler(filename="debug.log")
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s', datefmt='%H:%M:%S')
+file_handler.setFormatter(formatter)
+
+stream_handler = logging.StreamHandler(sys.stdout)
+formatter_min = logging.Formatter('%(asctime)s %(message)s', datefmt='%H:%M:%S')
+
 logger = logging.getLogger("pmg_scraper")
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
+logger.setLevel(logging.DEBUG)
