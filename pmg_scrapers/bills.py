@@ -10,8 +10,12 @@ from dateutil import parser as date_parser
 from datetime import datetime
 import scrapertools
 import time
+from pmg_scrapers import logger
+from pmg_backend.models import *
+from pmg_backend import db
 
-class BillParser(object):
+
+class BillScraper(object):
     """
     State machine for extracting a list of bills from an html table. It operates on a list of table rows, extracting
     one bill at a time.
@@ -23,16 +27,113 @@ class BillParser(object):
     <tr class="odd"><td colspan="2"><strong>Bill 30 - Marine Living Resources Amendment Bill</strong></td> </tr>
     <tr class="even"><td>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/bill/20131029-marine-living-resources-amendment-bill-b30b-2013">B30B-2013</a></td><td>29 Oct, 2013</td> </tr>
     """
-    def __init__(self, DEBUG):
-        self.DEBUG = DEBUG
+    def __init__(self):
         self.state_fn = self.start_state
-        self.bills = {}
-        self.drafts = []
         self.current_bill = {}
+        self.stats = {
+            "total_bills": 0,
+            "total_bill_versions": 0,
+            "total_drafts": 0,
+            "new_bills": 0,
+            "new_bill_versions": 0,
+            "new_drafts": 0,
+            "errors": []
+        }
+
+    def run_scraper(self):
+        """
+        Iterate through bill pages, and run the state machine for each page.
+        """
+        pager = Pager()
+
+        # iterate through bill pages
+        for url in pager.next_page:
+            logger.info(url)
+
+            # initiate parser for this page
+            self.state_fn = self.start_state
+            html = scrapertools.URLFetcher(url).html
+            soup = BeautifulSoup(html)
+            rows = soup.findAll("tr")
+
+            # feed rows into state machine
+            for row in rows:
+                while not self.state_fn(row):
+                    pass
+            # commit to database after each page
+            db.session.commit()
+        return
+
+    def add_or_update(self):
+        """
+        Add current_bill to database, or update the record if it already exists.
+        Then clear the current_bill attribute to make it ready for the next bill to be scraped.
+        """
+
+        # TODO: clean up the Draft vs. Bill logic below
+        # TODO: check that the numbers add up correctly
+        bill_data = self.current_bill
+
+        try:
+            if self.current_bill.get('status') and self.current_bill['status'] == "Draft":
+                # save scraped draft bill to database
+                bill = Bill.query.filter(Bill.name==bill_data['bill_name']).filter(Bill.year==bill_data['year']).first()
+                if bill is None:
+                    bill = Bill()
+                    bill.name = bill_data['bill_name']
+                    bill.year = bill_data['year']
+                    self.stats['new_drafts'] += 1
+                bill.bill_type = bill_data['type']
+                if bill_data.get('introduced_by'):
+                    bill.introduced_by = bill_data['introduced_by']
+                db.session.add(bill)
+                self.stats['total_drafts'] += 1
+
+            else:
+                # save scraped bills to database
+                bill_code = self.current_bill["code"]
+                bill = Bill.query.filter(Bill.code==bill_code).first()
+                if bill is None:
+                    bill = Bill()
+                    bill.code = bill_code
+                    self.stats['new_bills'] += 1
+                bill.name = bill_data['bill_name']
+                if bill_data.get('introduced_by'):
+                    bill.introduced_by = bill_data['introduced_by']
+                bill.year = bill_data['year']
+                bill.bill_type = bill_data['type']
+                bill.number = bill_data['number']
+                db.session.add(bill)
+                self.stats['total_bills'] += 1
+
+            # save related bill versions
+            for entry_data in bill_data['versions']:
+                entry = Entry.query.filter(Entry.url==entry_data['url']).first()  # Look for pre-existing entry.
+                if entry is None:
+                    entry = Entry()  # Create new entry.
+                    self.stats['new_bill_versions'] += 1
+                entry = scrapertools.populate_entry(entry, entry_data)
+                entry.bills.append(bill)
+                db.session.add(entry)
+                self.stats['total_bill_versions'] += 1
+
+        except Exception:
+            error_msg = "Error saving bill: "
+            if self.current_bill.get('bill_name'):
+                error_msg += self.current_bill['bill_name']
+            if self.current_bill.get('versions'):
+                error_msg += " - " + self.current_bill['versions'][0]['title']
+            logger.error(error_msg)
+            self.stats['errors'].append(error_msg)
+            pass
+
+        logger.debug(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
+        self.current_bill = {}
+        return
 
     def start_state(self, fragment):
         """
-        Inititialize State Machine
+        Inititialize State Machine for a particular page.
         """
         if not fragment.find("strong"):
             return True
@@ -49,17 +150,8 @@ class BillParser(object):
 
         if self.current_bill:
             # save previously scraped bill
-            if self.current_bill.get('status') and self.current_bill['status'] == "Draft":
-                self.drafts.append(self.current_bill)
-            else:
-                try:
-                    self.bills[self.current_bill["code"]] = self.current_bill
-                except KeyError:
-                    print("Bill cannot be identified")
-                    print(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
-            if self.DEBUG:
-                print(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
-            self.current_bill = {}
+            self.add_or_update()
+            
 
         text = fragment.text
         parts = text.split("-")
@@ -78,7 +170,7 @@ class BillParser(object):
         Extract available versions from second row.
         """
         link = fragment.find("a")
-        if link: 
+        if link:
             versions = self.current_bill.setdefault("versions", [])
             url = link["href"]
             if not self.current_bill.get("code"):
@@ -87,14 +179,14 @@ class BillParser(object):
                 if info:
                     self.current_bill = dict(self.current_bill.items() + info.items())
                 else:
-                    print("No bill found in string: " + tmp)
+                    logger.error("No bill found in string: " + tmp)
 
             version = {
                 "url": link["href"],
                 "title": link.text,
                 "date": date_parser.parse(fragment.findAll("td")[1].text).date(),
                 "entry_type": "version",
-            }
+                }
             # set entry_type appropriately if this bill has already been enacted
             if "as enacted" in link.text:
                 version['entry_type'] = "act"
@@ -111,60 +203,16 @@ class Pager(object):
     Return an iterable containing URLs to each of the available bills pages.
     """
 
-    def __init__(self, DEBUG):
-        self.DEBUG = DEBUG
-
     @property
     def next_page(self):
-        if self.DEBUG:
-            yield "http://www.pmg.org.za/print/bill?year=2010"
-        else:
-            current_year = datetime.today().year
-            for current_year in range(current_year, 2005, -1):
-                url = "http://www.pmg.org.za/print/bill?year=%d" % current_year
-                yield url
-
-
-def run_scraper(DEBUG):
-
-    pager = Pager(DEBUG)
-    bills = {}
-    drafts = []
-
-    # iterate through bill pages
-    for url in pager.next_page:
-        print(url, file=sys.stderr)
-
-        # initiate parser for this page
-        parser = BillParser(DEBUG)
-        html = scrapertools.URLFetcher(url).html
-        soup = BeautifulSoup(html)
-        rows = soup.findAll("tr")
-
-        # feed rows into state machine
-        for row in rows:
-            while not parser.state_fn(row):
-                pass
-
-        # save extracted content for this page
-        bills = dict(bills.items() + parser.bills.items())
-        drafts.extend(parser.drafts)
-    return bills, drafts
+        current_year = datetime.today().year
+        for current_year in range(current_year, 2005, -1):
+            url = "http://www.pmg.org.za/print/bill?year=%d" % current_year
+            yield url
 
 
 if __name__ == "__main__":
 
-    DEBUG = True
-
-    # for text in ["B6-2010", "B6F-2010", "B4-2010 - as enacted", "B - 2010", "PMB5-2013", "B78-2008 as enacted"]:
-    #     print(text)
-    #     print(scrapertools.analyze_bill_code(text))
-
-    bills, drafts = run_scraper(DEBUG)
-    from operator import itemgetter
-    newlist = sorted(drafts, key=itemgetter('bill_name'))
-    for draft in newlist:
-        print(draft['bill_name'])
-
-    # do something with scraped data
-    print(json.dumps(bills, indent=4, default=scrapertools.handler))
+    bill_scraper = BillScraper()
+    bill_scraper.run_scraper()
+    logger.info(json.dumps(bill_scraper.stats, indent=4))

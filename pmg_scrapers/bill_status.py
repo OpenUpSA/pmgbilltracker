@@ -1,3 +1,4 @@
+from __future__ import print_function
 import datetime
 from pmg_backend.models import *
 from pmg_backend import db
@@ -5,8 +6,8 @@ import simplejson
 from random import shuffle
 from scrapertools import analyze_bill_code
 from dateutil import parser as date_parser
-
 import csv
+from pmg_scrapers import logger
 
 
 def find_current_bills():
@@ -38,7 +39,7 @@ def find_current_bills():
         tmp = analyze_bill_code(tmp_code)
         code = tmp["code"]
 
-        print code + " " + str(entry)
+        print(code + " " + str(entry))
 
         bill = Bill.query.filter(Bill.code==code).first()
         available_status = {
@@ -67,7 +68,7 @@ def find_enacted_bills():
             if entry.type == "act":
                 bill.status = "enacted"
                 db.session.add(bill)
-                print "enacted: " + bill.name
+                print("enacted: " + bill.name)
                 break
     db.session.commit()
     return
@@ -103,14 +104,14 @@ def handle_assent():
         if tmp:
             code = tmp["code"]
         else:
-            print "Error analyzing bill code " + tmp_code
+            print("Error analyzing bill code " + tmp_code)
             continue
 
-        print code + " " + str(entry)
+        print(code + " " + str(entry))
 
         bill = Bill.query.filter(Bill.code==code).first()
         if bill is None:
-            print "Error finding bill " + code
+            print("Error finding bill " + code)
             continue
 
         try:
@@ -120,12 +121,12 @@ def handle_assent():
             try:
                 assent_date = date_parser.parse(assent_date).date()
             except Exception:
-                print "Error parsing date " + entry[2]
+                print("Error parsing date " + entry[2])
                 continue
             if entry[3] and len(entry[3]) > 2:
                 gazette = unicode(entry[3])
         except UnicodeDecodeError:
-            print "Unicode error: " + str(entry)
+            print("Unicode error: " + str(entry))
             continue
 
         # update bill record
