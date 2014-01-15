@@ -15,11 +15,12 @@ from random import shuffle
 
 
 class ReportScraper(object):
-    def __init__(self, start_url):
+
+    def __init__(self):
         self.current_committee = None
         self.current_report = None
-        self.current_url = start_url
-        self.current_page = scrapertools.URLFetcher(self.current_url).html
+        self.current_url = None
+        self.current_page = None
         self.stats = {
             "total_committee_reports": 0,
             "new_committee_reports": 0,
@@ -28,6 +29,9 @@ class ReportScraper(object):
 
     @property
     def next_page(self):
+        """
+        Extract the 'next' link, if there is one.
+        """
         soup = BeautifulSoup(self.current_page)
         reports_tab = soup.find(id="quicktabs_tabpage_committees_tabs_1")
         next_link = reports_tab.find("li", {"class": "pager-next"})
@@ -40,7 +44,9 @@ class ReportScraper(object):
 
     @property
     def next_report(self):
-
+        """
+        Iterate over the reports listed on a particular page.
+        """
         while True:
             soup = BeautifulSoup(self.current_page)
             reports_tab = soup.find(id="quicktabs_tabpage_committees_tabs_1")
@@ -60,52 +66,21 @@ class ReportScraper(object):
                         yield date, title, href
                     except Exception:
                         msg = "Error reading committee report details from table row: "
-
+                        msg += self.current_url
                         self.stats["errors"].append(msg)
                         pass
             if not self.next_page:
                 break
-
-    def run_scraper(self):
-
-        try:
-            state = open('tmp_state.json', 'r')
-            current_agent_id = int(json.loads(state.read())['current_agent_id'])
-            state.close()
-        except Exception:
-            logger.info("Starting from scratch.")
-            current_agent_id = 0
-            pass
-
-        committees = Agent.query.filter(Agent.type == "committee").filter(Agent.agent_id >= current_agent_id)
-        shuffle(committees)  # randomize the order, just to keep things interesting
-        tmp_count = len(committees)
-        i = 0
-        for committee in committees:
-            i += 1
-            self.current_committee = committee
-            logger.debug("agent_id: " + str(committee.agent_id))
-
-            # resume where we were previously
-            # TODO: this should not be necessary
-            state = open('tmp_state.json', 'w')
-            state.write('{"current_agent_id": ' + str(committee.agent_id) + '}')
-            state.close()
-
-            self.scrape_committee()
-            logger.debug(str(i) + " out of " + str(tmp_count) + " committees' reports have been scraped.")
-
-
-            # commit entries to database, once per committee
-            db.session.commit()
-
+        return
 
     def scrape_committee(self):
+        """
+        Scrape all meeting reports for a particular committee.
+        """
 
-        report_pager = ReportScraper(committee_url)
-        for (j, (date, title, href_report)) in enumerate(report_pager.next_report):
+        for (j, (date, title, href_report)) in enumerate(self.next_report):
             logger.debug("\t\t" + str(date) + " - " + title)
-            time.sleep(0.25)
+            time.sleep(0.25)  # avoid flooding the server with too many requests
             tmp_url = href_report
             html = scrapertools.URLFetcher(tmp_url).html
             soup = BeautifulSoup(html)
@@ -119,32 +94,68 @@ class ReportScraper(object):
                     "url": tmp_url,
                     "date": date,
                     "title": title,
-                }
+                    }
                 if self.current_committee.location:
                     self.current_report["location"] = self.current_committee.location
 
-                # TODO: filter by date
-                report = Entry.query.filter(Entry.agent_id==self.current_committee.agent_id) \
-                    .filter(Entry.title==self.current_report['title']).first()
-                if report is None:
-                    report = Entry()
-                    report.agent = self.current_committee
-                    self.stats["new_committee_reports"] += 1
-                report = scrapertools.populate_entry(report, self.current_report, bills)
+                try:
+                    self.add_or_update()
+                except Exception:
+                    msg = "Could not add committee report to database: "
+                    if self.current_report.get("title"):
+                        msg += self.current_report["title"]
+                    self.stats["errors"].append(msg)
+                    logger.error(msg)
                 self.current_report = {}
-                db.session.add(report)
-                self.stats["total_committee_reports"] += 1
+        return
+
+    def run_scraper(self):
+
+        committees = Agent.query.filter(Agent.type == "committee").all()
+        shuffle(committees)  # randomize the order, just to keep things interesting
+        tmp_count = len(committees)
+        i = 0
+        for committee in committees:
+            i += 1
+            self.current_committee = committee
+            self.current_url = committee.url
+            self.current_page = scrapertools.URLFetcher(self.current_url).html
+            logger.debug("Committee: " + str(committee.name))
+
+            self.scrape_committee()
+            # give some progress feedback
+            logger.info(str(i) + " out of " + str(tmp_count) + " committees' reports have been scraped.")
+            logger.info(json.dumps(self.stats, indent=4))
+
+            # commit entries to database, once per committee
+            db.session.commit()
+        return
+
+    def add_or_update(self):
+        """
+        Add current_report to database, or update the record if it already exists.
+        """
+
+        report = Entry.query.filter(Entry.agent_id == self.current_committee.agent_id) \
+            .filter(Entry.url == self.current_report['url']).first()
+        if report is None:
+            report = Entry()
+            report.agent = self.current_committee
+            self.stats["new_committee_reports"] += 1
+
+        tmp_bills = None
+        if self.current_report.get('bills'):
+            tmp_bills = self.current_report['bills']
+        report = scrapertools.populate_entry(report, self.current_report, tmp_bills)
+        db.session.add(report)
+        self.stats["total_committee_reports"] += 1
+        self.current_report = {}
         return
 
 
 if __name__ == "__main__":
 
-    tmp = [
-        "http://www.pmg.org.za/committees/Ad Hoc Committee on Protection of State Information Bill (NA)",
-        "http://www.pmg.org.za/committees/Reparation Committee",
-        "http://www.pmg.org.za/committees/committees/Ad Hoc Committee on Protection of State Information Bill (NCOP)",
-        ]
-    for url in tmp:
-        reports = run_scraper(url)
-
+    report_scraper = ReportScraper()
+    report_scraper.run_scraper()
+    logger.info(json.dumps(report_scraper.stats, indent=4))
 

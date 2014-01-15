@@ -12,8 +12,6 @@ tmp = path.split("/")[0:-1]
 parent_path = "/".join(tmp)
 sys.path.append(parent_path)
 
-from pmg_backend.models import *
-from pmg_backend import db
 from pmg_scrapers import logger
 
 import bills
@@ -60,7 +58,9 @@ class PMGScraper(object):
 
         logger.info("\n ----------- SCRAPING COMMITTEE REPORTS ---------------")
 
-
+        report_scraper = committee_reports.ReportScraper()
+        report_scraper.run_scraper()
+        logger.info(json.dumps(report_scraper.stats, indent=4))
         return
 
 
