@@ -4,6 +4,7 @@ import simplejson
 from random import shuffle
 import os
 import sys
+import json
 
 # Add the parent folder path to the sys.path list
 path = os.getcwd()
@@ -30,15 +31,9 @@ class PMGScraper(object):
 
         logger.info("\n ----------- SCRAPING BILLS ---------------")
 
-        bill_parser = bills.BillScraper()
-        bill_parser.run_scraper()
-        # draft_list = bill_parser.drafts
-        # bill_dict = bill_parser.bills
-        #
-        # logger.info(str(len(bill_dict)) + " Bills scraped")
-        # logger.info(str(len(draft_list)) + " Draft bills scraped")
-
-
+        bill_scraper = bills.BillScraper()
+        bill_scraper.run_scraper()
+        logger.info(json.dumps(bill_scraper.stats, indent=4))
         return
 
 
@@ -69,32 +64,15 @@ class PMGScraper(object):
 
 
     def scrape_committees(self):
-        """
-        Scrape list of committees from PMG.
-        """
 
         logger.info("\n ----------- SCRAPING COMMITTEES ---------------")
-        committee_list = committees.run_scraper()
-        logger.info(str(len(committee_list)) + " Committees scraped")
-
-        # save committees to database
-        for committee in committee_list:
-            agent = Agent.query.filter(Agent.name==committee['name']).filter(Agent.type==committee['type']).first()
-            if agent is None:
-                agent = Agent()
-                agent.name = committee['name']
-                agent.type = committee['type']
-                agent.location = committee['location']
-            agent.url = committee['url']
-            db.session.add(agent)
-        db.session.commit()
+        committee_scraper = committees.CommitteeScraper()
+        committee_scraper.run_scraper()
+        logger.info(json.dumps(committee_scraper.stats, indent=4))
         return
 
 
     def scrape_committee_reports(self):
-        """
-        Scrape meeting reports from each committee's page.
-        """
 
         logger.info("\n ----------- SCRAPING COMMITTEE REPORTS ---------------")
         count_reports = 0

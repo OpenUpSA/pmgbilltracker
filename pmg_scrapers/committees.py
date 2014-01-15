@@ -4,16 +4,79 @@ http://www.pmg.org.za/committees
 """
 from __future__ import print_function
 from BeautifulSoup import BeautifulSoup
-# from bs4 import BeautifulSoup
-from dateutil import parser as dateparser
-from datetime import datetime
 import scrapertools
-import simplejson
-import re
 from pmg_scrapers import logger
+from pmg_backend.models import *
+from pmg_backend import db
+import json
 
 
-class CommitteePager(object):
+class CommitteeScraper(object):
+
+    def __init__(self):
+        self.current_committee = {}
+        self.stats = {
+            "total_committees": 0,
+            "new_committees": 0,
+            "errors": []
+        }
+
+    def run_scraper(self):
+        """
+        Iterate through committees on http://www.pmg.org.za/committees, and scrape their details.
+        """
+
+        for (i, (list_name, href_committee, name)) in enumerate(self.next_committee):
+            # determine committee's location
+            location = None
+            if list_name == "National Assembly Committees":
+                location = 1
+            elif list_name == "NCOP Committees":
+                location = 2
+            elif list_name == "Joint Committees":
+                location = 3
+            else:
+                if "(NA)" in name:
+                    location = 1
+                elif "(NCOP)" in name:
+                    location = 2
+            # populate entry
+            self.current_committee = {
+                "type": "committee",
+                "url": href_committee,
+                "name": name,
+                "location": location
+            }
+            try:
+                self.add_or_update()
+            except Exception:
+                msg = "Could not add committee to database: "
+                if self.current_committee.get("name"):
+                    msg += self.current_committee["name"]
+                self.stats["errors"].append(msg)
+                logger.error(msg)
+                self.current_committee = {}
+        db.session.commit()
+        return
+
+    def add_or_update(self):
+        """
+        Add current_committee to database, or update the record if it already exists. Then clear the attribute.
+        """
+
+        agent = Agent.query.filter(Agent.name==self.current_committee['name'])\
+            .filter(Agent.type==self.current_committee['type']).first()
+        if agent is None:
+            agent = Agent()
+            agent.name = self.current_committee['name']
+            agent.type = self.current_committee['type']
+            agent.location = self.current_committee['location']
+            self.stats["new_committees"] += 1
+        agent.url = self.current_committee['url']
+        db.session.add(agent)
+        self.stats["total_committees"] += 1
+        self.current_committee = {}
+        return
 
     @property
     def next_committee(self):
@@ -32,36 +95,8 @@ class CommitteePager(object):
                 yield list_name, href, name
 
 
-def run_scraper():
-
-    committee_pager = CommitteePager()
-    committees = []
-
-    for (i, (list_name, href_committee, name)) in enumerate(committee_pager.next_committee):
-        # determine committee's location
-        location = None
-        if list_name == "National Assembly Committees":
-            location = 1
-        elif list_name == "NCOP Committees":
-            location = 2
-        elif list_name == "Joint Committees":
-            location = 3
-        else:
-            if "(NA)" in name:
-                location = 1
-            elif "(NCOP)" in name:
-                location = 2
-        # populate entry
-        tmp = {
-            "type": "committee",
-            "url": href_committee,
-            "name": name,
-            "location": location
-        }
-        committees.append(tmp)
-    return committees
-
-
 if __name__ == "__main__":
 
-    run_scraper()
+    committee_scraper = CommitteeScraper()
+    committee_scraper.run_scraper()
+    logger.info(json.dumps(committee_scraper.stats, indent=4))

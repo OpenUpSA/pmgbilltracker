@@ -210,6 +210,6 @@ class Pager(object):
 
 if __name__ == "__main__":
 
-    bill_parser = BillScraper()
-    bill_parser.run_scraper()
-    logger.info(json.dumps(bill_parser.stats, indent=4))
+    bill_scraper = BillScraper()
+    bill_scraper.run_scraper()
+    logger.info(json.dumps(bill_scraper.stats, indent=4))
