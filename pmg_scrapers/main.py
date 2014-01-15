@@ -59,45 +59,8 @@ class PMGScraper(object):
     def scrape_committee_reports(self):
 
         logger.info("\n ----------- SCRAPING COMMITTEE REPORTS ---------------")
-        count_reports = 0
-        count_tags = 0
 
-        try:
-            state = open('tmp_state.json', 'r')
-            current_agent_id = int(simplejson.loads(state.read())['current_agent_id'])
-            state.close()
-        except Exception:
-            logger.info("Starting from scratch.")
-            current_agent_id = 0
-            pass
 
-        committees = Agent.query.filter(Agent.agent_id >= current_agent_id).order_by(Agent.agent_id)  # TODO: narrow this down to committees only
-        # shuffle(committees)
-        for committee in committees:
-            logger.debug("agent_id: " + str(committee.agent_id))
-            state = open('tmp_state.json', 'w')
-            state.write('{"current_agent_id": ' + str(committee.agent_id) + '}')
-            state.close()
-            reports = committee_reports.run_scraper(DEBUG, committee.url, committee.location)
-            logger.debug(committee.name)
-            logger.debug(str(len(reports)) + " reports")
-            for data in reports:
-                count_reports += 1
-                data['entry_type'] = "committee_meeting"
-                bills = []
-                if data.get('bills'):
-                    bills = data["bills"]
-                    count_tags += len(bills)
-                # TODO: filter by date
-                report = Entry.query.filter(Entry.agent_id==committee.agent_id).filter(Entry.title==data['title']).first()
-                if report is None:
-                    report = Entry()
-                    report.agent = committee
-                report = populate_entry(report, data, bills)
-                db.session.add(report)
-            db.session.commit()
-            logger.info(str(count_reports) + " Committee meeting reports scraped")
-            logger.info(str(count_tags) + " Committee meeting reports tagged to bills")
         return
 
 
