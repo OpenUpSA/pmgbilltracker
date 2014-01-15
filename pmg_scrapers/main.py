@@ -36,7 +36,6 @@ class PMGScraper(object):
         logger.info(json.dumps(bill_scraper.stats, indent=4))
         return
 
-
     def scrape_hansards(self):
 
         logger.info("\n ----------- SCRAPING HANSARDS ---------------")

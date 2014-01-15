@@ -60,6 +60,8 @@ class BillScraper(object):
             for row in rows:
                 while not self.state_fn(row):
                     pass
+            # commit to database after each page
+            db.session.commit()
         return
 
     def add_or_update(self):
@@ -116,16 +118,17 @@ class BillScraper(object):
                 self.stats['total_bill_versions'] += 1
 
         except Exception:
-            error_msg = "Error saving bill: " + \
-                        self.current_bill['bill_name'] + " - " + self.current_bill['versions'][0]['title']
+            error_msg = "Error saving bill: "
+            if self.current_bill.get('bill_name'):
+                error_msg += self.current_bill['bill_name']
+            if self.current_bill.get('versions'):
+                error_msg += " - " + self.current_bill['versions'][0]['title']
             logger.error(error_msg)
             self.stats['errors'].append(error_msg)
-            # logger.error(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
+            pass
 
         logger.debug(json.dumps(self.current_bill, indent=4, default=scrapertools.handler))
         self.current_bill = {}
-
-        db.session.commit()
         return
 
     def start_state(self, fragment):
