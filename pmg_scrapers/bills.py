@@ -69,6 +69,7 @@ class BillScraper(object):
         """
 
         # TODO: clean up the Draft vs. Bill logic below
+        # TODO: check that the numbers add up correctly
         bill_data = self.current_bill
 
         try:
@@ -79,12 +80,12 @@ class BillScraper(object):
                     bill = Bill()
                     bill.name = bill_data['bill_name']
                     bill.year = bill_data['year']
-                    self.stats['new_bills'] += 1
+                    self.stats['new_drafts'] += 1
                 bill.bill_type = bill_data['type']
                 if bill_data.get('introduced_by'):
                     bill.introduced_by = bill_data['introduced_by']
                 db.session.add(bill)
-                self.stats['total_bills'] += 1
+                self.stats['total_drafts'] += 1
 
             else:
                 # save scraped bills to database
@@ -93,7 +94,7 @@ class BillScraper(object):
                 if bill is None:
                     bill = Bill()
                     bill.code = bill_code
-                    self.stats['new_drafts'] += 1
+                    self.stats['new_bills'] += 1
                 bill.name = bill_data['bill_name']
                 if bill_data.get('introduced_by'):
                     bill.introduced_by = bill_data['introduced_by']
@@ -101,7 +102,7 @@ class BillScraper(object):
                 bill.bill_type = bill_data['type']
                 bill.number = bill_data['number']
                 db.session.add(bill)
-                self.stats['total_drafts'] += 1
+                self.stats['total_bills'] += 1
 
             # save related bill versions
             for entry_data in bill_data['versions']:
@@ -211,3 +212,4 @@ if __name__ == "__main__":
 
     bill_parser = BillScraper()
     bill_parser.run_scraper()
+    logger.info(json.dumps(bill_parser.stats, indent=4))
