@@ -40,31 +40,16 @@ class PMGScraper(object):
 
         logger.info("\n ----------- SCRAPING HANSARDS ---------------")
 
-        count_tags = 0
-
-        hansard_list = hansards.run_scraper()
-
-        for data in hansard_list:
-            data['entry_type'] = "hansard"
-            bills = []
-            if data.get('bills'):
-                bills = data["bills"]
-                count_tags += len(bills)
-            # TODO: improve filtering
-            hansard = Entry.query.filter(Entry.type=="hansard").filter(Entry.title==data['title']).first()
-            if hansard is None:
-                hansard = Entry()
-            hansard = populate_entry(hansard, data, bills)
-            db.session.add(hansard)
-        db.session.commit()
-        logger.info(str(len(hansard_list)) + " Hansards scraped")
-        logger.info(str(count_tags) + " Hansards tagged to bills")
+        hansard_scraper = hansards.HansardScraper()
+        hansard_scraper.run_scraper()
+        logger.info(json.dumps(hansard_scraper.stats, indent=4))
         return
 
 
     def scrape_committees(self):
 
         logger.info("\n ----------- SCRAPING COMMITTEES ---------------")
+
         committee_scraper = committees.CommitteeScraper()
         committee_scraper.run_scraper()
         logger.info(json.dumps(committee_scraper.stats, indent=4))
