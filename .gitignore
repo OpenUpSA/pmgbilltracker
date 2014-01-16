@@ -37,3 +37,5 @@ nosetests.xml
 debug.log
 *.DS_Store
 pmg_backend/uploads/
+pmg_backend/pmgbilltracker.db
+
