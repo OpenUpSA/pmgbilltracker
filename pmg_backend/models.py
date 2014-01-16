@@ -84,7 +84,7 @@ class Entry(db.Model):
     title = db.Column(db.String(500))
     description = db.Column(db.String(1000))
 
-    location = db.Column(db.Integer)
+    location = db.Column(db.Integer, nullable=True)
 
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'), nullable=True)
     agent = db.relationship('Agent')

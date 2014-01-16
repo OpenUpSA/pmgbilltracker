@@ -16,9 +16,17 @@
 
         {# Agent Header #}
         {% if entry.agent and (entry.agent.agent_id != current_agent) %}
+            {# Catch new agent agent #}
+            {% if current_location and current_agent %}
+                <hr>
+            {% endif %}
             {% set current_agent = entry.agent.agent_id %}
             {{ render_agent(entry.agent) }}
         {% elif not entry.agent and current_agent %}
+            {# Catch empty agent #}
+            {% if current_location %}
+                <hr>
+            {% endif %}
             {% set current_agent = None %}
         {% endif %}
 
