@@ -61,7 +61,7 @@ class BillScraper(object):
                 while not self.state_fn(row):
                     pass
             # commit to database after each page
-            db.session.commit()
+            # db.session.commit()
         return
 
     def add_or_update(self):
@@ -151,6 +151,8 @@ class BillScraper(object):
         if self.current_bill:
             # save previously scraped bill
             self.add_or_update()
+            # commit to database
+            db.session.commit()
             
 
         text = fragment.text

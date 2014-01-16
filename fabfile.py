@@ -65,8 +65,9 @@ def run_scraper():
 
     # run scraper process
     # NOTE: the process keeps going even after manually closing the fabric session
-    sudo('rm /var/www/pmgbilltracker/pmg_scrapers/debug.log')
-    sudo('touch /var/www/pmgbilltracker/pmg_scrapers/debug.log')
+    with settings(warn_only=True):
+        sudo('rm /var/www/pmgbilltracker/pmg_scrapers/debug.log')
+        sudo('touch /var/www/pmgbilltracker/pmg_scrapers/debug.log')
     with cd('/var/www/pmgbilltracker/pmg_scrapers'):
         sudo('python main.py', pty=True)
     return

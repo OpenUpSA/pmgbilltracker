@@ -66,7 +66,7 @@ class PMGScraper(object):
 
 def rebuild_db():
 
-    from pmg_backend.models import *
+    from pmg_backend.models import Agent
     from pmg_backend import db
 
     db.drop_all()
@@ -98,6 +98,9 @@ if __name__ == "__main__":
     #     (4, "President's Office"),
     #     ]
 
+    start_time = datetime.datetime.now()
+    logger.info("Started at " + str(start_time))
+
     rebuild_db()
 
     scraper = PMGScraper()
@@ -105,6 +108,9 @@ if __name__ == "__main__":
     scraper.scrape_hansards()
     scraper.scrape_committees()
     scraper.scrape_committee_reports()
+
+    logger.info("Finished scraping at " + str(datetime.datetime.now()))
+    logger.info("Duration: " + str(datetime.datetime.now() - start_time))
 
     import bill_status
     bill_status.find_current_bills()

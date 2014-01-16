@@ -13,7 +13,7 @@ formatter_min = logging.Formatter('%(asctime)s %(message)s', datefmt='%H:%M:%S')
 logger = logging.getLogger("pmg_scraper")
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 # login and start session with pmg website
 logger.info("LOGGING IN")
