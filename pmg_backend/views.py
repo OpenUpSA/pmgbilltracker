@@ -27,7 +27,7 @@ def bill_list(year=None):
         tmp = Bill.query.filter(Bill.year==int(year)).filter(Bill.bill_type=="B").filter(Bill.code.isnot(None)).order_by(Bill.number.desc()).all()
         response = make_response(bill_serializer.serialize(tmp))
     else:
-        tmp = Bill.query.filter(Bill.bill_type=="B").order_by(Bill.year.desc(), Bill.number.desc()).all()
+        tmp = Bill.query.filter(Bill.bill_type=="B").filter(Bill.code.isnot(None)).order_by(Bill.year.desc(), Bill.number.desc()).all()
         response = make_response(bill_serializer.serialize(tmp))
     response.mimetype = "application/json"
     response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend

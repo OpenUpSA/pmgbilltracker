@@ -34,8 +34,10 @@ def index(year=None, bill_type=None):
     tmp = "bill"
     page_title = "All bills"
     bills = []
-    while (not bills) and (start_year > 2007):
+
+    while (not bills) and (start_year > 2007):  # ensure that we start on the first page that actually has content
         year_list = range(start_year, 2005, -1)
+
         if bill_type and bill_type.lower() in ["pmb", "draft", "current"]:
             tmp = bill_type.lower()
             if bill_type.lower() == "pmb":
@@ -56,15 +58,19 @@ def index(year=None, bill_type=None):
             "enacted": ("signed into law", "label-success"),
             "withdrawn": ("withdrawn", "label-default"),
             }
+
+        api_url = "http://" + API_HOST + "/" + tmp + "/"
+
         if start_year:
             r = requests.get("http://" + API_HOST + "/" + tmp + "/year/" + str(start_year) + "/")
         else:
-            r = requests.get("http://" + API_HOST + "/" + tmp + "/")
+            r = requests.get(api_url)
         bills = r.json()
         if not bills:
             start_year -= 1
 
-    return render_template('index.html', title=page_title, bill_type=bill_type, year_list=year_list, year=start_year, bills=bills, status_dict=status_dict, api_host=API_HOST)
+    return render_template('index.html', title=page_title, bill_type=bill_type, year_list=year_list,
+                           year=start_year, bills=bills, status_dict=status_dict, api_url=api_url)
 
 
 @app.route('/bills/')

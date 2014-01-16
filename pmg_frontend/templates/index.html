@@ -23,7 +23,7 @@
     <hr>
     {% for bill in bills %}
         {% if bill_type == "draft" %}
-            <a class="tile-anchor" href="{{ bill.entries[0].url }}">
+            <a class="tile-anchor" target="_blank" href="{{ bill.entries[0].url }}">
                 <div class="bill-index-tile" data-draft-url="{{ bill.entries[0].url }}">
                     <p><strong>{{ bill.name }}</strong></p>
                 </div>
@@ -60,16 +60,9 @@
     <script src="/static/bootstrap/js/typeahead.js"></script>
     <script type="text/javascript">
         $(function(){
-{#            $(".bill-index-tile").on('click', function(){#}
-{#                {% if bill_type == "draft" %}#}
-{#                    window.location = $(this).attr('data-draft-url')#}
-{#                {% else %}#}
-{#                    window.location = "/bill/" + $(this).attr('data-bill-id') + "/"#}
-{#                {% endif %}#}
-{#            })#}
 
             autocomplete_data = []
-            $.get("http://{{ api_host }}/bill/", function(data){
+            $.get("{{ api_url }}", function(data){
                 autocomplete_data = data;
             }).fail(function() {
                         $("#search-box").attr('disabled', "disabled").attr('placeholder', "Search is not available at present.")
@@ -82,10 +75,16 @@
                     map = {};
                     $.each(autocomplete_data, function(i, object) {
                         var tmp_name = object.name
-                        var tmp_code = "(" + object.code + " " + object.year + ")"
-                        if (tmp_name.length + tmp_code.length > 33)
-                            tmp_name = object.name.substring(0, 30) + "..."
-                        var key = tmp_name + " - " + tmp_code
+                        var key = tmp_name
+                        var tmp_code = ""
+                        {% if bill_type != "draft" %}
+                        tmp_code = "(" + object.code + ")"
+                        key = tmp_name + " - " + tmp_code
+                        {% endif %}
+
+                        if (key.length > 56)
+                            key = object.name.substring(0, 50) + "..."
+
                         map[key] = object;
                         objects.push(key);
                     });
