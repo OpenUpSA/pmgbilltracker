@@ -22,6 +22,7 @@ def index(year=None, bill_type=None):
     Display a list of available bills, with some summary info and a link to each bill's detail page.
     """
 
+    logger.debug("landing page called")
     try:
         if year is not None:
             year = int(year)
@@ -30,6 +31,8 @@ def index(year=None, bill_type=None):
         abort(400)
 
     start_year = date.today().year
+    if not year:
+        year = start_year
 
     tmp = "bill"
     page_title = "All bills"
@@ -50,27 +53,28 @@ def index(year=None, bill_type=None):
                 page_title = "Current Bills"
                 start_year = None
                 year_list = []
-        logger.debug("landing page called")
-        status_dict = {
-            "na": ("in progress", "label-primary"),
-            "ncop": ("in progress", "label-primary"),
-            "assent": ("sent to the president", "label-warning"),
-            "enacted": ("signed into law", "label-success"),
-            "withdrawn": ("withdrawn", "label-default"),
-            }
 
         api_url = "http://" + API_HOST + "/" + tmp + "/"
 
-        if start_year:
-            r = requests.get("http://" + API_HOST + "/" + tmp + "/year/" + str(start_year) + "/")
+        if year:
+            r = requests.get(api_url + "year/" + str(year) + "/")
         else:
             r = requests.get(api_url)
         bills = r.json()
         if not bills:
             start_year -= 1
+            year -= 1
+
+    status_dict = {
+        "na": ("in progress", "label-primary"),
+        "ncop": ("in progress", "label-primary"),
+        "assent": ("sent to the president", "label-warning"),
+        "enacted": ("signed into law", "label-success"),
+        "withdrawn": ("withdrawn", "label-default"),
+        }
 
     return render_template('index.html', title=page_title, bill_type=bill_type, year_list=year_list,
-                           year=start_year, bills=bills, status_dict=status_dict, api_url=api_url)
+                           year=year, bills=bills, status_dict=status_dict, api_url=api_url)
 
 
 @app.route('/bills/')
