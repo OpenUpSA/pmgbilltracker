@@ -2,6 +2,7 @@ from __future__ import print_function
 import requests
 import re
 from pmg_backend.models import Bill
+from pmg_scrapers import session
 
 
 def handler(obj):
@@ -12,12 +13,13 @@ def handler(obj):
 
 
 class URLFetcher(object):
+
     def __init__(self, url):
         self.url = url
 
     @property
     def html(self):
-        r = requests.get(self.url)
+        r = session.get(self.url)
         return r.content
 
 

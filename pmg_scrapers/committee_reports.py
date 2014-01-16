@@ -7,7 +7,7 @@ from BeautifulSoup import BeautifulSoup
 from dateutil import parser as date_parser
 import scrapertools
 import time
-from pmg_scrapers import logger
+from pmg_scrapers import logger, session
 from pmg_backend.models import *
 from pmg_backend import db
 import json
@@ -69,6 +69,8 @@ class ReportScraper(object):
                         msg += self.current_url
                         self.stats["errors"].append(msg)
                         pass
+            else:
+                print("No table body")
             if not self.next_page:
                 break
         return
@@ -146,6 +148,7 @@ class ReportScraper(object):
         tmp_bills = None
         if self.current_report.get('bills'):
             tmp_bills = self.current_report['bills']
+            print(tmp_bills)
         report = scrapertools.populate_entry(report, self.current_report, tmp_bills)
         db.session.add(report)
         self.stats["total_committee_reports"] += 1

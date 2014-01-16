@@ -38,4 +38,4 @@ debug.log
 *.DS_Store
 pmg_backend/uploads/
 pmg_backend/pmgbilltracker.db
-
+pmg_scrapers/scraper_config.json
