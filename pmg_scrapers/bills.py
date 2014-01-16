@@ -53,7 +53,7 @@ class BillScraper(object):
             # initiate parser for this page
             self.state_fn = self.start_state
             html = scrapertools.URLFetcher(url).html
-            soup = BeautifulSoup(html)
+            soup = BeautifulSoup(html, convertEntities=BeautifulSoup.HTML_ENTITIES)
             rows = soup.findAll("tr")
 
             # feed rows into state machine

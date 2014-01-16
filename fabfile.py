@@ -62,7 +62,7 @@ def setup():
 
 
 def run_scraper():
-    
+
     # run scraper process
     # NOTE: the process keeps going even after manually closing the fabric session
     with cd('/var/www/pmgbilltracker/pmg_scrapers'):

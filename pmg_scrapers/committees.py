@@ -81,7 +81,7 @@ class CommitteeScraper(object):
     @property
     def next_committee(self):
         html = scrapertools.URLFetcher("http://www.pmg.org.za/committees").html
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(html, convertEntities=BeautifulSoup.HTML_ENTITIES)
         container = soup.find(id="committees-all")
         committee_lists = container.findAll("div", {"class": "item-list"})
         for committee_list in committee_lists:

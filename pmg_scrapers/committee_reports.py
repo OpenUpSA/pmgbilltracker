@@ -48,7 +48,7 @@ class ReportScraper(object):
         Iterate over the reports listed on a particular page.
         """
         while True:
-            soup = BeautifulSoup(self.current_page)
+            soup = BeautifulSoup(self.current_page, convertEntities=BeautifulSoup.HTML_ENTITIES)
             reports_tab = soup.find(id="quicktabs_tabpage_committees_tabs_1")
             if reports_tab is None:
                 print("No reports tab for this committee: " + self.current_url)
@@ -158,4 +158,3 @@ if __name__ == "__main__":
     report_scraper = ReportScraper()
     report_scraper.run_scraper()
     logger.info(json.dumps(report_scraper.stats, indent=4))
-

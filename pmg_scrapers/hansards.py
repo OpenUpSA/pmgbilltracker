@@ -41,7 +41,7 @@ class HansardScraper(object):
     @property
     def next_hansard(self):
 
-        soup = BeautifulSoup(self.current_page)
+        soup = BeautifulSoup(self.current_page, convertEntities=BeautifulSoup.HTML_ENTITIES)
         hansards_table = soup.find("table", {"class": "views-table cols-2"})
         if hansards_table is None:
             self.stats["errors"].append("No hansards table for this page: " + self.current_url)
@@ -69,7 +69,7 @@ class HansardScraper(object):
                 time.sleep(0.25)
                 tmp_url = href_hansard
                 html = scrapertools.URLFetcher(tmp_url).html
-                soup = BeautifulSoup(html)
+                soup = BeautifulSoup(html, convertEntities=BeautifulSoup.HTML_ENTITIES)
                 content = soup.find(id="content")
                 # find bills that are mentioned in the text
                 bills = scrapertools.find_bills(str(content))
