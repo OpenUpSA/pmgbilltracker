@@ -10,15 +10,21 @@
         <div class="col-lg-2">
         </div>
         <a class="tile-anchor" href="/bills/current/all/">
-            <div class="col-lg-4 tile" data-link="/bills/current/all/">
+            <div class="col-lg-4 tile">
                 <h3>Current bills</h3>
-                <p class="lead">See which bills are currently making their way through Parliament.</p>
+                <p>See which bills are currently making their way through Parliament.</p>
+                <a href="/bills/current/all/" class="btn btn-primary pull-right btn-sm" role="button">
+                    <span class="glyphicon glyphicon-chevron-right"></span> View all
+                </a>
             </div>
         </a>
         <a class="tile-anchor" href="/bills/all/">
-            <div class="col-lg-4 tile" data-link="/bills/all/">
+            <div class="col-lg-4 tile">
                 <h3>All Bills</h3>
-                <p class="lead">Find bills from our archive.</p>
+                <p>Find bills from our archive.</p>
+                <a href="/bills/bills/all/" class="btn btn-primary pull-right btn-sm" role="button">
+                    <span class="glyphicon glyphicon-chevron-right"></span> View all
+                </a>
             </div>
         </a>
         <div class="col-lg-2">
@@ -29,15 +35,21 @@
         <div class="col-lg-2">
         </div>
         <a class="tile-anchor" href="/bills/pmb/all/">
-            <div class="col-lg-4 tile" data-link="/bills/pmb/all/">
+            <div class="col-lg-4 tile">
                 <h3>Private Member Bills</h3>
-                <p class="lead">Bills introduced by individual Members of Parliament.</p>
+                <p>Bills introduced by individual Members of Parliament.</p>
+                <a href="/bills/pmb/all/" class="btn btn-primary pull-right btn-sm" role="button">
+                    <span class="glyphicon glyphicon-chevron-right"></span> View all
+                </a>
             </div>
         </a>
         <a class="tile-anchor" href="/bills/explained/">
-            <div class="col-lg-4 tile" data-link="/bills/explained/">
+            <div class="col-lg-4 tile">
                 <h3>Bills Explained</h3>
-                <p class="lead">Find out more about the legislative process.</p>
+                <p>Find out more about the legislative process.</p>
+                <a href="/bills/explained/" class="btn btn-primary pull-right btn-sm" role="button">
+                    <span class="glyphicon glyphicon-chevron-right"></span> Read more
+                </a>
             </div>
         </a>
         <div class="col-lg-2">
@@ -48,9 +60,12 @@
         <div class="col-lg-2">
         </div>
         <a class="tile-anchor" href="/bills/draft/all/">
-            <div class="col-lg-4 tile" data-link="/bills/draft/all/">
+            <div class="col-lg-4 tile">
                 <h3>Draft Bills</h3>
-                <p class="lead">See which bills are waiting to be introduced.</p>
+                <p>See which bills are waiting to be introduced.</p>
+                <a href="/bills/draft/all/" class="btn btn-primary pull-right btn-sm" role="button">
+                    <span class="glyphicon glyphicon-chevron-right"></span> View all
+                </a>
             </div>
         </a>
         <div class="col-lg-4">
@@ -64,9 +79,7 @@
 {% block javascript %}
     <script type="text/javascript">
         $(function(){
-{#            $(".tile").on("click", function(){#}
-{#                window.location.href=$(this).attr("data-link");#}
-{#            })#}
+
         })
     </script>
 {% endblock %}

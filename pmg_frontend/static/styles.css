@@ -177,6 +177,7 @@ color: #999999;
 
 .tile-anchor{
     color: inherit;
+    padding-bottom: 5px;
 }
 
 .tile-anchor:hover{
@@ -187,6 +188,18 @@ color: #999999;
 .tile:hover{
     background-color: #eeeeee;
     cursor: pointer;
+}
+
+.tile{
+    margin-right: -1px;
+    margin-bottom: -1px;
+    min-height: 140px;
+    padding-bottom: 5px;
+    border: 1px solid #eee;
+}
+
+.tile p{
+    margin-bottom: 5px;
 }
 
 #status-text{
