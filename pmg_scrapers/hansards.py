@@ -79,8 +79,7 @@ class HansardScraper(object):
                 bills = scrapertools.find_bills(str(content))
                 # only save hansards that are related to bills
                 if bills:
-                    # infer location from title
-                    # TODO: convince them to make this check easier, because many entries won't be tagged correctly
+                    # infer location from title, where appropriate
                     location = None
                     agent = None
                     if title.startswith("NA:"):
@@ -98,7 +97,6 @@ class HansardScraper(object):
                     }
                     if agent:
                         self.current_hansard['agent'] = agent
-                    logger.debug(simplejson.dumps(self.current_hansard, indent=4, default=scrapertools.handler))
                     try:
                         self.add_or_update()
                     except Exception:
@@ -111,6 +109,7 @@ class HansardScraper(object):
 
             # save hansards to database, once per scraped page
             db.session.commit()
+            logger.debug(simplejson.dumps(self.stats, indent=4))
             # test whether we have reached the end
             if not self.next_page:
                 break
