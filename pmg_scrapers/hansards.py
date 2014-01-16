@@ -63,6 +63,10 @@ class HansardScraper(object):
 
     def run_scraper(self):
 
+        # define agents
+        na = Agent.query.filter(Agent.name == "National Assembly").first()
+        ncop = Agent.query.filter(Agent.name == "National Council Of Provinces").first()
+
         while True:
             for (j, (date, title, href_hansard)) in enumerate(self.next_hansard):
                 logger.debug("\t\t" + str(date) + " - " + title)
@@ -78,10 +82,13 @@ class HansardScraper(object):
                     # infer location from title
                     # TODO: convince them to make this check easier, because many entries won't be tagged correctly
                     location = None
+                    agent = None
                     if title.startswith("NA:"):
                         location = 1
+                        agent = na
                     elif title.startswith("NCOP:"):
                         location = 2
+                        agent = ncop
                     self.current_hansard = {
                         "bills": bills,
                         "url": tmp_url,
@@ -89,6 +96,8 @@ class HansardScraper(object):
                         "title": title,
                         "location": location
                     }
+                    if agent:
+                        self.current_hansard['agent'] = agent
                     logger.debug(simplejson.dumps(self.current_hansard, indent=4, default=scrapertools.handler))
                     try:
                         self.add_or_update()

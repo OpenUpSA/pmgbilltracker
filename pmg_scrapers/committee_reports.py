@@ -94,10 +94,11 @@ class ReportScraper(object):
                     "url": tmp_url,
                     "date": date,
                     "title": title,
+                    "agent": self.current_committee,
                     }
+
                 if self.current_committee.location:
                     self.current_report["location"] = self.current_committee.location
-
                 try:
                     self.add_or_update()
                 except Exception:
@@ -140,7 +141,6 @@ class ReportScraper(object):
             .filter(Entry.url == self.current_report['url']).first()
         if report is None:
             report = Entry()
-            report.agent = self.current_committee
             self.stats["new_committee_reports"] += 1
 
         tmp_bills = None

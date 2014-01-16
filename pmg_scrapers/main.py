@@ -64,6 +64,30 @@ class PMGScraper(object):
         return
 
 
+def rebuild_db():
+
+    from pmg_backend.models import *
+    from pmg_backend import db
+
+    db.drop_all()
+    db.create_all()
+
+    tmp = [
+        ("National Assembly", "house", 1),
+        ("National Council Of Provinces", "house", 2),
+        ("The President", "president", 4),
+        ]
+    for name, agent_type, location in tmp:
+        agent = Agent()
+        agent.name = name
+        agent.type = agent_type
+        agent.location = location
+        db.session.add(agent)
+
+    db.session.commit()
+    return
+
+
 if __name__ == "__main__":
 
     # locations = [
@@ -74,8 +98,7 @@ if __name__ == "__main__":
     #     (4, "President's Office"),
     #     ]
 
-    # db.drop_all()
-    # db.create_all()
+    rebuild_db()
 
     scraper = PMGScraper()
     scraper.scrape_bills()

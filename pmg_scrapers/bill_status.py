@@ -83,6 +83,8 @@ def handle_assent():
     with open("../data/bill_assent_dates.csv", 'Ur') as f:
         data = list(list(rec) for rec in csv.reader(f, delimiter=','))
 
+    president = Agent.query.filter(Agent.name == "The President").first()
+
     for i in range(len(data)):
 
         # ignore column title row
@@ -144,6 +146,7 @@ def handle_assent():
         tmp_entry.type = "assent"
         tmp_entry.location = 4
         tmp_entry.title = "Signed into law by the President."
+        tmp_entry.agent = president
         if act_no and gazette:
             tmp_entry.description = "Enacted as Act " + act_no + ". Refer to Government Gazette " + gazette + "."
         db.session.add(tmp_entry)

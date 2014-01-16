@@ -139,6 +139,8 @@ def populate_entry(entry, data, bill_codes=None):
         entry.location = data['location']
     if data.get("url"):
         entry.url = data['url']
+    if data.get("agent"):
+        entry.agent = data['agent']
     return entry
 
 
