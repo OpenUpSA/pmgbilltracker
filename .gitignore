@@ -37,5 +37,5 @@ nosetests.xml
 debug.log
 *.DS_Store
 pmg_backend/uploads/
-pmg_backend/pmgbilltracker.db
+instance/pmgbilltracker.db
 pmg_scrapers/scraper_config.json

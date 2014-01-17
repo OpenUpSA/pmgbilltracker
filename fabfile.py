@@ -76,7 +76,7 @@ def run_scraper():
 def download_database():
 
     # replace the local sqlite database with the latest copy from the server
-    get('/var/www/pmgbilltracker/pmg_backend/pmgbilltracker.db', 'pmg_backend/pmgbilltracker.db')
+    get('/var/www/pmgbilltracker/instance/pmgbilltracker.db', 'instance/pmgbilltracker.db')
     # download the scraper's latest log
     get('/var/www/pmgbilltracker/pmg_scrapers/debug.log', 'pmg_scrapers/debug.log')
     return
