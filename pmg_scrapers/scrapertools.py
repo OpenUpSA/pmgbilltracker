@@ -2,7 +2,7 @@ from __future__ import print_function
 import requests
 import re
 from pmg_backend.models import Bill
-from pmg_scrapers import session
+from pmg_scrapers import session, logger
 
 
 def handler(obj):
@@ -128,7 +128,7 @@ def populate_entry(entry, data, bill_codes=None):
             if tmp_bill:
                 entry.bills.append(tmp_bill)
             else:
-                print("Could not find related bill: " + code)
+                logger.info("Could not find related bill: " + code)
                 pass
     # populate required fields
     entry.type = data['entry_type']

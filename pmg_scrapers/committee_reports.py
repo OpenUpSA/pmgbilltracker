@@ -51,7 +51,7 @@ class ReportScraper(object):
             soup = BeautifulSoup(self.current_page, convertEntities=BeautifulSoup.HTML_ENTITIES)
             reports_tab = soup.find(id="quicktabs_tabpage_committees_tabs_1")
             if reports_tab is None:
-                print("No reports tab for this committee: " + self.current_url)
+                logger.error("No reports tab for this committee: " + self.current_url)
                 break
             table_body = reports_tab.find("tbody")
 
@@ -70,7 +70,7 @@ class ReportScraper(object):
                         self.stats["errors"].append(msg)
                         pass
             else:
-                print("No table body")
+                logger.error("No table body")
             if not self.next_page:
                 break
         return
@@ -103,12 +103,13 @@ class ReportScraper(object):
                     self.current_report["location"] = self.current_committee.location
                 try:
                     self.add_or_update()
-                except Exception:
+                except Exception, e:
                     msg = "Could not add committee report to database: "
                     if self.current_report.get("title"):
                         msg += self.current_report["title"]
                     self.stats["errors"].append(msg)
                     logger.error(msg)
+                    logger.exception(str(e))
                 self.current_report = {}
         return
 
@@ -148,7 +149,7 @@ class ReportScraper(object):
         tmp_bills = None
         if self.current_report.get('bills'):
             tmp_bills = self.current_report['bills']
-            print(tmp_bills)
+            logger.info(str(tmp_bills))
         report = scrapertools.populate_entry(report, self.current_report, tmp_bills)
         db.session.add(report)
         self.stats["total_committee_reports"] += 1
