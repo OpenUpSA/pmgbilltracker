@@ -52,6 +52,7 @@ def index(year=None, bill_type=None):
             elif bill_type.lower() == "current":
                 page_title = "Current Bills"
                 start_year = None
+                year = None
                 year_list = []
 
         api_url = "http://" + API_HOST + "/" + tmp + "/"
@@ -61,7 +62,7 @@ def index(year=None, bill_type=None):
         else:
             r = requests.get(api_url)
         bills = r.json()
-        if not bills:
+        if not bills and bill_type.lower() != "current":
             start_year -= 1
             year -= 1
 

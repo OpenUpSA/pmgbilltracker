@@ -148,6 +148,6 @@ def populate_entry(entry, data, bill_codes=None):
 
 if __name__ == "__main__":
 
-    for text in [" B6C-2010 ", "B6F-2010", "B4-2010 - as enacted", "B - 2010", "PMB5-2013", "B78-2008 as enacted", "16 Oct 2013 - Marine Living Resources Amendment Bill [B30-2013]: Public hearings Day 2"]:
+    for text in [" B6C-2010 ", "B6F -2010", "B4 - 2010 - as enacted", "B - 2010", "PMB5-2013", "B78-2008 as enacted", "16 Oct 2013 - Marine Living Resources Amendment Bill [B30-2013]: Public hearings Day 2"]:
         print(text)
         print(find_bills(text, True))
