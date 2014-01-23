@@ -55,7 +55,7 @@ NOTES:
 ------
 To access this server via SSH:
 
-    ssh -v -i ~/.ssh/aws_code4sa.pem ubuntu@54.229.255.34
+    ssh -v -i ~/.ssh/aws_code4sa.pem ubuntu@ec2-54-194-183-218.eu-west-1.compute.amazonaws.com
 
 Logs can be found at:
 

@@ -7,8 +7,7 @@ def staging():
     Env parameters for the staging environment.
     """
 
-    env.hosts = ['54.229.255.34']
-    # env.hosts = ['ec2-54-194-122-94.eu-west-1.compute.amazonaws.com']
+    env.hosts = ['ec2-54-194-183-218.eu-west-1.compute.amazonaws.com']
     env.envname = 'staging'
     env.user = 'ubuntu'
     env.group = 'ubuntu'
@@ -77,8 +76,9 @@ def download_database():
 
     # replace the local sqlite database with the latest copy from the server
     get('/var/www/pmgbilltracker/instance/pmgbilltracker.db', 'instance/pmgbilltracker.db')
-    # download the scraper's latest log
-    get('/var/www/pmgbilltracker/pmg_scrapers/debug.log', 'pmg_scrapers/debug.log')
+    with settings(warn_only=True):
+        # download the scraper's latest log, if one exists
+        get('/var/www/pmgbilltracker/pmg_scrapers/debug.log', 'pmg_scrapers/debug.log')
     return
 
 
