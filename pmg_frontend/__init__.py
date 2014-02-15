@@ -1,4 +1,6 @@
 import logging
+from logging.handlers import RotatingFileHandler
+import os
 from flask import Flask
 
 app = Flask(__name__, instance_relative_config=True)
@@ -18,10 +20,8 @@ file_formatter = logging.Formatter(
     '[in %(pathname)s:%(lineno)d]'
 )
 
-# add file handler to application logger
-from logging.handlers import RotatingFileHandler
 log_path = app.instance_path[0:app.instance_path.index('instance')]
-file_handler = RotatingFileHandler(log_path + 'debug.log')
+file_handler = RotatingFileHandler(os.path.join(log_path, 'debug.log'))
 file_handler.setLevel(LOG_LEVEL)
 file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)

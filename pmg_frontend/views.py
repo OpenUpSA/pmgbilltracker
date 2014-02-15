@@ -7,10 +7,16 @@ from pmg_frontend import logger
 
 
 API_HOST = app.config['API_HOST']
+error_bad_request = 400
+
+def url(action, param=None):
+    u =  "http://{host}/{action}/".format(host=API_HOST, action=action)
+    if param:
+        return u + param + "/"
+    return u
 
 @app.route('/')
 def root():
-
     return redirect('/bills/')
 
 @app.route('/bills/all/')
@@ -28,7 +34,7 @@ def index(year=None, bill_type=None):
             year = int(year)
     except ValueError as e:
         logger.debug(e)
-        abort(400)
+        abort(error_bad_request)
 
     start_year = date.today().year
     if not year:
@@ -55,7 +61,7 @@ def index(year=None, bill_type=None):
                 year = None
                 year_list = []
 
-        api_url = "http://" + API_HOST + "/" + tmp + "/"
+        api_url = url(tmp)
 
         if year:
             r = requests.get(api_url + "year/" + str(year) + "/")
@@ -74,8 +80,10 @@ def index(year=None, bill_type=None):
         "withdrawn": ("withdrawn", "label-default"),
         }
 
-    return render_template('index.html', title=page_title, bill_type=bill_type, year_list=year_list,
-                           year=year, bills=bills, status_dict=status_dict, api_url=api_url)
+    return render_template(
+        'index.html', title=page_title, bill_type=bill_type, year_list=year_list,
+        year=year, bills=bills, status_dict=status_dict, api_url=api_url
+    )
 
 
 @app.route('/bills/')
@@ -99,10 +107,11 @@ def detail(bill_id=None):
     try:
         bill_id = int(bill_id)
     except:
-        abort(400)
+        abort(error_bad_request)
 
     logger.debug("detail page called")
-    r = requests.get("http://" + API_HOST + "/bill/" + str(bill_id) + "/")
+    api_url = url("bill", str(bill_id))
+    r = requests.get(api_url)
     bill = r.json()
 
     return render_template('detail.html', bill=bill)
