@@ -75,7 +75,7 @@ def index(year=None, bill_type=None):
     status_dict = {
         "na": ("in progress", "label-primary"),
         "ncop": ("in progress", "label-primary"),
-        "assent": ("sent to the president", "label-warning"),
+        "assent": ("submitted to the president", "label-warning"),
         "enacted": ("signed into law", "label-success"),
         "withdrawn": ("withdrawn", "label-default"),
         }
