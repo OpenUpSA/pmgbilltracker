@@ -1,6 +1,12 @@
 from pmg_backend import db
 from sqlalchemy.orm import backref
 
+class classproperty(object):
+    def __init__(self, f):
+        self.f = f
+    def __get__(self, obj, owner):
+        return self.f(owner)
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True)
@@ -23,9 +29,10 @@ class User(db.Model):
 
 
 # M2M table
-entry_bills_table = db.Table('entry_bills', db.Model.metadata,
-                             db.Column('entry_id', db.Integer, db.ForeignKey('entry.entry_id')),
-                             db.Column('bill_id', db.Integer, db.ForeignKey('bill.bill_id'))
+entry_bills_table = db.Table(
+    'entry_bills', db.Model.metadata,
+    db.Column('entry_id', db.Integer, db.ForeignKey('entry.entry_id')),
+    db.Column('bill_id', db.Integer, db.ForeignKey('bill.bill_id'))
 )
 
 
@@ -47,6 +54,27 @@ class Bill(db.Model):
     green_paper = db.Column(db.String(200))
     draft = db.Column(db.String(200))
     gazette = db.Column(db.String(200))
+
+    @classproperty
+    def regular_bills(cls):
+        return cls.query.filter(Bill.bill_type=="B")
+
+    @classproperty
+    def pmb(cls):
+        return cls.query.filter(Bill.bill_type=="PMB")
+
+    @classproperty
+    def draft_bills(cls):
+        # TODO: set "draft" as a special bill_type
+        return cls.query.filter(Bill.code==None)
+
+    @classproperty
+    def current_bills(cls):
+        return cls.query\
+            .filter(Bill.status != "enacted")\
+            .filter(Bill.status != "withdrawn")\
+            .filter(Bill.status != "expired")\
+            .filter(Bill.status != None)
 
     def __str__(self):
         return str(self.bill_id) + " - " + self.name

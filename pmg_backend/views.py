@@ -7,7 +7,7 @@ from serializers import BillSerializer
 bill_serializer = BillSerializer()
 
 def make_json_response(bills, include_related=False):
-    response = make_response(bill_serializer.serialize(bills, include_related=True))
+    response = make_response(bill_serializer.serialize(bills, include_related))
     response.mimetype = "application/json"
     response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend
     return response
@@ -23,17 +23,14 @@ def autodiscover():
 
     return render_template('index.html')
 
-
 @app.route('/bill/')
 @app.route('/bill/year/<year>/')
 def bill_list(year=None):
 
     logger.debug("Bill list endpoint called")
-    bills = Bill.query\
-        .filter(Bill.bill_type=="B")\
+    bills = Bill.regular_bills\
         .filter(Bill.code.isnot(None))\
-        .order_by(Bill.year.desc(), Bill.number.desc())\
-        .all()
+        .order_by(Bill.year.desc(), Bill.number.desc())
 
     if year:
         bills = bills.filter(Bill.year==int(year))
@@ -44,10 +41,7 @@ def bill_list(year=None):
 @app.route('/pmb/year/<year>/')
 def pmb_list(year=None):
 
-    pmb = Bill.query\
-        .filter(Bill.bill_type=="PMB")\
-        .order_by(Bill.number.desc())\
-        .all()
+    pmb = Bill.pmb.order_by(Bill.number.desc())
 
     logger.debug("PMB list endpoint called")
     if year:
@@ -59,28 +53,23 @@ def pmb_list(year=None):
 def draft_list(year=None):
 
     logger.debug("Draft list endpoint called")
-    bills = Bill.query\
-        .filter(Bill.code==None)\
-        .order_by(Bill.number.desc())\
-        .all()
+    bills = Bill.draft_bills.order_by(Bill.number.desc())
 
-    # TODO: set "draft" as a special bill_type
     if year:
         bills = bills.filter(Bill.year==int(year))
-        return make_json_response(bilss, include_related=True)
+        return make_json_response(bills, include_related=True)
     else:
         return make_json_response(bills)
-
 
 @app.route('/current/')
 def current_list(year=None):
 
     logger.debug("Current list endpoint called")
-    tmp = Bill.query.filter(Bill.status != "enacted").filter(Bill.status != "withdrawn").filter(Bill.status != "expired").filter(Bill.status != None).order_by(Bill.year.desc(), Bill.number.desc()).all()
-    response = make_response(bill_serializer.serialize(tmp))
-    response.mimetype = "application/json"
-    response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend
-    return response
+    
+    bills = Bill.current_bills\
+        .order_by(Bill.year.desc(), Bill.number.desc())
+
+    return make_json_response(bills)
 
 
 @app.route('/bill/<bill_id>/')
@@ -88,7 +77,5 @@ def bill_detail(bill_id):
 
     logger.debug("Bill detail endpoint called")
 
-    tmp = Bill.query.get_or_404(bill_id)
-    response = make_response(bill_serializer.serialize(tmp, include_related=True))
-    response.mimetype = "application/json"
-    return response
+    bill = Bill.query.get_or_404(bill_id)
+    return make_json_response(bill, include_related=True)

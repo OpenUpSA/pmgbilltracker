@@ -1,10 +1,9 @@
-import simplejson
+import json
 from datetime import datetime, date
-from models import *
 from pmg_backend import db, logger
 
 
-class CustomEncoder(simplejson.JSONEncoder):
+class CustomEncoder(json.JSONEncoder):
     """
     Define encoding rules for fields that are not readily serializable.
     """
@@ -14,12 +13,12 @@ class CustomEncoder(simplejson.JSONEncoder):
             encoded_obj = obj.strftime("%B %d, %Y")
         elif isinstance(obj, db.Model):
             try:
-                encoded_obj = simplejson.dumps(obj.to_dict(), cls=CustomEncoder)
+                encoded_obj = json.dumps(obj.to_dict(), cls=CustomEncoder, indent=4)
                 logger.debug(encoded_obj)
             except Exception:
                 encoded_obj = str(obj)
         else:
-            encoded_obj = simplejson.JSONEncoder.default(self, obj)
+            encoded_obj = json.JSONEncoder.default(self, obj)
         return encoded_obj
 
 
@@ -44,7 +43,7 @@ class BaseSerializer():
             out = []
             for obj in obj_or_list:
                 out.append(self.to_dict(obj, include_related))
-        return simplejson.dumps(out, cls=CustomEncoder)
+        return json.dumps(out, cls=CustomEncoder, indent=4)
 
 
 class BillSerializer(BaseSerializer):

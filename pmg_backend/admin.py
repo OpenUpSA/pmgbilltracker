@@ -13,17 +13,17 @@ class BillView(ModelView):
     page_size = 50
     form_excluded_columns = ('entries', )
     form_overrides = dict(bill_type=SelectField, status=SelectField, objective=TextAreaField)
-    form_args = dict(
+    form_args = {
         # Pass the choices to the `SelectField`
-        bill_type=dict(
-            choices=[
+        "bill_type" : {
+            "choices" : [
                 ("Section 75 (Ordinary Bills not affecting the provinces)", "Section 75 (Ordinary Bills not affecting the provinces)"),
                 ("Section 76 (Ordinary Bills affecting the provinces)", "Section 76 (Ordinary Bills affecting the provinces)"),
                 ("Other", "Other"),
-                ]
-        ),
-        status=dict(
-            choices=[
+            ]
+        },
+        "status" : {
+            "choices":[
                 (None, "Unknown"),
                 ("na", "In progress - NA"),
                 ("ncop", "In progress - NCOP"),
@@ -31,23 +31,16 @@ class BillView(ModelView):
                 ("enacted", "Enacted"),
                 ("withdrawn", "Withdrawn")
             ]
-        )
-    )
+        }
+    }
 
 entry_types = [
-    "gazette",
-    "memorandum",
-    "greenpaper",
-    "whitepaper",
-    "draft",
-    "bill",
-    "pmg-meeting-report",
-    "public-hearing-report",
-    "committee-report",
-    "hansard-minutes",
-    "vote-count",
-    "other",
-    ]
+    "gazette", "memorandum", "greenpaper",
+    "whitepaper", "draft", "bill",
+    "pmg-meeting-report", "public-hearing-report",
+    "committee-report", "hansard-minutes",
+    "vote-count", "other",
+]
 
 entry_type_choices = []
 for entry_type in entry_types:
@@ -56,20 +49,20 @@ for entry_type in entry_types:
 
 class EntryView(ModelView):
     form_overrides = dict(type=SelectField, location=SelectField, notes=TextAreaField)
-    form_args = dict(
+    form_args = {
         # Pass the choices to the `SelectField`
-        type=dict(
-            choices=entry_type_choices
-        ),
-        location=dict(
-            choices=[
+        "type":{
+            "choices": entry_type_choices
+        },
+        "location":{
+            "choices": [
                 (None, "Unknown"),
                 (1, "National Assembly (NA)"),
                 (2, "National Council of Provinces (NCOP)"),
                 (3, "President's Office"),
-                ]
-        )
-    )
+            ]
+        }
+    }
     # TODO: paste raw url
 
 
@@ -118,7 +111,7 @@ class HomeView(AdminIndexView):
                     "three",
                     ]
             },
-            }
+        }
         return self.render('admin/home.html', stats=stats)
 
 
