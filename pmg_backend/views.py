@@ -6,6 +6,12 @@ from serializers import BillSerializer
 
 bill_serializer = BillSerializer()
 
+def make_json_response(bills, include_related=False):
+    response = make_response(bill_serializer.serialize(bills, include_related=True))
+    response.mimetype = "application/json"
+    response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend
+    return response
+
 @app.route('/')
 def autodiscover():
     """
@@ -23,48 +29,47 @@ def autodiscover():
 def bill_list(year=None):
 
     logger.debug("Bill list endpoint called")
+    bills = Bill.query\
+        .filter(Bill.bill_type=="B")\
+        .filter(Bill.code.isnot(None))\
+        .order_by(Bill.year.desc(), Bill.number.desc())\
+        .all()
+
     if year:
-        tmp = Bill.query.filter(Bill.year==int(year)).filter(Bill.bill_type=="B").filter(Bill.code.isnot(None)).order_by(Bill.number.desc()).all()
-        response = make_response(bill_serializer.serialize(tmp))
-    else:
-        tmp = Bill.query.filter(Bill.bill_type=="B").filter(Bill.code.isnot(None)).order_by(Bill.year.desc(), Bill.number.desc()).all()
-        response = make_response(bill_serializer.serialize(tmp))
-    response.mimetype = "application/json"
-    response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend
-    return response
+        bills = bills.filter(Bill.year==int(year))
+    return make_json_response(bills)
 
 
 @app.route('/pmb/')
 @app.route('/pmb/year/<year>/')
 def pmb_list(year=None):
 
+    pmb = Bill.query\
+        .filter(Bill.bill_type=="PMB")\
+        .order_by(Bill.number.desc())\
+        .all()
+
     logger.debug("PMB list endpoint called")
     if year:
-        tmp = Bill.query.filter(Bill.year==int(year)).filter(Bill.bill_type=="PMB").order_by(Bill.number.desc()).all()
-        response = make_response(bill_serializer.serialize(tmp))
-    else:
-        tmp = Bill.query.filter(Bill.bill_type=="PMB").order_by(Bill.year.desc(), Bill.number.desc()).all()
-        response = make_response(bill_serializer.serialize(tmp))
-    response.mimetype = "application/json"
-    response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend
-    return response
-
+        pmb = pmb.filter(Bill.year==int(year))
+    return make_json_response(pmb)
 
 @app.route('/draft/')
 @app.route('/draft/year/<year>/')
 def draft_list(year=None):
 
     logger.debug("Draft list endpoint called")
+    bills = Bill.query\
+        .filter(Bill.code==None)\
+        .order_by(Bill.number.desc())\
+        .all()
+
     # TODO: set "draft" as a special bill_type
     if year:
-        tmp = Bill.query.filter(Bill.year==int(year)).filter(Bill.code==None).order_by(Bill.number.desc()).all()
-        response = make_response(bill_serializer.serialize(tmp, include_related=True))
+        bills = bills.filter(Bill.year==int(year))
+        return make_json_response(bilss, include_related=True)
     else:
-        tmp = Bill.query.filter(Bill.code==None).order_by(Bill.year.desc(), Bill.number.desc()).all()
-        response = make_response(bill_serializer.serialize(tmp))
-    response.mimetype = "application/json"
-    response.headers.add('Access-Control-Allow-Origin', "*")  # allow for ajax requests from frontend
-    return response
+        return make_json_response(bills)
 
 
 @app.route('/current/')
