@@ -9,51 +9,48 @@ from dateutil import parser as date_parser
 import csv
 from pmg_scrapers import logger
 
-
 def find_current_bills():
     """
     Update status of most recent set of bills from http://pmg.org.za/billsstatus/proceedings, via
     the csv at /data/current_status.csv
     """
 
+    data = []
     with open("../data/current_status.csv", 'Ur') as f:
-        data = list(list(rec) for rec in csv.reader(f, delimiter=','))
+        reader = csv.reader(f)
+        headers = reader.next()
 
-    for i in range(len(data)):
+        for i, row in enumerate(reader):
 
-        # ignore column title row
-        if i==0:
-            continue
+            entry = row
 
-        entry = data[i]
+            # fix bill types
+            if entry[0].startswith("PM"):
+                entry[0] = "PMB" + entry[0][2::]
+            elif not entry[0].startswith("B"):
+                entry[0] = "B" + entry[0]
+            tmp_code = entry[0]
+            tmp_status = entry[1].lower()
 
-        # fix bill types
-        if entry[0].startswith("PM"):
-            entry[0] = "PMB" + entry[0][2::]
-        elif not entry[0].startswith("B"):
-            entry[0] = "B" + entry[0]
-        tmp_code = entry[0]
-        tmp_status = entry[1].lower()
+            # clean bill code
+            tmp = analyze_bill_code(tmp_code)
+            code = tmp["code"]
 
-        # clean bill code
-        tmp = analyze_bill_code(tmp_code)
-        code = tmp["code"]
+            logger.info(code + " " + str(entry))
 
-        logger.info(code + " " + str(entry))
+            bill = Bill.query.filter(Bill.code==code).first()
+            available_status = {
+                "act": "enacted",
+                "unknown": None,
+                "pc": "na",
+                "sc": "ncop",
+                "intro": "na",
+            }
 
-        bill = Bill.query.filter(Bill.code==code).first()
-        available_status = {
-            "act": "enacted",
-            "unknown": None,
-            "pc": "na",
-            "sc": "ncop",
-            "intro": "na",
-        }
-
-        if available_status.get(tmp_status):
-            tmp_status = available_status[tmp_status]
-        bill.status = tmp_status
-        db.session.add(bill)
+            if available_status.get(tmp_status):
+                tmp_status = available_status[tmp_status]
+            bill.status = tmp_status
+            db.session.add(bill)
     db.session.commit()
     return
 
