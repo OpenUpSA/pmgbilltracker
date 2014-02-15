@@ -1,7 +1,7 @@
 from pmg_backend import app
 from flask.ext.admin import Admin, form, BaseView, AdminIndexView, expose
 from flask.ext.admin.contrib.sqla import ModelView
-from models import *
+from models import Bill, Entry, Agent, db
 from flask.ext.admin.contrib.fileadmin import FileAdmin
 from wtforms.fields import SelectField, TextAreaField
 import datetime

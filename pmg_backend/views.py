@@ -1,6 +1,6 @@
 from flask import request, make_response, url_for, session, render_template
 from pmg_backend import app
-from models import *
+from models import Bill
 from pmg_backend import db, logger
 from serializers import BillSerializer
 
