@@ -29,6 +29,7 @@ try:
         'op': 'Log in'
     }
 except Exception:
+    import traceback; traceback.print_exc()
     logger.error("Configuration Error:")
     logger.error("Please ensure that a file called 'scraper_config.json' exists in the scraper directory, and that it contains" \
           "valid 'username' and 'password' parameters for logging in to the PMG website. This is needed for accessing " \
