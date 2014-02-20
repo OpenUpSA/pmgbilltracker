@@ -49,7 +49,7 @@
                     {% if entry.type in ["version", "act"] -%}
                         {% if loop.first %}Bill versions:<br>{% endif %}
                         <a target="_blank" href="{{ entry.url }}">
-                            <i class="fa fa-file-text"></i> {{ entry.title }}
+                            <i class="fa fa-file-text"></i> {{ entry.title }} - {{ entry.date }}
                         </a><br>
                     {%- endif %}
                 {% endfor %}
