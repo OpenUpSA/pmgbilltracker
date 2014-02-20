@@ -82,7 +82,7 @@ class ReportScraper(object):
 
         for (j, (date, title, href_report)) in enumerate(self.next_report):
             logger.debug("\t\t" + str(date) + " - " + title)
-            time.sleep(0.25)  # avoid flooding the server with too many requests
+            time.sleep(3.00)  # avoid flooding the server with too many requests
             tmp_url = href_report
             html = scrapertools.URLFetcher(tmp_url).html
             soup = BeautifulSoup(html)
@@ -118,9 +118,7 @@ class ReportScraper(object):
         committees = Agent.query.filter(Agent.type == "committee").all()
         shuffle(committees)  # randomize the order, just to keep things interesting
         tmp_count = len(committees)
-        i = 0
-        for committee in committees:
-            i += 1
+        for i, committee in enumerate(committees):
             self.current_committee = committee
             self.current_url = committee.url
             self.current_page = scrapertools.URLFetcher(self.current_url).html
@@ -128,7 +126,7 @@ class ReportScraper(object):
 
             self.scrape_committee()
             # give some progress feedback
-            logger.info(str(i) + " out of " + str(tmp_count) + " committees' reports have been scraped.")
+            logger.info(str(i + 1) + " out of " + str(tmp_count) + " committees' reports have been scraped.")
             logger.info(json.dumps(self.stats, indent=4))
 
             # commit entries to database, once per committee
