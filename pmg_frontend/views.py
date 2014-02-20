@@ -113,5 +113,8 @@ def detail(bill_id=None):
     api_url = url("bill", str(bill_id))
     r = requests.get(api_url)
     bill = r.json()
+    entries = bill["entries"]
+    entries_without_versions = [entry for entry in entries if entry["type"] != "version"]
+    bill["entries"] = entries_without_versions
 
     return render_template('detail.html', bill=bill)
