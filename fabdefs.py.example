@@ -1,0 +1,4 @@
+from fabric.api import env
+env.hosts = ["bills.pmg.org.za"]
+env.port = 2222
+env.user = 'adi'
