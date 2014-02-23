@@ -45,13 +45,11 @@
             {#            {% endif %}#}
 
             <div id="version-container" class="pull-right">
-                {% for entry in bill.entries %}
-                    {% if entry.type in ["version", "act"] -%}
-                        {% if loop.first %}Bill versions:<br>{% endif %}
-                        <a target="_blank" href="{{ entry.url }}">
-                            <i class="fa fa-file-text"></i> {{ entry.title }} - {{ entry.date }}
-                        </a><br>
-                    {%- endif %}
+                {% for entry in bill.versions %}
+                    {% if loop.first %}Bill versions:<br>{% endif %}
+                    <a target="_blank" href="{{ entry.url }}">
+                        <i class="fa fa-file-text"></i> {{ entry.title }} - {{ entry.date }}
+                    </a><br>
                 {% endfor %}
             </div>
         </div>
