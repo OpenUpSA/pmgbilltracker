@@ -56,10 +56,10 @@ class EntryView(ModelView):
         },
         "location":{
             "choices": [
-                (None, "Unknown"),
-                (1, "National Assembly (NA)"),
-                (2, "National Council of Provinces (NCOP)"),
-                (3, "President's Office"),
+                ("null", "Unknown"),
+                ("1", "National Assembly (NA)"),
+                ("2", "National Council of Provinces (NCOP)"),
+                ("3", "President's Office"),
             ]
         }
     }
