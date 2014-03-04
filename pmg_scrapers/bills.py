@@ -84,8 +84,6 @@ class BillScraper(object):
                     bill.year = bill_data['year']
                     self.stats['new_drafts'] += 1
                 bill.bill_type = bill_data['type']
-                if bill_data.get('introduced_by'):
-                    bill.introduced_by = bill_data['introduced_by']
                 db.session.add(bill)
                 self.stats['total_drafts'] += 1
 
@@ -98,8 +96,6 @@ class BillScraper(object):
                     bill.code = bill_code
                     self.stats['new_bills'] += 1
                 bill.name = bill_data['bill_name']
-                if bill_data.get('introduced_by'):
-                    bill.introduced_by = bill_data['introduced_by']
                 bill.year = bill_data['year']
                 bill.bill_type = bill_data['type']
                 bill.number = bill_data['number']
@@ -159,8 +155,6 @@ class BillScraper(object):
         parts = text.split("-")
         tmp = "-".join(parts[1::]).strip()  # disregards the bill number, just use the rest of the text
         if "[" in tmp and "]" in tmp:
-            introduced_by = tmp[tmp.find("[")+1:tmp.find("]")]  # extract info in square brackets
-            self.current_bill["introduced_by"] = introduced_by.strip()
             tmp = tmp[0:tmp.find("[")].strip()  # throw away extracted info
         self.current_bill["bill_name"] = tmp
 
