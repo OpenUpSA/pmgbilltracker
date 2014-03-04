@@ -37,7 +37,7 @@ class BillView(ModelView):
 entry_types = [
     "gazette", "memorandum", "greenpaper",
     "whitepaper", "draft", "bill",
-    "pmg-meeting-report", "public-hearing-report",
+    "pmg-meeting-report", "public-hearing",
     "committee-report", "hansard-minutes",
     "vote-count", "other",
 ]

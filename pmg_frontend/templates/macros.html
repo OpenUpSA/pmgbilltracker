@@ -73,7 +73,7 @@
 {%- endmacro %}
 
 {% macro render_entry(entry) -%}
-    <div class="bill-history-entry{% if entry.type == "public-hearing-report" %} public-hearing{% endif %}">
+    <div class="bill-history-entry{% if entry.type == "public-hearing" %} public-hearing{% endif %}">
         <p class="entry-date text-muted pull-left">{{ entry.date }}</p>
         {% if entry.type in ["version", "act"] -%}
             <p class="bill-version">
@@ -84,14 +84,14 @@
             </p>
         {%- else %}
             <p class="entry">
-                {% if entry.type == "public-hearing-report" %}
+                {% if entry.type == "public-hearing" %}
                     <a href="{{ entry.url }}" target="_blank">
                         <span class="label label-success pull-right" style="margin-right: 25px;">Public participation</span>
                     </a>
                     <strong>
                 {% endif %}
                 <a href="{{ entry.url }}" target="_blank">{{ entry.title }}</a>
-                {% if entry.type == "public-hearing-report" %}
+                {% if entry.type == "public-hearing" %}
                     </strong>
                 {% endif %}
                 {% if entry.description %}
