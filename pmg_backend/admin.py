@@ -35,11 +35,12 @@ class BillView(ModelView):
     }
 
 entry_types = [
+    "other",
     "gazette", "memorandum", "greenpaper",
     "whitepaper", "draft", "bill",
     "pmg-meeting-report", "public-hearing",
     "committee-report", "hansard-minutes",
-    "vote-count", "other",
+    "vote-count",
 ]
 
 entry_type_choices = []
@@ -61,7 +62,7 @@ class EntryView(ModelView):
                 ("2", "National Council of Provinces (NCOP)"),
                 ("3", "President's Office"),
             ]
-        }
+        },
     }
     # TODO: paste raw url
 

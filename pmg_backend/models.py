@@ -101,9 +101,9 @@ class Entry(db.Model):
     entry_id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
 
-    type = db.Column(db.String(100))
+    type = db.Column(db.String(100), nullable=False)
     url = db.Column(db.String(500))
-    title = db.Column(db.String(500))
+    title = db.Column(db.String(500), nullable=False)
     description = db.Column(db.String(1000))
 
     location = db.Column(db.Integer, nullable=True)
