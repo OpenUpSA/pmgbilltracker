@@ -45,15 +45,9 @@ class Bill(db.Model):
     bill_type = db.Column(db.String(100))
     year = db.Column(db.Integer)
     number = db.Column(db.Integer)
-    introduced_by = db.Column(db.String(500))
 
     objective = db.Column(db.String(1000))
     status = db.Column(db.String(100))
-
-    white_paper = db.Column(db.String(200))
-    green_paper = db.Column(db.String(200))
-    draft = db.Column(db.String(200))
-    gazette = db.Column(db.String(200))
 
     @classproperty
     def regular_bills(cls):
