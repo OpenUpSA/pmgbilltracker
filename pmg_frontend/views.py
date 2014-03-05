@@ -113,10 +113,18 @@ def detail(bill_id=None):
     api_url = url("bill", str(bill_id))
     r = requests.get(api_url)
     bill = r.json()
+
     entries = bill["entries"]
+
+    # separate special entries from the rest of the list
     version_types = ["version", "act"]
-    entries_without_versions = [entry for entry in entries if entry["type"] not in version_types]
+    special_types = ["gazette", "whitepaper", "memorandum", "greenpaper", "draft"]
+
+    bill["entries"] = [entry for entry in entries if entry["type"] not in version_types + special_types]
+
     bill["versions"] = [entry for entry in entries if entry["type"] in version_types]
-    bill["entries"] = entries_without_versions
+    special_entries = [entry for entry in entries if entry["type"] in special_types]
+    for entry in special_entries:
+        bill[entry["type"]] = entry
 
     return render_template('detail.html', bill=bill)

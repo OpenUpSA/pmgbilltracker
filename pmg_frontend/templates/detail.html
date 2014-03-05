@@ -14,35 +14,9 @@
             {#                <p>{{ bill.bill_type }}</p>#}
             {#            {%- endif %}#}
 
-            {% if bill.introduced_by -%}
-                <p>Introduced by: {{ bill.introduced_by }}</p>
-            {%- endif %}
-
             {% if bill.objective -%}
                 <p class="lead">{{ bill.objective }}</p>
             {%- endif %}
-
-
-            {% if bill.green_paper %}
-                <a class="btn btn-sm btn-default pull-right bill-link" role="button" target="_blank" href="/{{ bill.green_paper }}">
-                    <i class="fa fa-file-text"></i> Green Paper
-                </a>
-            {% endif %}
-            {% if bill.white_paper %}
-                <a class="btn btn-sm btn-default pull-right bill-link" role="button" target="_blank" href="/{{ bill.white_paper }}">
-                    <i class="fa fa-file-text"></i> White Paper
-                </a>
-            {% endif %}
-            {% if bill.draft %}
-                <a class="btn btn-sm btn-default pull-right bill-link" role="button" target="_blank" href="/{{ bill.draft }}">
-                    <i class="fa fa-file-text"></i> Draft
-                </a>
-            {% endif %}
-            {#            {% if bill.gazette %}#}
-            {#                <a class="btn btn-sm btn-default pull-right bill-link" role="button" target="_blank" href="/{{ bill.gazette }}">#}
-            {#                    <i class="fa fa-file-text"></i> Gazette#}
-            {#                </a>#}
-            {#            {% endif %}#}
 
             <div id="version-container" class="pull-right">
                 {% for entry in bill.versions %}
@@ -101,6 +75,17 @@
     {% if bill.entries %}
         <h2>Bill history</h2>
         <hr>
+
+        {% for type in ["gazette", "whitepaper", "memorandum", "greenpaper", "draft"] %}
+            {% if bill.get(type) %}
+                <a href="{{ bill[type].url }}">
+                <span class="special-entry label label-default">
+                <i class="fa fa-file-text"></i> {{ type | title}}
+                </span>
+                </a>
+            {% endif %}
+        {% endfor %}
+
         {{ render_entries(bill.entries) }}
     {% else %}
         <p class="lead text-muted">There are no events to display.</p>
