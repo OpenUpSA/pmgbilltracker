@@ -8,6 +8,8 @@ import datetime
 
 
 class BillView(ModelView):
+    can_create = False
+    can_delete = False
     column_list = ('name', 'code', 'bill_type', 'status')
     column_searchable_list = ('code', 'name')
     page_size = 50
@@ -64,56 +66,13 @@ class EntryView(ModelView):
             ]
         },
     }
-    # TODO: paste raw url
 
 
 class HomeView(AdminIndexView):
     @expose("/")
     def index(self):
-        stats = {
-            "date": datetime.date.today(),
-            "start_time": datetime.time(hour=1, minute=0),
-            "duration": datetime.timedelta(hours=1, minutes=23),
-            "bills": {
-                "total_bills": 111,
-                "total_drafts": 34,
-                "new_bills": 1,
-                "new_drafts": 3,
-                "errors": [
-                    "one",
-                    "two",
-                    "three",
-                    ]
-            },
-            "committees": {
-                "total": 111,
-                "new": 1,
-                "errors": [
-                    "one",
-                    "two",
-                    "three",
-                    ]
-            },
-            "committee_meeting_reports": {
-                "total": 111,
-                "new": 1,
-                "errors": [
-                    "one",
-                    "two",
-                    "three",
-                    ]
-            },
-            "hansards": {
-                "total": 111,
-                "new": 1,
-                "errors": [
-                    "one",
-                    "two",
-                    "three",
-                    ]
-            },
-        }
-        return self.render('admin/home.html', stats=stats)
+
+        return self.render('admin/home.html')
 
 
 admin = Admin(app, name='PMG Bill Tracker', base_template='admin/my_master.html', index_view=HomeView(name='Home'))
