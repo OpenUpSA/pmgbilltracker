@@ -1,0 +1,26 @@
+{% extends 'admin/model/list.html' %}
+
+{% macro render_entries(model, column) %}
+    <a href="/admin/entry/?">
+    related entries
+    </a>
+{% endmacro %}
+
+{% macro render_location(model, column) %}
+    {% set locations = {
+    "1": "National Assembly (NA)",
+    "2": "National Council of Provinces (NCOP)",
+    "3": "President's Office"} %}
+    {% if locations.get(model[column]|string) %}
+    {{ locations[model[column]|string]}}
+    {% else %}
+    Unknown
+    {% endif %}
+{% endmacro %}
+
+{% macro render_date(model, column) %}
+    <nobr>{{ model[column]|string|truncate(10, true, "") }}</nobr>
+{% endmacro %}
+
+
+
