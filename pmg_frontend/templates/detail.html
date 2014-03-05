@@ -18,12 +18,14 @@
                 <p class="lead">{{ bill.objective }}</p>
             {%- endif %}
 
-            <div id="version-container" class="pull-right">
+            <div id="version-container">
                 {% for entry in bill.versions %}
-                    {% if loop.first %}Bill versions:<br>{% endif %}
+                    {% if loop.first %}<p>Bill versions:</p>{% endif %}
+                    <span class="label label-info bill-version" data-toggle="tooltip" title="{{ entry.date }}">
                     <a target="_blank" href="{{ entry.url }}">
-                        <i class="fa fa-file-text"></i> {{ entry.title }} - {{ entry.date }}
-                    </a><br>
+                        <i class="fa fa-file-text"></i> {{ entry.title }}
+                    </a>
+                    </span>
                 {% endfor %}
             </div>
         </div>
@@ -92,3 +94,12 @@
     {% endif %}
 
 {% endblock page %}
+
+{% block javascript %}
+    <script type="application/javascript">
+
+        $( document ).ready(function(){
+            $(".bill-version").tooltip({})
+        })
+    </script>
+{% endblock %}

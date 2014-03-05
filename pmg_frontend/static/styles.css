@@ -226,3 +226,14 @@ color: #999999;
     margin-left: 20px;
     padding: 5px;
 }
+
+.bill-version{
+    font-size: 1em;
+    margin-left: 10px;
+    margin-right: 0px;
+    padding: 5px;
+}
+
+.bill-version a{
+    color: #ffffff;
+}
