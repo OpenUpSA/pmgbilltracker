@@ -6,6 +6,10 @@
     </a>
 {% endmacro %}
 
+{% macro render_code(model, column) %}
+    <nobr>{{ model[column] }}</nobr>
+{% endmacro %}
+
 {% macro render_location(model, column) %}
     {% set locations = {
     "1": "National Assembly (NA)",

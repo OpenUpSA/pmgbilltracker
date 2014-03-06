@@ -22,6 +22,7 @@ class BillView(MyModelView):
     column_searchable_list = ('code', 'name')
     column_formatters = dict(
         entries=macro('render_entries'),
+        code=macro('render_code'),
         )
     form_overrides = dict(bill_type=SelectField, status=SelectField, objective=TextAreaField)
     form_args = {
