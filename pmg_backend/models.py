@@ -113,7 +113,7 @@ class Entry(db.Model):
     bills = db.relationship('Bill', secondary=entry_bills_table, backref=backref("entries", order_by=(date, title)))
 
     def __str__(self):
-        return str(self.entry_id) + " - " + str(self.title)
+        return str(self.entry_id) + " - " + self.title
 
     def __repr__(self):
         return '<Entry: %r>' % str(self)
