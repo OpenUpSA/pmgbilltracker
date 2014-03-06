@@ -15,8 +15,9 @@ def restart():
 
 def deploy():
     with cd("/var/www/bills.pmg.org.za"):
-        run("git pull origin master")
-
+        # run("git pull origin master")
+        run("mv config_staging/config_backend.py instance/config_backend.py")
+        run("mv config_staging/config_backend.py instance/config_frontend.py")
     restart()
 
 #def run_scraper():
