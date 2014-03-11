@@ -10,10 +10,14 @@
     <nobr>{{ model[column] }}</nobr>
 {% endmacro %}
 
+{% macro render_url(model, column) %}
+    <a href="{{ model[column] }}" target="_blank">{{ model[column] }}</a>
+{% endmacro %}
+
 {% macro render_location(model, column) %}
     {% set locations = {
-    "1": "National Assembly (NA)",
-    "2": "National Council of Provinces (NCOP)",
+    "1": "NA",
+    "2": "NCOP",
     "3": "President's Office"} %}
     {% if locations.get(model[column]|string) %}
     {{ locations[model[column]|string]}}

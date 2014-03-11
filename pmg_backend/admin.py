@@ -62,9 +62,11 @@ for entry_type in entry_types:
 
 class EntryView(MyModelView):
     list_template = 'admin/custom_list_template.html'
+    column_list = ('date', 'type', 'title', 'description', 'url', 'agent', 'location')
     column_formatters = dict(
         location=macro('render_location'),
         date=macro('render_date'),
+        url=macro('render_url'),
         )
     form_overrides = dict(type=SelectField, location=SelectField, notes=TextAreaField)
     form_args = {

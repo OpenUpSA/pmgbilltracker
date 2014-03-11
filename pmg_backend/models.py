@@ -87,9 +87,9 @@ class Agent(db.Model):
     location = db.Column(db.Integer)
 
     def __str__(self):
-        tmp = str(self.agent_id) + " - (" + self.type + ")"
+        tmp = "(" + self.type + ")"
         if self.name:
-            tmp += " " + self.name
+            tmp = self.name + " " + tmp
         return tmp
 
     def __repr__(self):
