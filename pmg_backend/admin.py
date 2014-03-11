@@ -6,7 +6,7 @@ from flask.ext.admin.contrib.fileadmin import FileAdmin
 from flask.ext.admin.model.template import macro
 from wtforms.fields import SelectField, TextAreaField
 import datetime
-
+from flask.ext.admin.form import rules
 
 class MyModelView(ModelView):
     can_create = True
@@ -62,13 +62,21 @@ for entry_type in entry_types:
 
 class EntryView(MyModelView):
     list_template = 'admin/custom_list_template.html'
-    column_list = ('date', 'type', 'title', 'description', 'url', 'agent', 'location')
+    form_create_rules = (
+        'date',
+        'location',
+        'agent',
+        'type',
+        'title',
+        'description',
+        'url')
+    form_edit_rules = form_create_rules
     column_formatters = dict(
         location=macro('render_location'),
         date=macro('render_date'),
         url=macro('render_url'),
         )
-    form_overrides = dict(type=SelectField, location=SelectField, notes=TextAreaField)
+    form_overrides = dict(type=SelectField, location=SelectField, description=TextAreaField)
     form_args = {
         # Pass the choices to the `SelectField`
         "type":{
