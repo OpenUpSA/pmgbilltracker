@@ -75,7 +75,7 @@
 {% macro render_entry(entry) -%}
     <div class="bill-history-entry{% if entry.type == "public-hearing" %} public-hearing{% endif %}">
         <p class="entry-date text-muted pull-left">{{ entry.date }}</p>
-        {% if entry.type in ["version", "act"] -%}
+        {% if entry.type in ["bill-version", "act"] -%}
             <p class="bill-version">
                 New version introduced.
                 <a class="btn btn-primary btn-sm pull-right" role="button" target="_blank" href="{{ entry.url }}">

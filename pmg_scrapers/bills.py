@@ -181,7 +181,7 @@ class BillScraper(object):
                 "url": link["href"],
                 "title": link.text,
                 "date": date_parser.parse(fragment.findAll("td")[1].text).date(),
-                "entry_type": "version",
+                "entry_type": "bill-version",
                 }
             # set entry_type appropriately if this bill has already been enacted
             if "as enacted" in link.text:

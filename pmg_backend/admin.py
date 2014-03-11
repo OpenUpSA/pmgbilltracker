@@ -47,9 +47,9 @@ class BillView(MyModelView):
     }
 
 entry_types = [
-    "other",
+    "default",
     "gazette", "memorandum", "greenpaper",
-    "whitepaper", "draft", "bill",
+    "whitepaper", "draft", "bill-version", "act",
     "pmg-meeting-report", "public-hearing",
     "committee-report", "hansard-minutes",
     "vote-count",
