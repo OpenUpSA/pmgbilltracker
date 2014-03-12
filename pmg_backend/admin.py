@@ -174,9 +174,7 @@ class HomeView(AdminIndexView):
         if login.current_user.is_authenticated():
             return redirect(url_for('.index'))
         link = '<p>Don\'t have an account? <a href="' + url_for('.register_view') + '">Click here to register.</a></p>'
-        self._template_args['form'] = form
-        self._template_args['link'] = link
-        return self.render('admin/home.html')
+        return self.render('admin/home.html', form=form, link=link)
 
     @expose('/register/', methods=('GET', 'POST'))
     def register_view(self):
@@ -194,9 +192,7 @@ class HomeView(AdminIndexView):
             login.login_user(user)
             return redirect(url_for('.index'))
         link = '<p>Already have an account? <a href="' + url_for('.login_view') + '">Click here to log in.</a></p>'
-        self._template_args['form'] = form
-        self._template_args['link'] = link
-        return self.render('admin/home.html')
+        return self.render('admin/home.html', form=form, link=link, register=True)
 
     @expose('/logout/')
     def logout_view(self):

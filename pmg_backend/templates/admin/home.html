@@ -3,7 +3,36 @@
     {{ super() }}
     <div class="row-fluid">
         <h1>PMG Bill Tracker ADMIN</h1>
-        <p class="lead">Allow people to keep track of a bill's history as it moves through parliament.</p>
-        <p>This Admin interface lets you manage the information related to the bills going through parliament.</p>
+        {% if not register %}
+            <p class="lead">Allow people to keep track of a bill's history as it moves through parliament.</p>
+            <p>This Admin interface lets you manage the information related to the bills going through parliament.</p>
+        {% endif %}
+    </div>
+
+    <div class="row-fluid">
+        {% if not current_user.is_authenticated() %}
+            <hr>
+            {% if register %}
+                <p class="lead">Please register by entering your details below.</p>
+            {% endif %}
+            <form method="POST" action="">
+                {{ form.hidden_tag() if form.hidden_tag }}
+                {% for f in form if f.type != 'CSRFTokenField' %}
+                    <div>
+                        {{ f.label }}
+                        {{ f }}
+                        {% if f.errors %}
+                            <ul>
+                                {% for e in f.errors %}
+                                    <li>{{ e }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button class="btn" type="submit">Submit</button>
+            </form>
+            {{ link | safe }}
+        {% endif %}
     </div>
 {% endblock body %}
