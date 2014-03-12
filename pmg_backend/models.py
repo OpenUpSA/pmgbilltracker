@@ -7,6 +7,7 @@ class classproperty(object):
     def __get__(self, obj, owner):
         return self.f(owner)
 
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True)
