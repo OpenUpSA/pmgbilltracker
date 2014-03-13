@@ -6,7 +6,7 @@ from flask.ext.admin.model.template import macro
 from wtforms.fields import SelectField, TextAreaField
 from flask.ext.admin.form import rules
 from wtforms import form, fields, validators
-from flask import request, url_for, redirect
+from flask import request, url_for, redirect, flash
 from flask.ext import login
 
 # Define login and registration forms (for flask-login)
@@ -28,23 +28,17 @@ class LoginForm(form.Form):
 
 
 class RegistrationForm(form.Form):
-    email = fields.TextField(validators=[validators.required()])
-    password = fields.PasswordField(validators=[validators.required()])
+    email = fields.TextField(validators=[validators.required(), validators.email()])
+    password = fields.PasswordField(
+        validators=[
+            validators.required(),
+            validators.length(min=6, message="Your password needs to have at least six characters.")
+        ]
+    )
 
     def validate_login(self, field):
         if db.session.query(User).filter_by(email=self.email.data).count() > 0:
             raise validators.ValidationError('Duplicate users')
-
-
-# Initialize flask-login
-def init_login():
-    login_manager = login.LoginManager()
-    login_manager.init_app(app)
-
-    # Create user loader function
-    @login_manager.user_loader
-    def load_user(user_id):
-        return db.session.query(User).get(user_id)
 
 
 class MyModelView(ModelView):
@@ -169,7 +163,11 @@ class HomeView(AdminIndexView):
         form = LoginForm(request.form)
         if helpers.validate_form_on_submit(form):
             user = form.get_user()
-            login.login_user(user)
+            if user:
+                login.login_user(user)
+            else:
+                flash('Username or Password is invalid' , 'error')
+                return redirect(url_for('.login_view'))
 
         if login.current_user.is_authenticated():
             return redirect(url_for('.index'))
@@ -186,11 +184,15 @@ class HomeView(AdminIndexView):
             form.password.data = hash(form.password.data)
             form.populate_obj(user)
 
+            # activate the admin user
+            if user.email == 'info@pmg.org.za':
+                user.is_active = True
+
             db.session.add(user)
             db.session.commit()
 
-            login.login_user(user)
-            return redirect(url_for('.index'))
+            flash('Please wait for your new account to be activated.' , 'info')
+            return redirect(url_for('.login_view'))
         link = '<p>Already have an account? <a href="' + url_for('.login_view') + '">Click here to log in.</a></p>'
         return self.render('admin/home.html', form=form, link=link, register=True)
 
@@ -201,6 +203,16 @@ class HomeView(AdminIndexView):
 
 
 # Initialize flask-login
+def init_login():
+    login_manager = login.LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = ".login_view"
+
+    # Create user loader function
+    @login_manager.user_loader
+    def load_user(user_id):
+        return db.session.query(User).get(user_id)
+
 init_login()
 
 admin = Admin(app, name='PMG Bill Tracker', base_template='admin/my_master.html', index_view=HomeView(name='Home'))

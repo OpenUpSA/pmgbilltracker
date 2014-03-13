@@ -12,12 +12,14 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True)
     email = db.Column(db.String(120), unique=True)
+    password = db.Column(db.String(64))
+    is_active = db.Column(db.Boolean, default=False)
 
     def is_authenticated(self):
         return True
 
     def is_active(self):
-        return True
+        return self.is_active
 
     def is_anonymous(self):
         return False
