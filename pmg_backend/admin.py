@@ -8,6 +8,7 @@ from flask.ext.admin.form import rules
 from wtforms import form, fields, validators
 from flask import request, url_for, redirect, flash
 from flask.ext import login
+from sqlalchemy import func
 
 # Define login and registration forms (for flask-login)
 class LoginForm(form.Form):
@@ -44,11 +45,39 @@ class RegistrationForm(form.Form):
 class MyModelView(ModelView):
     can_create = True
     can_edit = True
-    can_delete = False
+    can_delete = True
     page_size = 50
+    column_exclude_list = ['is_deleted', ]
 
     def is_accessible(self):
         return login.current_user.is_authenticated()
+
+    def get_query(self):
+        """
+        Add filter to return only non-deleted records.
+        """
+        return self.session.query(self.model).filter(self.model.is_deleted==False)
+
+    def get_count_query(self):
+        """
+        Add filter to count only non-deleted records.
+        """
+        return self.session.query(func.count('*')).select_from(self.model).filter(self.model.is_deleted==False)
+
+    def delete_model(self, model):
+        try:
+            self.on_model_delete(model)
+            self.session.flush()
+            model.delete()
+            self.session.add(model)
+            self.session.commit()
+            return True
+        except Exception as ex:
+            if self._debug:
+                raise
+            flash('Failed to delete model. %(error)s' % str(ex), 'error')
+            self.session.rollback()
+            return False
 
 
 class BillView(MyModelView):
@@ -191,7 +220,7 @@ class HomeView(AdminIndexView):
             db.session.add(user)
             db.session.commit()
 
-            flash('Please wait for your new account to be activated.' , 'info')
+            flash('Please wait for your new account to be activated.', 'info')
             return redirect(url_for('.login_view'))
         link = '<p>Already have an account? <a href="' + url_for('.login_view') + '">Click here to log in.</a></p>'
         return self.render('admin/home.html', form=form, link=link, register=True)

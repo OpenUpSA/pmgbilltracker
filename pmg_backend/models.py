@@ -13,7 +13,13 @@ class User(db.Model):
     username = db.Column(db.String(64), unique=True)
     email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(64))
+
     is_active = db.Column(db.Boolean, default=False)
+    is_deleted = db.Column(db.Boolean, default=False)
+
+    def delete(self):
+        self.is_active = False
+        self.is_deleted = False
 
     def is_authenticated(self):
         return True
@@ -41,7 +47,7 @@ entry_bills_table = db.Table(
 
 class Bill(db.Model):
 
-    __table_args__ = ( db.UniqueConstraint('code', 'year', 'name'), { } )
+    __table_args__ = (db.UniqueConstraint('code', 'year', 'name'), {})
     bill_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(500), nullable=False)
     code = db.Column(db.String(100))
@@ -51,6 +57,11 @@ class Bill(db.Model):
 
     objective = db.Column(db.String(1000))
     status = db.Column(db.String(100))
+
+    is_deleted = db.Column(db.Boolean, default=False)
+
+    def delete(self):
+        self.is_deleted = True
 
     @classproperty
     def regular_bills(cls):
@@ -89,6 +100,11 @@ class Agent(db.Model):
     url = db.Column(db.String(500))
     location = db.Column(db.Integer)
 
+    is_deleted = db.Column(db.Boolean, default=False)
+
+    def delete(self):
+        self.is_deleted = True
+
     def __str__(self):
         tmp = "(" + self.type + ")"
         if self.name:
@@ -103,17 +119,20 @@ class Entry(db.Model):
 
     entry_id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
-
     type = db.Column(db.String(100), nullable=False)
     url = db.Column(db.String(500))
     title = db.Column(db.String(500), nullable=False)
     description = db.Column(db.String(1000))
-
     location = db.Column(db.Integer, nullable=True)
+
+    is_deleted = db.Column(db.Boolean, default=False)
 
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'), nullable=True)
     agent = db.relationship('Agent')
     bills = db.relationship('Bill', secondary=entry_bills_table, backref=backref("entries", order_by=(date, title)))
+
+    def delete(self):
+        self.is_deleted = True
 
     def __str__(self):
         return str(self.entry_id) + " - " + self.title
