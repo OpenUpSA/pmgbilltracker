@@ -83,6 +83,15 @@ class MyModelView(ModelView):
 class BillView(MyModelView):
     can_create = False
     list_template = 'admin/custom_list_template.html'
+    form_create_rules = (
+        'name',
+        'code',
+        'bill_type',
+        'objective',
+        'status',
+        'entries'
+    )
+    form_edit_rules = form_create_rules
     column_list = ('name', 'code', 'bill_type', 'status', 'entries')
     column_searchable_list = ('code', 'name')
     column_formatters = dict(
@@ -90,6 +99,11 @@ class BillView(MyModelView):
         code=macro('render_code'),
         )
     form_overrides = dict(bill_type=SelectField, status=SelectField, objective=TextAreaField)
+    form_widget_args = {
+        'code':{
+            'disabled':True
+        }
+    }
     form_args = {
         # Pass the choices to the `SelectField`
         "bill_type" : {
@@ -111,7 +125,7 @@ class BillView(MyModelView):
                 ("enacted", "Enacted"),
                 ("withdrawn", "Withdrawn"),
                 ("lapsed", "Lapsed"),
-            ]
+                ]
         }
     }
 
