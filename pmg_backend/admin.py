@@ -160,10 +160,19 @@ class EntryView(MyModelView):
 
 class AgentView(MyModelView):
     list_template = 'admin/custom_list_template.html'
+    column_searchable_list = ('name', )
+    form_create_rules = (
+        'name',
+        'type',
+        'url',
+        'location',
+    )
+    form_edit_rules = form_create_rules
     column_formatters = dict(
         location=macro('render_location'),
+        url=macro('render_url'),
         )
-    form_overrides = dict(location=SelectField, )
+    form_overrides = dict(location=SelectField, type=SelectField)
     form_args = {
         # Pass the choices to the `SelectField`
         "location":{
@@ -172,6 +181,14 @@ class AgentView(MyModelView):
                 ("1", "National Assembly (NA)"),
                 ("2", "National Council of Provinces (NCOP)"),
                 ("3", "President's Office"),
+                ]
+        },
+        "type":{
+            "choices": [
+                ("committee", "Committee"),
+                ("minister", "Minister"),
+                ("president", "The President"),
+                ("house", "House of Parliament"),
                 ]
         },
         }

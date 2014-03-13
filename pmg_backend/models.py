@@ -96,7 +96,6 @@ class Agent(db.Model):
     agent_id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(500))
     name = db.Column(db.String(500))
-    short_name = db.Column(db.String(100))
     url = db.Column(db.String(500))
     location = db.Column(db.Integer)
 
