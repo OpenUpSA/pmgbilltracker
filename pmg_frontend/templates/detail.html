@@ -10,9 +10,9 @@
         <div class="container">
             <h1>{{ bill.name }}</h1>
 
-            {#            {% if bill.bill_type -%}#}
-            {#                <p>{{ bill.bill_type }}</p>#}
-            {#            {%- endif %}#}
+            {% if bill.bill_type -%}
+                <p class="pull-right">{{ bill.bill_type }}</p>
+            {%- endif %}
 
             {% if bill.objective -%}
                 <p class="lead">{{ bill.objective }}</p>

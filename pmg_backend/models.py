@@ -65,16 +65,15 @@ class Bill(db.Model):
 
     @classproperty
     def regular_bills(cls):
-        return cls.query.filter(Bill.bill_type=="B")
+        return cls.query.filter(Bill.code.startswith("B"))
 
     @classproperty
     def pmb(cls):
-        return cls.query.filter(Bill.bill_type=="PMB")
+        return cls.query.filter(Bill.code.startswith("PMB"))
 
     @classproperty
     def draft_bills(cls):
-        # TODO: set "draft" as a special bill_type
-        return cls.query.filter(Bill.code==None)
+        return cls.query.filter(Bill.bill_type=="Draft")
 
     @classproperty
     def current_bills(cls):

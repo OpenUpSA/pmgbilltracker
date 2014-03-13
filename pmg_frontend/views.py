@@ -78,6 +78,7 @@ def index(year=None, bill_type=None):
         "assent": ("submitted to the president", "label-warning"),
         "enacted": ("signed into law", "label-success"),
         "withdrawn": ("withdrawn", "label-default"),
+        "lapsed": ("lapsed", "label-default"),
         }
 
     return render_template(

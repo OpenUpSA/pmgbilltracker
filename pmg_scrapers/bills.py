@@ -83,7 +83,7 @@ class BillScraper(object):
                     bill.name = bill_data['bill_name']
                     bill.year = bill_data['year']
                     self.stats['new_drafts'] += 1
-                bill.bill_type = bill_data['type']
+                bill.bill_type = "Draft"
                 db.session.add(bill)
                 self.stats['total_drafts'] += 1
 
@@ -97,7 +97,6 @@ class BillScraper(object):
                     self.stats['new_bills'] += 1
                 bill.name = bill_data['bill_name']
                 bill.year = bill_data['year']
-                bill.bill_type = bill_data['type']
                 bill.number = bill_data['number']
                 db.session.add(bill)
                 self.stats['total_bills'] += 1

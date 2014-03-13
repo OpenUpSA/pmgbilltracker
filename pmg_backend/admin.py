@@ -94,19 +94,23 @@ class BillView(MyModelView):
         # Pass the choices to the `SelectField`
         "bill_type" : {
             "choices" : [
-                ("Section 75 (Ordinary Bills not affecting the provinces)", "Section 75 (Ordinary Bills not affecting the provinces)"),
-                ("Section 76 (Ordinary Bills affecting the provinces)", "Section 76 (Ordinary Bills affecting the provinces)"),
+                ("Draft", "Draft Bill"),
+                ("S74", "Section 74 (Constitutional amendments)"),
+                ("S75", "Section 75 (Ordinary Bills not affecting the provinces)"),
+                ("S76", "Section 76 (Ordinary Bills affecting the provinces)"),
+                ("S77", "Section 77 (Money Bills)"),
                 ("Other", "Other"),
                 ]
         },
         "status" : {
             "choices":[
-                (None, "Unknown"),
+                ("", "Unknown"),
                 ("na", "In progress - NA"),
                 ("ncop", "In progress - NCOP"),
                 ("assent", "Sent to the President"),
                 ("enacted", "Enacted"),
-                ("withdrawn", "Withdrawn")
+                ("withdrawn", "Withdrawn"),
+                ("lapsed", "Lapsed"),
             ]
         }
     }
