@@ -15,7 +15,7 @@ def restart():
 
 def deploy():
     with cd("/var/www/bills.pmg.org.za"):
-        run("git pull origin master")
+        run("git pull origin develop")
         sudo("mv config_staging/config_backend.py instance/config_backend.py")
         sudo("mv config_staging/config_frontend.py instance/config_frontend.py")
     restart()

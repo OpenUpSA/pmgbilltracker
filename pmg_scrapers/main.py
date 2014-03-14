@@ -101,7 +101,7 @@ if __name__ == "__main__":
     start_time = datetime.datetime.now()
     logger.info("Started at " + str(start_time))
 
-    # rebuild_db()
+    rebuild_db()
 
     scraper = PMGScraper()
     scraper.scrape_bills()
