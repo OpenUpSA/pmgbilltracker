@@ -46,8 +46,6 @@
     background-color: #eee;
 }
 
-
-
 .bill-status{
     margin-bottom: 10px;
 }
@@ -58,7 +56,7 @@
     border-style: solid;
     margin-top: 10px;
     margin-bottom: 10px;
-    padding-bottom: 10px;
+    padding-bottom: 30px;
     min-height: 135px;
 }
 
@@ -106,6 +104,10 @@
     background-color: greenyellow;
 }
 
+.location hr {
+    margin-top: 40px;
+}
+
 .stage{
     position: relative;
     padding-left: 95px;
@@ -116,7 +118,8 @@
 .stage-title{
     text-transform:uppercase;
     font-weight: bold;
-    margin-bottom: 5px;
+    padding-top: 5px;
+    margin-bottom: 10px;
 }
 
 .stage-icon{
