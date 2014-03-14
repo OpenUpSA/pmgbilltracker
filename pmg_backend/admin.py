@@ -92,10 +92,11 @@ class BillView(MyModelView):
         'entries'
     )
     form_edit_rules = form_create_rules
-    column_list = ('name', 'code', 'bill_type', 'status', 'entries')
+    column_list = ('name', 'code', 'bill_type', 'status', 'entries', 'related_docs')
     column_searchable_list = ('code', 'name')
     column_formatters = dict(
         entries=macro('render_entries'),
+        related_docs=macro('render_related_docs'),
         code=macro('render_code'),
         )
     form_overrides = dict(bill_type=SelectField, status=SelectField, objective=TextAreaField)
@@ -199,7 +200,7 @@ class EntryView(MyModelView):
         """
         query = self.session.query(self.model) \
             .filter(self.model.is_deleted==False) \
-            .filter(Entry.type.in_(related_doc_types))
+            .filter(Entry.type.in_(entry_types))
         if request.args.get('bill_id'):
             try:
                 bill = Bill.query.get(request.args['bill_id'])
@@ -242,13 +243,28 @@ class RelatedDocView(MyModelView):
         """
         Add filter to return only non-deleted records.
         """
-        return self.session.query(self.model).filter(self.model.is_deleted==False).filter(Entry.type.in_(related_doc_types))
+        query = self.session.query(self.model) \
+            .filter(self.model.is_deleted==False) \
+            .filter(Entry.type.in_(related_doc_types))
+        if request.args.get('bill_id'):
+            try:
+                bill = Bill.query.get(request.args['bill_id'])
+                self._template_args['filtered_bill'] = bill
+                query = query.filter(Entry.bills.any(bill_id=request.args['bill_id']))
+            except Exception, e:
+                pass
+        return query
 
     def get_count_query(self):
         """
         Add filter to count only non-deleted records.
         """
-        return self.session.query(func.count('*')).select_from(Entry).filter(Entry.is_deleted==False).filter(Entry.type.in_(related_doc_types))
+        query = self.session.query(func.count('*')).select_from(Entry) \
+            .filter(Entry.is_deleted==False) \
+            .filter(Entry.type.in_(related_doc_types))
+        if request.args.get('bill_id'):
+            query = query.filter(Entry.bills.any(bill_id=request.args['bill_id']))
+        return query
 
 
 class AgentView(MyModelView):

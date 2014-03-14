@@ -6,6 +6,12 @@
     </a>
 {% endmacro %}
 
+{% macro render_related_docs(model, column) %}
+    <a href="/admin/related-docs/?bill_id={{ model.bill_id }}">
+        related documents
+    </a>
+{% endmacro %}
+
 {% macro render_code(model, column) %}
     <nobr>{{ model[column] }}</nobr>
 {% endmacro %}
@@ -41,7 +47,7 @@
 
 {% block body %}
     {% if filtered_bill %}
-        <h3>Entries: {{ filtered_bill.code }} - {{ filtered_bill.name }}</h3>
+        <h3>{{ filtered_bill.code }} - {{ filtered_bill.name }}</h3>
     {% endif %}
     {{ super() }}
 {% endblock %}
