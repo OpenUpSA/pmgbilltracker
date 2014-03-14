@@ -2,7 +2,7 @@
 
 {% macro render_entries(model, column) %}
     <a href="/admin/entry/?">
-    related entries
+        related entries
     </a>
 {% endmacro %}
 
@@ -11,18 +11,21 @@
 {% endmacro %}
 
 {% macro render_url(model, column) %}
-    <a href="{{ model[column] }}" target="_blank">{{ model[column] }}</a>
+    {% if model[column] %}
+        <a href="{{ model[column] }}" target="_blank">{{ model[column] }}</a>
+    {% endif %}
 {% endmacro %}
 
 {% macro render_location(model, column) %}
     {% set locations = {
     "1": "NA",
     "2": "NCOP",
-    "3": "President's Office"} %}
+    "3": "NA+NCOP",
+    "4": "President's Office"} %}
     {% if locations.get(model[column]|string) %}
-    {{ locations[model[column]|string]}}
+        {{ locations[model[column]|string]}}
     {% else %}
-    Unknown
+        Unknown
     {% endif %}
 {% endmacro %}
 

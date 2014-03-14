@@ -73,31 +73,36 @@
 {%- endmacro %}
 
 {% macro render_entry(entry) -%}
-    <div class="bill-history-entry{% if entry.type == "public-hearing" %} public-hearing{% endif %}">
-        <p class="entry-date text-muted pull-left">{{ entry.date }}</p>
-        {% if entry.type in ["bill-version", "act"] -%}
-            <p class="bill-version">
-                New version introduced.
-                <a class="btn btn-primary btn-sm pull-right" role="button" target="_blank" href="{{ entry.url }}">
-                    <i class="fa fa-file-text"></i> {{ entry.title }}
-                </a>
-            </p>
-        {%- else %}
-            <p class="entry">
-                {% if entry.type == "public-hearing" %}
-                    <a href="{{ entry.url }}" target="_blank">
-                        <span class="label label-success pull-right" style="margin-right: 25px;">Public participation</span>
-                    </a>
-                    <strong>
-                {% endif %}
-                <a href="{{ entry.url }}" target="_blank">{{ entry.title }}</a>
-                {% if entry.type == "public-hearing" %}
-                    </strong>
-                {% endif %}
-                {% if entry.description %}
-                    <br>{{ entry.description }}
-                {% endif %}
-            </p>
-        {%- endif %}
-    </div>
+<div class="bill-history-entry{% if entry.type == "public-hearing" %} public-hearing{% endif %}">
+    <p class="entry-date text-muted pull-left">{{ entry.date }}</p>
+    {% if entry.type in ["bill-version", "act"] -%}
+        <p class="bill-version">
+            New version introduced.
+            <a class="btn btn-primary btn-sm pull-right" role="button" target="_blank" href="{{ entry.url }}">
+                <i class="fa fa-file-text"></i> {{ entry.title }}
+            </a>
+        </p>
+    {%- else %}
+        <p class="entry">
+        {% if entry.type == "public-hearing" %}
+            <a href="{{ entry.url }}" target="_blank">
+                <span class="label label-success pull-right" style="margin-right: 25px;">Public participation</span>
+            </a>
+            <strong>
+        {% endif %}
+        {% if entry.url %}
+            <a href="{{ entry.url }}" target="_blank">{{ entry.title }}</a>
+        {% endif %}
+    {% else %}
+        {{ entry.title }}
+    {% endif %}
+    {% if entry.type == "public-hearing" %}
+        </strong>
+    {% endif %}
+    {% if entry.description %}
+        <br>{{ entry.description }}
+    {% endif %}
+    </p>
+    {%- endif %}
+</div>
 {%- endmacro %}
