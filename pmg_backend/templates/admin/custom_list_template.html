@@ -1,7 +1,7 @@
 {% extends 'admin/model/list.html' %}
 
 {% macro render_entries(model, column) %}
-    <a href="/admin/entry/?">
+    <a href="/admin/entry/?bill_id={{ model.bill_id }}">
         related entries
     </a>
 {% endmacro %}
@@ -35,7 +35,13 @@
 
 {% macro render_bills(model, column) %}
     {% for bill in model[column] %}
-    <span class="label label-success label-tooltip" data-toggle="tooltip" title="{{ bill.name }}">{{ bill.code }}</span>
+        <span class="label label-success label-tooltip" data-toggle="tooltip" title="{{ bill.name }}">{{ bill.code }}</span>
     {% endfor %}
 {% endmacro %}
 
+{% block body %}
+    {% if filtered_bill %}
+        <h3>Entries: {{ filtered_bill.code }} - {{ filtered_bill.name }}</h3>
+    {% endif %}
+    {{ super() }}
+{% endblock %}

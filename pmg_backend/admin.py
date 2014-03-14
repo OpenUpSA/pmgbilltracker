@@ -201,7 +201,12 @@ class EntryView(MyModelView):
             .filter(self.model.is_deleted==False) \
             .filter(Entry.type.in_(related_doc_types))
         if request.args.get('bill_id'):
-            query = query.filter(Entry.bills.any(bill_id=request.args['bill_id']))
+            try:
+                bill = Bill.query.get(request.args['bill_id'])
+                self._template_args['filtered_bill'] = bill
+                query = query.filter(Entry.bills.any(bill_id=request.args['bill_id']))
+            except Exception, e:
+                pass
         return query
 
     def get_count_query(self):
