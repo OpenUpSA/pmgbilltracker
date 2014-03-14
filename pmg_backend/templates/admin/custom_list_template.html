@@ -33,5 +33,9 @@
     <nobr>{{ model[column]|string|truncate(10, true, "") }}</nobr>
 {% endmacro %}
 
-
+{% macro render_bills(model, column) %}
+    {% for bill in model[column] %}
+    <span class="label label-success label-tooltip" data-toggle="tooltip" title="{{ bill.name }}">{{ bill.code }}</span>
+    {% endfor %}
+{% endmacro %}
 

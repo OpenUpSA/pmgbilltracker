@@ -91,7 +91,7 @@ class ReportScraper(object):
             # only save report entries that can be tagged to bills
             if bills:
                 self.current_report = {
-                    "entry_type": "committee_meeting",
+                    "entry_type": "committee-meeting",
                     "bills": bills,
                     "url": tmp_url,
                     "date": date,

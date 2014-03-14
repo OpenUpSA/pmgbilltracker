@@ -84,7 +84,7 @@ class Bill(db.Model):
             .filter(Bill.status != None)
 
     def __str__(self):
-        return str(self.bill_id) + " - " + self.name
+        return str(self.code) + " - " + self.name
 
     def __repr__(self):
         return '<Bill: %r>' % str(self)
@@ -116,7 +116,7 @@ class Agent(db.Model):
 class Entry(db.Model):
 
     entry_id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, nullable=False)
+    date = db.Column(db.Date, nullable=True)
     type = db.Column(db.String(100), nullable=False)
     url = db.Column(db.String(500))
     title = db.Column(db.String(500), nullable=False)

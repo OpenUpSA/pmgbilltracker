@@ -131,22 +131,30 @@ class BillView(MyModelView):
 
 entry_types = [
     "default",
+    "committee-meeting", "public-hearing",
+    "committee-report", "hansard",
+    "vote-count",
+    ]
+
+related_doc_types = [
     "gazette", "memorandum", "greenpaper",
     "whitepaper", "draft", "bill-version", "act",
-    "pmg-meeting-report", "public-hearing",
-    "committee-report", "hansard-minutes",
-    "vote-count",
     ]
 
 entry_type_choices = []
 for entry_type in entry_types:
     entry_type_choices.append((entry_type, entry_type))
 
+related_doc_choices = []
+for related_doc_type in related_doc_types:
+    related_doc_choices.append((related_doc_type, related_doc_type))
+
 
 class EntryView(MyModelView):
     list_template = 'admin/custom_list_template.html'
     form_create_rules = (
         'date',
+        'bills',
         'location',
         'agent',
         'type',
@@ -154,10 +162,20 @@ class EntryView(MyModelView):
         'description',
         'url')
     form_edit_rules = form_create_rules
+    column_list = (
+        'date',
+        'bills',
+        'type',
+        'agent',
+        'url',
+        'title',
+        'description',
+        'location')
     column_formatters = dict(
         location=macro('render_location'),
         date=macro('render_date'),
         url=macro('render_url'),
+        bills=macro('render_bills'),
         )
     form_overrides = dict(type=SelectField, location=SelectField, description=TextAreaField)
     form_args = {
@@ -174,6 +192,47 @@ class EntryView(MyModelView):
                 ]
         },
         }
+    def get_query(self):
+        """
+        Add filter to return only non-deleted records.
+        """
+        return self.session.query(self.model).filter(self.model.is_deleted==False).filter(Entry.type.in_(entry_types))
+
+    def get_count_query(self):
+        """
+        Add filter to count only non-deleted records.
+        """
+        return self.session.query(func.count('*')).select_from(Entry).filter(Entry.is_deleted==False).filter(Entry.type.in_(entry_types))
+
+
+
+class RelatedDocView(MyModelView):
+    list_template = 'admin/custom_list_template.html'
+    form_create_rules = ('type', 'bills', 'title', 'url')
+    form_edit_rules = form_create_rules
+    column_list = ('type', 'bills', 'title', 'url')
+    column_formatters = dict(
+        url=macro('render_url'),
+        bills=macro('render_bills'),
+        )
+    form_overrides = dict(type=SelectField,)
+    form_args = {
+        # Pass the choices to the `SelectField`
+        "type":{
+            "choices": related_doc_choices
+        },
+        }
+    def get_query(self):
+        """
+        Add filter to return only non-deleted records.
+        """
+        return self.session.query(self.model).filter(self.model.is_deleted==False).filter(Entry.type.in_(related_doc_types))
+
+    def get_count_query(self):
+        """
+        Add filter to count only non-deleted records.
+        """
+        return self.session.query(func.count('*')).select_from(Entry).filter(Entry.is_deleted==False).filter(Entry.type.in_(related_doc_types))
 
 
 class AgentView(MyModelView):
@@ -283,4 +342,5 @@ admin = Admin(app, name='PMG Bill Tracker', base_template='admin/my_master.html'
 
 admin.add_view(BillView(Bill, db.session, name="Bills", endpoint='bill'))
 admin.add_view(EntryView(Entry, db.session, name="Entries", endpoint='entry'))
+admin.add_view(RelatedDocView(Entry, db.session, name="Related documents", endpoint='related-docs'))
 admin.add_view(AgentView(Agent, db.session, name="Agents", endpoint='agent'))

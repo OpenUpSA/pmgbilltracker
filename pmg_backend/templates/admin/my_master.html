@@ -2,7 +2,6 @@
 {% block head_css %}
     {{ super() }}
     <style>
-
     </style>
 {% endblock head_css%}
 
@@ -17,4 +16,13 @@
             </ul>
         </div>
     {% endif %}
+{% endblock %}
+
+{% block tail_js %}
+    {{ super() }}
+    <script type="application/javascript">
+        $( document ).ready(function(){
+            $(".label-tooltip").tooltip({'placement': 'right'})
+        })
+    </script>
 {% endblock %}
