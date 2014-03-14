@@ -192,18 +192,28 @@ class EntryView(MyModelView):
                 ]
         },
         }
+
     def get_query(self):
         """
         Add filter to return only non-deleted records.
         """
-        return self.session.query(self.model).filter(self.model.is_deleted==False).filter(Entry.type.in_(entry_types))
+        query = self.session.query(self.model) \
+            .filter(self.model.is_deleted==False) \
+            .filter(Entry.type.in_(related_doc_types))
+        if request.args.get('bill_id'):
+            query = query.filter(Entry.bills.any(bill_id=request.args['bill_id']))
+        return query
 
     def get_count_query(self):
         """
         Add filter to count only non-deleted records.
         """
-        return self.session.query(func.count('*')).select_from(Entry).filter(Entry.is_deleted==False).filter(Entry.type.in_(entry_types))
-
+        query = self.session.query(func.count('*')).select_from(Entry) \
+            .filter(Entry.is_deleted==False) \
+            .filter(Entry.type.in_(entry_types))
+        if request.args.get('bill_id'):
+            query = query.filter(Entry.bills.any(bill_id=request.args['bill_id']))
+        return query
 
 
 class RelatedDocView(MyModelView):
@@ -222,6 +232,7 @@ class RelatedDocView(MyModelView):
             "choices": related_doc_choices
         },
         }
+
     def get_query(self):
         """
         Add filter to return only non-deleted records.
