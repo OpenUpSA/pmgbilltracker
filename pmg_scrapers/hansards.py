@@ -6,7 +6,6 @@ from __future__ import print_function
 from BeautifulSoup import BeautifulSoup
 from dateutil import parser as date_parser
 import scrapertools
-import simplejson
 import time
 from pmg_scrapers import logger
 from pmg_backend.models import *
@@ -109,7 +108,7 @@ class HansardScraper(object):
 
             # save hansards to database, once per scraped page
             db.session.commit()
-            logger.debug(simplejson.dumps(self.stats, indent=4))
+            logger.debug(json.dumps(self.stats, indent=4))
             # test whether we have reached the end
             if not self.next_page:
                 break

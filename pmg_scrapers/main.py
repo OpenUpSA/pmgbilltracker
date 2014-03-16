@@ -1,6 +1,5 @@
 from __future__ import print_function
 import datetime
-import simplejson
 from random import shuffle
 import os
 import sys

@@ -2,7 +2,6 @@ from __future__ import print_function
 import datetime
 from pmg_backend.models import *
 from pmg_backend import db
-import simplejson
 from random import shuffle
 from scrapertools import analyze_bill_code
 from dateutil import parser as date_parser
