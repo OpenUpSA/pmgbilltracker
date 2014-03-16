@@ -92,9 +92,9 @@
         {% endif %}
         {% if entry.url %}
             <a href="{{ entry.url }}" target="_blank">{{ entry.title }}</a>
+        {% else %}
+            {{ entry.title }}
         {% endif %}
-    {% else %}
-        {{ entry.title }}
     {% endif %}
     {% if entry.type == "public-hearing" %}
         </strong>
@@ -103,6 +103,5 @@
         <br>{{ entry.description }}
     {% endif %}
     </p>
-    {%- endif %}
 </div>
 {%- endmacro %}
