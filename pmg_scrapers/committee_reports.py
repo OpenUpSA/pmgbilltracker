@@ -82,7 +82,7 @@ class ReportScraper(object):
 
         for (j, (date, title, href_report)) in enumerate(self.next_report):
             logger.debug("\t\t" + str(date) + " - " + title)
-            time.sleep(3.00)  # avoid flooding the server with too many requests
+            time.sleep(0.5)  # avoid flooding the server with too many requests
             tmp_url = href_report
             html = scrapertools.URLFetcher(tmp_url).html
             soup = BeautifulSoup(html)

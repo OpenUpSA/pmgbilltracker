@@ -78,10 +78,7 @@ class Bill(db.Model):
     @classproperty
     def current_bills(cls):
         return cls.query\
-            .filter(Bill.status != "enacted")\
-            .filter(Bill.status != "withdrawn")\
-            .filter(Bill.status != "expired")\
-            .filter(Bill.status != None)
+            .filter(Bill.status.in_("na", "ncop", "president"))
 
     def __str__(self):
         return str(self.code) + " - " + self.name
