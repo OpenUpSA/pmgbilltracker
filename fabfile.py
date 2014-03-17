@@ -49,8 +49,8 @@ def setup():
         put('requirements/production.txt', '/tmp/production.txt')
         sudo('pip install -r /tmp/production.txt')
 
-    # install nginx
-    sudo('apt-get install nginx')
+    # install nginx & uwsgi
+    sudo('apt-get install nginx uwsgi')
     # restart nginx after reboot
     sudo('update-rc.d nginx defaults')
     sudo('service nginx start')
