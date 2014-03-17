@@ -1,7 +1,6 @@
 from flask import request, make_response, url_for, session, render_template, abort, redirect
 from pmg_frontend import app
 import requests
-import simplejson
 from datetime import datetime, date
 from pmg_frontend import logger
 
