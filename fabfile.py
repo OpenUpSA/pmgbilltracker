@@ -99,10 +99,10 @@ def configure():
     sudo('supervisorctl update')
 
     # configure Flask
-    put(env.config_dir + '/config_backend.py /tmp/config_backend.py')
-    put(env.config_dir + '/config_frontend.py /tmp/config_frontend.py')
-    sudo("mv /tmp/config_backend.py instance/config_backend.py")
-    sudo("mv /tmp/config_frontend.py instance/config_frontend.py")
+    put(env.config_dir + '/config_backend.py', '/tmp/config_backend.py')
+    put(env.config_dir + '/config_frontend.py', '/tmp/config_frontend.py')
+    sudo('mv /tmp/config_backend.py ' + env.code_dir + '/instance/config_backend.py')
+    sudo('mv /tmp/config_frontend.py ' + env.code_dir + '/instance/config_frontend.py')
 
     restart()
     return

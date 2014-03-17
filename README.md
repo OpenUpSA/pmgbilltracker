@@ -97,3 +97,6 @@ Logs can be found at:
 
         /var/log/supervisor/bills_backend.log
         /var/log/supervisor/bills_backend_err.log
+
+        /var/log/supervisor/bills_frontend.log
+        /var/log/supervisor/bills_frontend_err.log
