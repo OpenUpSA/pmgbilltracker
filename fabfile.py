@@ -38,6 +38,17 @@ def unschedule_scraper():
 def restart():
     sudo("supervisorctl restart pmg_backend")
     sudo("supervisorctl restart pmg_frontend")
+    sudo('service nginx restart')
+    return
+
+
+def set_permissions():
+    """
+     Ensure that www-data has access to the application folder
+    """
+
+    # sudo('chmod -R 775 ' + env.code_dir)
+    sudo('chown -R www-data:www-data ' + env.code_dir)
     return
 
 
@@ -92,6 +103,10 @@ def configure():
     with settings(warn_only=True):
         sudo('ln -s %s/nginx_pmgbilltracker.conf /etc/nginx/conf.d/' % env.code_dir)
 
+    # # ensure sockets exist for gunicorn
+    # sudo('touch ' + env.code_dir + '/pmg_frontend/gunicorn.sock')
+    # sudo('touch ' + env.code_dir + '/pmg_backend/gunicorn.sock')
+
     # upload supervisor config
     put(env.config_dir + '/supervisor.conf', '/tmp/supervisor.conf')
     sudo('mv /tmp/supervisor.conf /etc/supervisor/conf.d/supervisor_pmgbilltracker.conf')
@@ -137,5 +152,6 @@ def deploy():
     local('rm pmg_frontend.tar.gz')
     local('rm pmg_scrapers.tar.gz')
 
+    set_permissions()
     restart()
     return
