@@ -3,14 +3,37 @@ pmgbilltracker
 
 Bill Tracking Application for the Parliamentary Monitoring Group.
 
-The project consists of two components: a frontend client application to demonstrate a user-facing website,
-and a backend application that handles all of the application logic, and exposes the database through an API
-and an admin interface.
+The project consists of a user-facing website frontend and a backend API that handles the application logic.
+An admin interface sits on top of the backend.
 
+## What does this project do
 
-SETUP FOR LOCAL ENVIRONMENT:
------------------------
-To run this application in your local environment, using the builtin Flask dev-server:
+The aim of the billtracker application is to supplement the PMG's existing website at http://pmg.org.za with a
+set of pages that summarize all activity related to a particular bill. This includes committee meetings,
+parliamentary debates, public hearings, etc.
+
+By showing all of the activity related to a bill on a single page, it becomes easier for ordinary citizens to
+understand the parliamentary process and make sense of the factors that influence a bill as it moves through
+the houses of parliament.
+
+The application's content is scraped automatically from the existing pmg website, but it can also be managed
+manually through an admin interface.
+
+## How it works
+
+The billtracker can be found at http://bills.pmg.org.za. The admin-interface for managing the application's content,
+is hosted at http://bills-api.pmg.org.za/admin.
+
+## Contributing to the project
+
+This project is open-source, and anyone is welcome to contribute. If you just want to make us aware of a bug / make
+a feature request, then please add a new GitHub Issue (if a similar one does not already exist).
+
+If you want to contribute to the code, please fork the repository, make your changes, and create a pull request.
+
+### Local setup
+
+To run this application in your local environment, use the builtin Flask dev-server:
 
 1. Navigate into the application folder and install the required Python packages:
 
@@ -30,32 +53,34 @@ To run this application in your local environment, using the builtin Flask dev-s
 The frontend application should now be running at `http://localhost:5000/`, and the backend at `http://localhost:5001/`.
 
 
-DEPLOY INSTRUCTIONS:
------------------------
-To deploy this application to an Ubuntu 13.10 instance on AWS EC2:
+### Deploy instructions
 
-1. Install fabric to handle deployment:
+To deploy this application to an Ubuntu 12.04 instance, which you can access via SSH:
+
+1. Install the 'fabric' package for interacting with servers via ssh:
 
         sudo pip install fabric
 
-2. Save the ssh key for the instance as `aws_code4sa.pem` in your `~/.ssh` directory.
+2. Set up the relevant config paramenters for your server in `fabdefs.py`.
 
-3. Edit the `env.hosts` variable for the staging environment in fabfile.py to point to the correct instance.
-
-4. Navigate into the application folder and run the server setup and deploy scripts:
+3. Navigate into the application folder and run the server setup and deploy scripts:
 
         cd pmgbilltracker
-        fab staging setup
-        fab staging deploy
-        fab staging configure
+        fab <server_name> setup
+        fab <server_name> deploy
+        fab <server_name> configure
 
 More details about setup and deployment can be found in fabfile.py, the script that fabric runs during deployment.
 
-NOTES:
-------
-To access this server via SSH:
+### Maintenance
 
-    ssh -v -i ~/.ssh/aws_code4sa.pem ubuntu@ec2-54-194-183-218.eu-west-1.compute.amazonaws.com
+Schedule the scraper to update the database daily:
+
+        fab <server_name> schedule_scraper
+
+Cancel the daily scraping with:
+
+        fab <server_name> unschedule_scraper
 
 Logs can be found at:
 
@@ -68,8 +93,7 @@ Logs can be found at:
         /var/log/nginx/error.log
         /var/log/nginx/access.log
 
-* uWSGI:
+* Supervisor:
 
-        /var/log/uwsgi/emperor.log
-        /var/log/uwsgi/uwsgi_frontend.log
-        /var/log/uwsgi/uwsgi_backend.log
+        /var/log/supervisor/bills_backend.log
+        /var/log/supervisor/bills_backend_err.log
