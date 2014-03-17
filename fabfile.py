@@ -17,6 +17,24 @@ def virtualenv():
             yield
 
 
+def schedule_scraper():
+
+    # schedule the scraper to run
+    with settings(warn_only=True):
+        sudo('rm ' + env.code_dir + '/pmg_scrapers/debug.log')
+        sudo('touch ' + env.code_dir + '/pmg_scrapers/debug.log')
+
+    sudo('echo "0 21 * * * python ' + env.code_dir + '/pmg_scrapers/main.py" > /tmp/cron.txt')
+    sudo('crontab /tmp/cron.txt')
+    return
+
+
+def unschedule_scraper():
+
+    sudo('crontab -r')
+    return
+
+
 def restart():
     sudo("supervisorctl restart pmg_backend")
     sudo("supervisorctl restart pmg_frontend")
@@ -49,36 +67,75 @@ def setup():
         put('requirements/production.txt', '/tmp/production.txt')
         sudo('pip install -r /tmp/production.txt')
 
-    # install nginx & uwsgi
-    sudo('apt-get install nginx uwsgi')
+    # install nginx
+    sudo('apt-get install nginx')
     # restart nginx after reboot
     sudo('update-rc.d nginx defaults')
     sudo('service nginx start')
     return
 
 
-def deploy():
-    with cd(env.code_dir):
-        run("git pull origin develop")
-        sudo("mv config_staging/config_backend.py instance/config_backend.py")
-        sudo("mv config_staging/config_frontend.py instance/config_frontend.py")
+def configure():
+    """
+    Configure Nginx, supervisor & Flask. Then restart.
+    """
+
+    with settings(warn_only=True):
+        # disable default site
+        sudo('rm /etc/nginx/sites-enabled/default')
+
+    # upload nginx server blocks
+    put(env.config_dir + '/nginx.conf', '/tmp/nginx.conf')
+    sudo('mv /tmp/nginx.conf %s/nginx_pmgbilltracker.conf' % env.code_dir)
+
+    # link server blocks to Nginx config
+    with settings(warn_only=True):
+        sudo('ln -s %s/nginx_pmgbilltracker.conf /etc/nginx/conf.d/' % env.code_dir)
+
+    # upload supervisor config
+    put(env.config_dir + '/supervisor.conf', '/tmp/supervisor.conf')
+    sudo('mv /tmp/supervisor.conf /etc/supervisor/conf.d/supervisor_pmgbilltracker.conf')
+    sudo('supervisorctl reread')
+    sudo('supervisorctl update')
+
+    # configure Flask
+    put(env.config_dir + '/config_backend.py /tmp/config_backend.py')
+    put(env.config_dir + '/config_frontend.py /tmp/config_frontend.py')
+    sudo("mv /tmp/config_backend.py instance/config_backend.py")
+    sudo("mv /tmp/config_frontend.py instance/config_frontend.py")
+
     restart()
     return
 
 
-def schedule_scraper():
+def deploy():
+    # create a tarball of our packages
+    local('tar -czf pmg_backend.tar.gz pmg_backend/', capture=False)
+    local('tar -czf pmg_frontend.tar.gz pmg_frontend/', capture=False)
+    local('tar -czf pmg_scrapers.tar.gz pmg_scrapers/', capture=False)
 
-    # schedule the scraper to run
+    # upload the source tarballs to the server
+    put('pmg_backend.tar.gz', '/tmp/pmg_backend.tar.gz')
+    put('pmg_frontend.tar.gz', '/tmp/pmg_frontend.tar.gz')
+    put('pmg_scrapers.tar.gz', '/tmp/pmg_scrapers.tar.gz')
+
     with settings(warn_only=True):
-        sudo('rm ' + env.code_dir + '/pmg_scrapers/debug.log')
-        sudo('touch ' + env.code_dir + '/pmg_scrapers/debug.log')
+        sudo('service nginx stop')
 
-    sudo('echo "0 21 * * * python ' + env.code_dir + '/pmg_scrapers/main.py" > /tmp/cron.txt')
-    sudo('crontab /tmp/cron.txt')
-    return
+    # enter application directory
+    with cd(env.code_dir):
+        # and unzip new files
+        sudo('tar xzf /tmp/pmg_backend.tar.gz')
+        sudo('tar xzf /tmp/pmg_frontend.tar.gz')
+        sudo('tar xzf /tmp/pmg_scrapers.tar.gz')
 
+    # now that all is set up, delete the tarballs again
+    sudo('rm /tmp/pmg_backend.tar.gz')
+    sudo('rm /tmp/pmg_frontend.tar.gz')
+    sudo('rm /tmp/pmg_scrapers.tar.gz')
+    local('rm pmg_backend.tar.gz')
+    local('rm pmg_frontend.tar.gz')
+    local('rm pmg_scrapers.tar.gz')
 
-def unschedule_scraper():
-
-    sudo('crontab -r')
+    restart()
     return
