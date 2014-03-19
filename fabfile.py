@@ -12,7 +12,7 @@ except ImportError:
 
 @contextmanager
 def virtualenv():
-    with cd(env.code_dir):
+    with cd(env.project_dir):
         with prefix(env.activate):
             yield
 
@@ -21,10 +21,10 @@ def schedule_scraper():
 
     # schedule the scraper to run
     with settings(warn_only=True):
-        sudo('rm ' + env.code_dir + '/pmg_scrapers/debug.log')
-        sudo('touch ' + env.code_dir + '/pmg_scrapers/debug.log')
+        sudo('rm ' + env.project_dir + '/pmg_scrapers/debug.log')
+        sudo('touch ' + env.project_dir + '/pmg_scrapers/debug.log')
 
-    sudo('echo "0 21 * * * python ' + env.code_dir + '/pmg_scrapers/main.py" > /tmp/cron.txt')
+    sudo('echo "0 21 * * * python ' + env.project_dir + '/pmg_scrapers/main.py" > /tmp/cron.txt')
     sudo('crontab /tmp/cron.txt')
     return
 
@@ -47,7 +47,7 @@ def set_permissions():
      Ensure that www-data has access to the application folder
     """
 
-    sudo('chown -R www-data:www-data ' + env.code_dir)
+    sudo('chown -R www-data:www-data ' + env.project_dir)
     return
 
 
@@ -64,12 +64,12 @@ def setup():
 
     # create application directory if it doesn't exist yet
     with settings(warn_only=True):
-        if run("test -d %s" % env.code_dir).failed:
+        if run("test -d %s" % env.project_dir).failed:
             # create project folder
-            sudo("git clone https://github.com/Code4SA/pmgbilltracker.git " + env.code_dir)
-        if run("test -d %s/env" % env.code_dir).failed:
+            sudo("git clone https://github.com/Code4SA/pmgbilltracker.git " + env.project_dir)
+        if run("test -d %s/env" % env.project_dir).failed:
             # create virtualenv
-            sudo('virtualenv --no-site-packages %s/env' % env.code_dir)
+            sudo('virtualenv --no-site-packages %s/env' % env.project_dir)
 
     # install the necessary Python packages
     with virtualenv():
@@ -96,11 +96,11 @@ def configure():
 
     # upload nginx server blocks
     put(env.config_dir + '/nginx.conf', '/tmp/nginx.conf')
-    sudo('mv /tmp/nginx.conf %s/nginx_pmgbilltracker.conf' % env.code_dir)
+    sudo('mv /tmp/nginx.conf %s/nginx_pmgbilltracker.conf' % env.project_dir)
 
     # link server blocks to Nginx config
     with settings(warn_only=True):
-        sudo('ln -s %s/nginx_pmgbilltracker.conf /etc/nginx/conf.d/' % env.code_dir)
+        sudo('ln -s %s/nginx_pmgbilltracker.conf /etc/nginx/conf.d/' % env.project_dir)
 
     # upload supervisor config
     put(env.config_dir + '/supervisor.conf', '/tmp/supervisor.conf')
@@ -113,8 +113,12 @@ def configure():
         sudo('mkdir %s/instance' % env.project_dir)
     put(env.config_dir + '/config_backend.py', '/tmp/config_backend.py')
     put(env.config_dir + '/config_frontend.py', '/tmp/config_frontend.py')
-    sudo('mv /tmp/config_backend.py ' + env.code_dir + '/instance/config_backend.py')
-    sudo('mv /tmp/config_frontend.py ' + env.code_dir + '/instance/config_frontend.py')
+    put(env.config_dir + '/config_backend_private.py', '/tmp/config_backend_private.py')
+    put(env.config_dir + '/config_frontend_private.py', '/tmp/config_frontend_private.py')
+    sudo('mv /tmp/config_backend.py ' + env.project_dir + '/instance/config_backend.py')
+    sudo('mv /tmp/config_frontend.py ' + env.project_dir + '/instance/config_frontend.py')
+    sudo('mv /tmp/config_backend_private.py ' + env.project_dir + '/instance/config_backend_private.py')
+    sudo('mv /tmp/config_frontend_private.py ' + env.project_dir + '/instance/config_frontend_private.py')
 
     restart()
     return
@@ -135,7 +139,7 @@ def deploy():
         sudo('service nginx stop')
 
     # enter application directory
-    with cd(env.code_dir):
+    with cd(env.project_dir):
         # and unzip new files
         sudo('tar xzf /tmp/pmg_backend.tar.gz')
         sudo('tar xzf /tmp/pmg_frontend.tar.gz')

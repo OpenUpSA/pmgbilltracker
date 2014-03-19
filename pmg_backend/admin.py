@@ -319,7 +319,11 @@ class HomeView(AdminIndexView):
         if helpers.validate_form_on_submit(form):
             user = form.get_user()
             if user:
-                login.login_user(user)
+                if not user.is_active():
+                    flash('Your account has not been activated. Please contact the site administrator.' , 'error')
+                    return redirect(url_for('.login_view'))
+                else:
+                    login.login_user(user)
             else:
                 flash('Username or Password is invalid' , 'error')
                 return redirect(url_for('.login_view'))
@@ -340,7 +344,7 @@ class HomeView(AdminIndexView):
             form.populate_obj(user)
 
             # activate the admin user
-            if user.email == 'info@pmg.org.za':
+            if user.email == app.config['ADMIN_USER']:
                 user.is_active = True
 
             db.session.add(user)
