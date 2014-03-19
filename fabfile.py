@@ -47,7 +47,6 @@ def set_permissions():
      Ensure that www-data has access to the application folder
     """
 
-    # sudo('chmod -R 775 ' + env.code_dir)
     sudo('chown -R www-data:www-data ' + env.code_dir)
     return
 
@@ -103,10 +102,6 @@ def configure():
     with settings(warn_only=True):
         sudo('ln -s %s/nginx_pmgbilltracker.conf /etc/nginx/conf.d/' % env.code_dir)
 
-    # # ensure sockets exist for gunicorn
-    # sudo('touch ' + env.code_dir + '/pmg_frontend/gunicorn.sock')
-    # sudo('touch ' + env.code_dir + '/pmg_backend/gunicorn.sock')
-
     # upload supervisor config
     put(env.config_dir + '/supervisor.conf', '/tmp/supervisor.conf')
     sudo('mv /tmp/supervisor.conf /etc/supervisor/conf.d/supervisor_pmgbilltracker.conf')
@@ -114,6 +109,8 @@ def configure():
     sudo('supervisorctl update')
 
     # configure Flask
+    with settings(warn_only=True):
+        sudo('mkdir %s/instance' % env.project_dir)
     put(env.config_dir + '/config_backend.py', '/tmp/config_backend.py')
     put(env.config_dir + '/config_frontend.py', '/tmp/config_frontend.py')
     sudo('mv /tmp/config_backend.py ' + env.code_dir + '/instance/config_backend.py')
