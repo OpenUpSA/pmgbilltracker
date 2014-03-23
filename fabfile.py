@@ -24,10 +24,10 @@ def schedule_scraper():
         sudo('rm ' + env.project_dir + '/pmg_scrapers/debug.log')
         sudo('touch ' + env.project_dir + '/pmg_scrapers/debug.log')
 
-    sudo('echo "0 21 * * * python ' + env.project_dir + '/pmg_scrapers/main.py" > /tmp/cron.txt')
+    sudo('echo "0 21 * * * %s/env/bin/python %s/pmg_scrapers/main.py" > /tmp/cron.txt' & (env.project_dir, env.project_dir))
     sudo('crontab /tmp/cron.txt')
     return
-
+# "0 21 * * * /var/www/pmgbilltracker/env/bin/python /var/www/pmgbilltracker/pmg_scrapers/main.py"
 
 def unschedule_scraper():
 
@@ -76,6 +76,8 @@ def setup():
         put('requirements/base.txt', '/tmp/base.txt')
         put('requirements/production.txt', '/tmp/production.txt')
         sudo('pip install -r /tmp/production.txt')
+        put('requirements/scrapers.txt', '/tmp/scrapers.txt')
+        sudo('pip install -r /tmp/scrapers.txt')
 
     # install nginx
     sudo('apt-get install nginx')

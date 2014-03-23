@@ -3,13 +3,11 @@ Scrapes all bills introduced from 2006 until now from PMG e.g.
 www.pmg.org.za/bill?year=2013, while including links to bill versions and the introduction date
 """
 from __future__ import print_function
-import sys
 import json
 from BeautifulSoup import BeautifulSoup
 from dateutil import parser as date_parser
 from datetime import datetime
 import scrapertools
-import time
 from pmg_scrapers import logger
 from pmg_backend.models import *
 from pmg_backend import db
@@ -27,7 +25,8 @@ class BillScraper(object):
     <tr class="odd"><td colspan="2"><strong>Bill 30 - Marine Living Resources Amendment Bill</strong></td> </tr>
     <tr class="even"><td>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/bill/20131029-marine-living-resources-amendment-bill-b30b-2013">B30B-2013</a></td><td>29 Oct, 2013</td> </tr>
     """
-    def __init__(self):
+    def __init__(self, session):
+        self.session = session
         self.state_fn = self.start_state
         self.current_bill = {}
         self.stats = {
@@ -52,7 +51,7 @@ class BillScraper(object):
 
             # initiate parser for this page
             self.state_fn = self.start_state
-            html = scrapertools.URLFetcher(url).html
+            html = scrapertools.URLFetcher(url, self.session).html
             soup = BeautifulSoup(html, convertEntities=BeautifulSoup.HTML_ENTITIES)
             rows = soup.findAll("tr")
 
