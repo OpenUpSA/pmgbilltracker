@@ -29,9 +29,18 @@ def schedule_scraper():
     return
 # "0 21 * * * /var/www/pmgbilltracker/env/bin/python /var/www/pmgbilltracker/pmg_scrapers/main.py"
 
+
 def unschedule_scraper():
 
     sudo('crontab -r')
+    return
+
+
+def upload_db():
+    put('instance/pmgbilltracker.db', '/tmp/pmgbilltracker.db')
+    sudo('mv /tmp/pmgbilltracker.db %s/instance/pmgbilltracker.db' % env.project_dir)
+    set_permissions()
+    restart()
     return
 
 

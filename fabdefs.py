@@ -1,9 +1,9 @@
 from fabric.api import env
 
 
-def staging():
+def production():
     """
-    Env parameters for the staging environment.
+    Env parameters for the production environment.
     """
 
     env.host_string = 'root@5.9.195.3:22'

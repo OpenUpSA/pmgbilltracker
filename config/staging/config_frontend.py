@@ -1,7 +1,7 @@
 import os.path as op
 import logging
 
-HOST = 'bills.pmg.org.za'
+HOST = 'bills.demo4sa.org.za'
 API_HOST = '0.0.0.0:5001'
 
 LOG_LEVEL = logging.INFO
