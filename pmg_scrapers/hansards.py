@@ -6,7 +6,6 @@ from __future__ import print_function
 from BeautifulSoup import BeautifulSoup
 from dateutil import parser as date_parser
 import scrapertools
-import simplejson
 import time
 from pmg_scrapers import logger
 from pmg_backend.models import *
@@ -16,9 +15,10 @@ import json
 
 class HansardScraper(object):
 
-    def __init__(self):
+    def __init__(self, session):
+        self.session = session
         self.current_url = "http://www.pmg.org.za/hansard"
-        self.current_page = scrapertools.URLFetcher(self.current_url).html
+        self.current_page = scrapertools.URLFetcher(self.current_url, self.session).html
         self.current_hansard = {}
         self.stats = {
             "total_hansards": 0,
@@ -34,7 +34,7 @@ class HansardScraper(object):
         if next_link:
             href = "http://www.pmg.org.za" + next_link.find('a').attrs[0][1]
             self.current_url = href
-            self.current_page = scrapertools.URLFetcher(self.current_url).html
+            self.current_page = scrapertools.URLFetcher(self.current_url, self.session).html
             return True
         return False
 
@@ -72,7 +72,7 @@ class HansardScraper(object):
                 logger.debug("\t\t" + str(date) + " - " + title)
                 time.sleep(0.25)
                 tmp_url = href_hansard
-                html = scrapertools.URLFetcher(tmp_url).html
+                html = scrapertools.URLFetcher(tmp_url, self.session).html
                 soup = BeautifulSoup(html, convertEntities=BeautifulSoup.HTML_ENTITIES)
                 content = soup.find(id="content")
                 # find bills that are mentioned in the text
@@ -109,7 +109,7 @@ class HansardScraper(object):
 
             # save hansards to database, once per scraped page
             db.session.commit()
-            logger.debug(simplejson.dumps(self.stats, indent=4))
+            logger.debug(json.dumps(self.stats, indent=4))
             # test whether we have reached the end
             if not self.next_page:
                 break

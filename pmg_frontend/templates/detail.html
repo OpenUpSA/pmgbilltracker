@@ -10,9 +10,9 @@
         <div class="container">
             <h1>{{ bill.name }}</h1>
 
-            {#            {% if bill.bill_type -%}#}
-            {#                <p>{{ bill.bill_type }}</p>#}
-            {#            {%- endif %}#}
+            {% if bill.bill_type -%}
+                <p class="pull-right">{{ bill.bill_type }}</p>
+            {%- endif %}
 
             {% if bill.objective -%}
                 <p class="lead">{{ bill.objective }}</p>
@@ -35,12 +35,12 @@
         <div class="row text-center">
             <div class="col col-lg-12">
                 <p id="status-text" class="lead">
-                    {% if bill.status in ["enacted", "assent", "ncop", "na", "introduced"] -%}
+                    {% if bill.status in ["enacted", "president", "ncop", "na", "introduced"] -%}
                         <div class="c4sa-container" style="margin-left: auto; margin-right: auto;">
                         <div class="c4sa-grey c4sa-progress"></div>
                         {% if bill.status == "enacted" %}
                             <div class="c4sa-stage stage5">
-                        {% elif bill.status == "assent" %}
+                        {% elif bill.status == "president" %}
                             <div class="c4sa-stage stage4">
                         {% elif bill.status == "ncop" %}
                             <div class="c4sa-stage stage3">
@@ -63,6 +63,8 @@
                     </div>
                     {% elif bill.status == "withdrawn" %}
                         This Bill has been withdrawn.
+                    {% elif bill.status == "lapsed" %}
+                        This Bill has lapsed.
                     {% else -%}
                         Unknown status
                     {%- endif %}

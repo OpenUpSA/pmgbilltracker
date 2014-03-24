@@ -1,4 +1,3 @@
-fabdefs.py
 *.py[cod]
 
 # C extensions
@@ -39,4 +38,5 @@ debug.log
 *.DS_Store
 pmg_backend/uploads/
 instance/pmgbilltracker.db
-pmg_scrapers/scraper_config.json
+
+env/

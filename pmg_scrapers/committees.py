@@ -13,7 +13,8 @@ import json
 
 class CommitteeScraper(object):
 
-    def __init__(self):
+    def __init__(self, session):
+        self.session = session
         self.current_committee = {}
         self.stats = {
             "total_committees": 0,
@@ -80,7 +81,7 @@ class CommitteeScraper(object):
 
     @property
     def next_committee(self):
-        html = scrapertools.URLFetcher("http://www.pmg.org.za/committees").html
+        html = scrapertools.URLFetcher("http://www.pmg.org.za/committees", self.session).html
         soup = BeautifulSoup(html, convertEntities=BeautifulSoup.HTML_ENTITIES)
         container = soup.find(id="committees-all")
         committee_lists = container.findAll("div", {"class": "item-list"})

@@ -7,7 +7,7 @@ from BeautifulSoup import BeautifulSoup
 from dateutil import parser as date_parser
 import scrapertools
 import time
-from pmg_scrapers import logger, session
+from pmg_scrapers import logger
 from pmg_backend.models import *
 from pmg_backend import db
 import json
@@ -16,7 +16,8 @@ from random import shuffle
 
 class ReportScraper(object):
 
-    def __init__(self):
+    def __init__(self, session):
+        self.session = session
         self.current_committee = None
         self.current_report = None
         self.current_url = None
@@ -38,7 +39,7 @@ class ReportScraper(object):
         if next_link:
             href = "http://www.pmg.org.za" + next_link.find('a').attrs[0][1]
             self.current_url = href
-            self.current_page = scrapertools.URLFetcher(self.current_url).html
+            self.current_page = scrapertools.URLFetcher(self.current_url, self.session).html
             return True
         return False
 
@@ -82,16 +83,16 @@ class ReportScraper(object):
 
         for (j, (date, title, href_report)) in enumerate(self.next_report):
             logger.debug("\t\t" + str(date) + " - " + title)
-            time.sleep(3.00)  # avoid flooding the server with too many requests
+            time.sleep(0.5)  # avoid flooding the server with too many requests
             tmp_url = href_report
-            html = scrapertools.URLFetcher(tmp_url).html
+            html = scrapertools.URLFetcher(tmp_url, self.session).html
             soup = BeautifulSoup(html)
             content = soup.find(id="content")
             bills = scrapertools.find_bills(str(content))
             # only save report entries that can be tagged to bills
             if bills:
                 self.current_report = {
-                    "entry_type": "committee_meeting",
+                    "entry_type": "committee-meeting",
                     "bills": bills,
                     "url": tmp_url,
                     "date": date,
@@ -121,7 +122,7 @@ class ReportScraper(object):
         for i, committee in enumerate(committees):
             self.current_committee = committee
             self.current_url = committee.url
-            self.current_page = scrapertools.URLFetcher(self.current_url).html
+            self.current_page = scrapertools.URLFetcher(self.current_url, self.session).html
             logger.debug("Committee: " + str(committee.name))
 
             self.scrape_committee()

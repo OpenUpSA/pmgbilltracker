@@ -2,7 +2,6 @@ from __future__ import print_function
 import datetime
 from pmg_backend.models import *
 from pmg_backend import db
-import simplejson
 from random import shuffle
 from scrapertools import analyze_bill_code
 from dateutil import parser as date_parser
@@ -41,7 +40,7 @@ def find_current_bills():
             bill = Bill.query.filter(Bill.code==code).first()
             available_status = {
                 "act": "enacted",
-                "unknown": None,
+                "": None,
                 "pc": "na",
                 "sc": "ncop",
                 "intro": "na",
@@ -96,7 +95,6 @@ def handle_assent():
         elif not entry[0].startswith("B"):
             entry[0] = "B" + entry[0]
         tmp_code = entry[0]
-        tmp_status = entry[1].lower()
 
         # clean bill code
         tmp = analyze_bill_code(tmp_code)
@@ -155,8 +153,3 @@ if __name__ == "__main__":
     find_current_bills()
     find_enacted_bills()
     handle_assent()
-
-    # tmp_entries = Entry.query.filter(Entry.type=="assent").all()
-    # for entry in tmp_entries:
-    #     db.session.delete(entry)
-    # db.session.commit()

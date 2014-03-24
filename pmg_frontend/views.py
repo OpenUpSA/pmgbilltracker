@@ -1,7 +1,6 @@
 from flask import request, make_response, url_for, session, render_template, abort, redirect
 from pmg_frontend import app
 import requests
-import simplejson
 from datetime import datetime, date
 from pmg_frontend import logger
 
@@ -78,6 +77,7 @@ def index(year=None, bill_type=None):
         "assent": ("submitted to the president", "label-warning"),
         "enacted": ("signed into law", "label-success"),
         "withdrawn": ("withdrawn", "label-default"),
+        "lapsed": ("lapsed", "label-default"),
         }
 
     return render_template(
