@@ -78,7 +78,7 @@ class Bill(db.Model):
     @classproperty
     def current_bills(cls):
         return cls.query\
-            .filter(Bill.status.in_("na", "ncop", "president"))
+            .filter(Bill.status.in_(["na", "ncop", "president"]))
 
     def __str__(self):
         return str(self.code) + " - " + self.name
