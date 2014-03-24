@@ -19,15 +19,17 @@ def virtualenv():
 
 def schedule_scraper():
 
+    put('run_scraper.py', '/tmp/run_scraper.py')
+    sudo('mv /tmp/run_scraper.py %s/run_scraper.py' % env.project_dir)
+
     # schedule the scraper to run
     with settings(warn_only=True):
         sudo('rm ' + env.project_dir + '/pmg_scrapers/debug.log')
         sudo('touch ' + env.project_dir + '/pmg_scrapers/debug.log')
 
-    sudo('echo "0 21 * * * %s/env/bin/python %s/pmg_scrapers/main.py" > /tmp/cron.txt' & (env.project_dir, env.project_dir))
+    sudo('echo "0 21 * * * %s/env/bin/python %s/run_scraper.py" > /tmp/cron.txt' % (env.project_dir, env.project_dir))
     sudo('crontab /tmp/cron.txt')
     return
-# "0 21 * * * /var/www/pmgbilltracker/env/bin/python /var/www/pmgbilltracker/pmg_scrapers/main.py"
 
 
 def unschedule_scraper():

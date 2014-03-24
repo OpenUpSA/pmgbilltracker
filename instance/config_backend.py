@@ -9,3 +9,4 @@ LOGGER_NAME = "pmg_backend_logger"  # make sure this is not the same as the name
 DEBUG = True
 
 SECRET_KEY = "AEORJAEONIAEGCBGKMALMAENFXGOAERGN"
+ADMIN_USER = "info@pmg.org.za"
