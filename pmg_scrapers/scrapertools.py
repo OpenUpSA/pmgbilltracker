@@ -1,6 +1,6 @@
 from __future__ import print_function
 import re
-# from pmg_scrapers import logger
+import time
 from pmg_backend.models import Bill
 
 
@@ -45,6 +45,7 @@ class URLFetcher(object):
 
     @property
     def html(self):
+        time.sleep(0.3)  # avoid flooding the server with too many requests
         r = self.session.get(self.url)
         return r.content
 
