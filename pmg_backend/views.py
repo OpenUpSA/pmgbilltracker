@@ -1,10 +1,11 @@
-from flask import request, make_response, url_for, session, render_template
+from flask import request, make_response, url_for, session, render_template, abort
 from pmg_backend import app
 from models import Bill
 from pmg_backend import db, logger
 from serializers import BillSerializer
 
 bill_serializer = BillSerializer()
+error_bad_request = 400
 
 def make_json_response(bills, include_related=False):
     response = make_response(bill_serializer.serialize(bills, include_related))
@@ -78,4 +79,19 @@ def bill_detail(bill_id):
     logger.debug("Bill detail endpoint called")
 
     bill = Bill.query.get_or_404(bill_id)
+    return make_json_response(bill, include_related=True)
+
+
+@app.route('/bill/<bill_prefix>-<bill_year>/')
+def bill_detail_from_code(bill_prefix, bill_year):
+
+    logger.debug("Bill detail-from-code endpoint called")
+
+    try:
+        bill_year = int(bill_year)
+        bill_code = bill_prefix + "-" + str(bill_year)
+    except:
+        abort(error_bad_request)
+
+    bill = Bill.query.filter(Bill.code==bill_code).first()
     return make_json_response(bill, include_related=True)

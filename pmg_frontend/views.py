@@ -98,6 +98,25 @@ def bills_explained():
     return render_template('bills_explained.html')
 
 
+@app.route('/bill/<bill_prefix>-<bill_year>/')
+def bill_redirect(bill_prefix, bill_year):
+    """
+    Redirect to bill's page, based on the bill's code, rather than a backend ID.
+    """
+
+    try:
+        bill_year = int(bill_year)
+        bill_code = bill_prefix + "-" + str(bill_year)
+    except:
+        abort(error_bad_request)
+
+    api_url = url("bill", str(bill_code))
+    r = requests.get(api_url)
+    bill = r.json()
+
+    return redirect('/bill/' + str(bill['bill_id']) + "/", 301)
+
+
 @app.route('/bill/<bill_id>/')
 def detail(bill_id=None):
     """
