@@ -46,6 +46,14 @@ def upload_db():
     return
 
 
+def download_db():
+    tmp = get('%s/instance/pmgbilltracker.db' % env.project_dir, '/tmp/pmgbilltracker.db')
+    if tmp.succeeded:
+        print "Success"
+        local('mv /tmp/pmgbilltracker.db instance/pmgbilltracker.db')
+    return
+
+
 def restart():
     sudo("supervisorctl restart pmg_backend")
     sudo("supervisorctl restart pmg_frontend")
