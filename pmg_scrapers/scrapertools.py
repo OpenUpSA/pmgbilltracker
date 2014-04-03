@@ -65,7 +65,7 @@ class FileFetcher(object):
 
 re_bill_1 = re.compile("""
     (^|[\s\[])      # Opening bracket / space.
-    (PMB|B)\s*      # Type of bill (ordinary or Private Member Bill).
+    (PMB|B)\s*      # prefix (ordinary or Private Member Bill)
     ([0-9]+)        # Bill number
     ([A-Z])*        # Bill version
     \s*-\s*
@@ -75,7 +75,7 @@ re_bill_1 = re.compile("""
 
 # 2.    Match bills and draft bills, without requiring brackets / spaces around the bill code.
 re_bill_2 = re.compile("""
-    (PMB|B)\s*      # Type of bill (ordinary or Private Member Bill).
+    (PMB|B)\s*      # prefix (ordinary or Private Member Bill).
     ([0-9]+|X+)*    # Bill number
     ([A-Z])*        # Bill version
     \s*-\s*
@@ -94,13 +94,13 @@ def find_bills(text, include_versions=False):
 
     out = {}
     for result in set(matches):
-        bracket_1, bill_type, number, version, year, bracket_2 = result
-        bill_type = bill_type.upper()
+        bracket_1, prefix, number, version, year, bracket_2 = result
+        prefix = prefix.upper()
         version = version.upper()
-        code = bill_type + number + "-" + year
+        code = prefix + number + "-" + year
         out[code] = [code,]
         if include_versions and version:
-            version_id = bill_type + number + (version if version else "") + "-" + year
+            version_id = prefix + number + (version if version else "") + "-" + year
             if not version_id in out[code]:
                 out[code].append(version_id)
 
@@ -119,7 +119,7 @@ def analyze_bill_code(text):
     if not match:
         return None
 
-    bill_type = match.group(1).upper()
+    prefix = match.group(1).upper()
     number = match.group(2)
     if number and "X" in number:
         number = None
@@ -128,7 +128,7 @@ def analyze_bill_code(text):
         version = version.upper()
     year = match.group(4)
 
-    code = bill_type + (number if number else "X") + "-" + year
+    code = prefix + (number if number else "X") + "-" + year
 
     status = "Bill"
     if not number:
@@ -138,7 +138,7 @@ def analyze_bill_code(text):
 
     out = {
         'code': code,
-        'type': bill_type,
+        'type': prefix,
         'number': number,
         'status': status,
         'year': year,

@@ -114,7 +114,7 @@ class BillView(MyModelView):
                 ("S75", "Section 75 (Ordinary Bills not affecting the provinces)"),
                 ("S76", "Section 76 (Ordinary Bills affecting the provinces)"),
                 ("S77", "Section 77 (Money Bills)"),
-                ("Other", "Other"),
+                ("", "Unknown"),
                 ]
         },
         "status" : {
