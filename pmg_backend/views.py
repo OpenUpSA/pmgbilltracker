@@ -89,9 +89,11 @@ def bill_detail_from_code(bill_prefix, bill_year):
 
     try:
         bill_year = int(bill_year)
-        bill_code = bill_prefix + "-" + str(bill_year)
+        bill_code = bill_prefix.upper() + "-" + str(bill_year)
     except:
         abort(error_bad_request)
 
     bill = Bill.query.filter(Bill.code==bill_code).first()
+    if not bill:
+        abort(404)
     return make_json_response(bill, include_related=True)
