@@ -66,6 +66,10 @@ def index(year=None, bill_type=None):
             r = requests.get(api_url + "year/" + str(year) + "/")
         else:
             r = requests.get(api_url)
+
+        if not r.status_code == 200:
+            return(r.text, r.status_code)
+
         bills = r.json()
         if not bills and bill_type.lower() != "current":
             start_year -= 1
@@ -112,6 +116,8 @@ def bill_redirect(bill_prefix, bill_year):
 
     api_url = url("bill", str(bill_code))
     r = requests.get(api_url)
+    if not r.status_code == 200:
+        return(r.text, r.status_code)
     bill = r.json()
 
     return redirect('/bill/' + str(bill['bill_id']) + "/", 301)
@@ -131,6 +137,8 @@ def detail(bill_id=None):
     logger.debug("detail page called")
     api_url = url("bill", str(bill_id))
     r = requests.get(api_url)
+    if not r.status_code == 200:
+        return(r.text, r.status_code)
     bill = r.json()
 
     entries = bill["entries"]
