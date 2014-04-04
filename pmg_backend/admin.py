@@ -121,6 +121,7 @@ class BillView(MyModelView):
                 ("", "Unknown"),
                 ("na", "In progress - NA"),
                 ("ncop", "In progress - NCOP"),
+                ("returned-to-na", "Returned with amendments - NA"),
                 ("president", "Sent to the President"),
                 ("enacted", "Enacted"),
                 ("withdrawn", "Withdrawn"),
