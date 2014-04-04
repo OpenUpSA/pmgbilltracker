@@ -130,7 +130,10 @@ class Entry(db.Model):
         self.is_deleted = True
 
     def __str__(self):
-        return str(self.entry_id) + " - " + self.title
+        title_snippet = self.title
+        if len(title_snippet) > 60:
+            title_snippet = title_snippet[0:59] + "..."
+        return str(self.date.isoformat()) + " " + title_snippet
 
     def __repr__(self):
         return '<Entry: %r>' % str(self)
