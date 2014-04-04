@@ -145,7 +145,7 @@ def detail(bill_id=None):
 
     # separate special entries from the rest of the list
     version_types = ["bill-version", "act"]
-    special_types = ["gazette", "whitepaper", "memorandum", "greenpaper", "draft"]
+    special_types = ["original-act", "gazette", "whitepaper", "memorandum", "greenpaper", "draft"]
 
     bill["entries"] = [entry for entry in entries if entry["type"] not in version_types + special_types]
 

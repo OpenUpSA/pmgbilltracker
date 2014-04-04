@@ -92,7 +92,7 @@
         <h2>Bill history</h2>
         <hr>
 
-        {% for entry_type in ["gazette", "whitepaper", "memorandum", "greenpaper", "draft"] %}
+        {% for entry_type in ["original-act", "gazette", "whitepaper", "memorandum", "greenpaper", "draft"] %}
             {% if bill.get(entry_type) %}
                 <a href="{{ bill[entry_type].url }}">
                 <span class="special-entry label label-default">

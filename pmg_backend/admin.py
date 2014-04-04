@@ -144,7 +144,7 @@ entry_types = [
 
 related_doc_types = [
     "gazette", "memorandum", "greenpaper",
-    "whitepaper", "draft", "bill-version", "act",
+    "whitepaper", "draft", "bill-version", "act", "original-act",
     ]
 
 entry_type_choices = []
