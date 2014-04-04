@@ -83,7 +83,7 @@ class MyModelView(ModelView):
 class BillView(MyModelView):
     can_create = False
     list_template = 'admin/custom_list_template.html'
-    form_create_rules = (
+    form_edit_rules = (
         'name',
         'code',
         'bill_type',
@@ -91,7 +91,6 @@ class BillView(MyModelView):
         'status',
         'entries'
     )
-    form_edit_rules = form_create_rules
     column_list = ('name', 'code', 'bill_type', 'status', 'entries', 'related_docs')
     column_searchable_list = ('code', 'name')
     column_formatters = dict(
@@ -102,7 +101,7 @@ class BillView(MyModelView):
     form_overrides = dict(bill_type=SelectField, status=SelectField, objective=TextAreaField)
     form_widget_args = {
         'code':{
-            'disabled':True
+            'disabled': True
         }
     }
     form_args = {
@@ -129,6 +128,11 @@ class BillView(MyModelView):
                 ]
         }
     }
+
+    def update_model(self, form, model):
+
+        del form.code
+        return super(MyModelView, self).update_model(form=form, model=model)
 
 entry_types = [
     "default",
