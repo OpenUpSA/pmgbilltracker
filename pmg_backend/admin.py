@@ -191,7 +191,7 @@ class EntryView(MyModelView):
         },
         "location":{
             "choices": [
-                ("null", "Unknown"),
+                ("", "Unknown"),
                 ("1", "National Assembly (NA)"),
                 ("2", "National Council of Provinces (NCOP)"),
                 ("3", "President's Office"),
@@ -291,7 +291,7 @@ class AgentView(MyModelView):
         # Pass the choices to the `SelectField`
         "location":{
             "choices": [
-                ("null", "Unknown"),
+                ("", "Unknown"),
                 ("1", "National Assembly (NA)"),
                 ("2", "National Council of Provinces (NCOP)"),
                 ("3", "President's Office"),
