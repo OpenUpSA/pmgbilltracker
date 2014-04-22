@@ -66,6 +66,10 @@ def index(year=None, bill_type=None):
             r = requests.get(api_url + "year/" + str(year) + "/")
         else:
             r = requests.get(api_url)
+
+        if not r.status_code == 200:
+            return(r.text, r.status_code)
+
         bills = r.json()
         if not bills and bill_type.lower() != "current":
             start_year -= 1
@@ -98,6 +102,27 @@ def bills_explained():
     return render_template('bills_explained.html')
 
 
+@app.route('/bill/<bill_prefix>-<bill_year>/')
+def bill_redirect(bill_prefix, bill_year):
+    """
+    Redirect to bill's page, based on the bill's code, rather than a backend ID.
+    """
+
+    try:
+        bill_year = int(bill_year)
+        bill_code = bill_prefix + "-" + str(bill_year)
+    except:
+        abort(error_bad_request)
+
+    api_url = url("bill", str(bill_code))
+    r = requests.get(api_url)
+    if not r.status_code == 200:
+        return(r.text, r.status_code)
+    bill = r.json()
+
+    return redirect('/bill/' + str(bill['bill_id']) + "/", 301)
+
+
 @app.route('/bill/<bill_id>/')
 def detail(bill_id=None):
     """
@@ -112,13 +137,15 @@ def detail(bill_id=None):
     logger.debug("detail page called")
     api_url = url("bill", str(bill_id))
     r = requests.get(api_url)
+    if not r.status_code == 200:
+        return(r.text, r.status_code)
     bill = r.json()
 
     entries = bill["entries"]
 
     # separate special entries from the rest of the list
     version_types = ["bill-version", "act"]
-    special_types = ["gazette", "whitepaper", "memorandum", "greenpaper", "draft"]
+    special_types = ["original-act", "gazette", "whitepaper", "memorandum", "greenpaper", "draft"]
 
     bill["entries"] = [entry for entry in entries if entry["type"] not in version_types + special_types]
 

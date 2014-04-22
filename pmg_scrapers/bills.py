@@ -69,8 +69,6 @@ class BillScraper(object):
         Then clear the current_bill attribute to make it ready for the next bill to be scraped.
         """
 
-        # TODO: clean up the Draft vs. Bill logic below
-        # TODO: check that the numbers add up correctly
         bill_data = self.current_bill
 
         try:

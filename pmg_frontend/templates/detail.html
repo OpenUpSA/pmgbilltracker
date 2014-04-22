@@ -8,11 +8,7 @@
 {% block page_header %}
     <div class="bill-detail-header">
         <div class="container">
-            <h1>{{ bill.name }}</h1>
-
-            {% if bill.bill_type -%}
-                <p class="pull-right">{{ bill.bill_type }}</p>
-            {%- endif %}
+            <h1>{{ bill.name }}{% if bill.code %}<small> ({{ bill.code }})</small>{% endif %}</h1>
 
             {% if bill.objective -%}
                 <p class="lead">{{ bill.objective }}</p>
@@ -28,6 +24,22 @@
                     </span>
                 {% endfor %}
             </div>
+
+            {% if bill.bill_type -%}
+                <p class="pull-right">
+                    {% if bill.bill_type == "Draft" %}
+                        Draft
+                    {% elif bill.bill_type == "S74" %}
+                        Section 74 (Constitutional amendments)
+                    {% elif bill.bill_type == "S75" %}
+                        Section 75 (Ordinary Bills not affecting the provinces)
+                    {% elif bill.bill_type == "S76" %}
+                        Section 76 (Ordinary Bills affecting the provinces)
+                    {% elif bill.bill_type == "S77" %}
+                        Section 77 (Money Bills)
+                    {% endif %}
+                </p>
+            {%- endif %}
         </div>
     </div>
 
@@ -35,7 +47,7 @@
         <div class="row text-center">
             <div class="col col-lg-12">
                 <p id="status-text" class="lead">
-                    {% if bill.status in ["enacted", "president", "ncop", "na", "introduced"] -%}
+                    {% if bill.status in ["enacted", "president", "ncop", "na", "returned-to-na", "introduced"] -%}
                         <div class="c4sa-container" style="margin-left: auto; margin-right: auto;">
                         <div class="c4sa-grey c4sa-progress"></div>
                         {% if bill.status == "enacted" %}
@@ -46,6 +58,8 @@
                             <div class="c4sa-stage stage3">
                         {% elif bill.status == "na" %}
                             <div class="c4sa-stage stage2">
+                        {% elif bill.status == "returned-to-na" %}
+                            <div class="c4sa-stage stage3">
                         {% elif bill.status == "introduced" %}
                             <div class="c4sa-stage stage1">
                         {% endif %}
@@ -65,8 +79,6 @@
                         This Bill has been withdrawn.
                     {% elif bill.status == "lapsed" %}
                         This Bill has lapsed.
-                    {% else -%}
-                        Unknown status
                     {%- endif %}
                 </p>
             </div>
@@ -80,11 +92,11 @@
         <h2>Bill history</h2>
         <hr>
 
-        {% for type in ["gazette", "whitepaper", "memorandum", "greenpaper", "draft"] %}
-            {% if bill.get(type) %}
-                <a href="{{ bill[type].url }}">
+        {% for entry_type in ["original-act", "gazette", "whitepaper", "memorandum", "greenpaper", "draft"] %}
+            {% if bill.get(entry_type) %}
+                <a href="{{ bill[entry_type].url }}">
                 <span class="special-entry label label-default">
-                <i class="fa fa-file-text"></i> {{ type | title}}
+                <i class="fa fa-file-text"></i> {{ entry_type | title}}
                 </span>
                 </a>
             {% endif %}
@@ -102,6 +114,12 @@
 
         $( document ).ready(function(){
             $(".bill-version").tooltip({})
+
+            {% if bill.status == "returned-to-na" %}
+            $(".label3").css("left", "225px");
+            $(".label2").css("left", "428px");
+            {% endif %}
         })
+
     </script>
 {% endblock %}

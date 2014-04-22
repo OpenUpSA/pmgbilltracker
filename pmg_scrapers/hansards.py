@@ -70,7 +70,6 @@ class HansardScraper(object):
         while True:
             for (j, (date, title, href_hansard)) in enumerate(self.next_hansard):
                 logger.debug("\t\t" + str(date) + " - " + title)
-                time.sleep(0.25)
                 tmp_url = href_hansard
                 html = scrapertools.URLFetcher(tmp_url, self.session).html
                 soup = BeautifulSoup(html, convertEntities=BeautifulSoup.HTML_ENTITIES)

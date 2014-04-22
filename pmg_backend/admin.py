@@ -83,7 +83,7 @@ class MyModelView(ModelView):
 class BillView(MyModelView):
     can_create = False
     list_template = 'admin/custom_list_template.html'
-    form_create_rules = (
+    form_edit_rules = (
         'name',
         'code',
         'bill_type',
@@ -91,7 +91,6 @@ class BillView(MyModelView):
         'status',
         'entries'
     )
-    form_edit_rules = form_create_rules
     column_list = ('name', 'code', 'bill_type', 'status', 'entries', 'related_docs')
     column_searchable_list = ('code', 'name')
     column_formatters = dict(
@@ -102,7 +101,7 @@ class BillView(MyModelView):
     form_overrides = dict(bill_type=SelectField, status=SelectField, objective=TextAreaField)
     form_widget_args = {
         'code':{
-            'disabled':True
+            'disabled': True
         }
     }
     form_args = {
@@ -114,7 +113,7 @@ class BillView(MyModelView):
                 ("S75", "Section 75 (Ordinary Bills not affecting the provinces)"),
                 ("S76", "Section 76 (Ordinary Bills affecting the provinces)"),
                 ("S77", "Section 77 (Money Bills)"),
-                ("Other", "Other"),
+                ("", "Unknown"),
                 ]
         },
         "status" : {
@@ -122,6 +121,7 @@ class BillView(MyModelView):
                 ("", "Unknown"),
                 ("na", "In progress - NA"),
                 ("ncop", "In progress - NCOP"),
+                ("returned-to-na", "Returned with amendments - NA"),
                 ("president", "Sent to the President"),
                 ("enacted", "Enacted"),
                 ("withdrawn", "Withdrawn"),
@@ -129,6 +129,11 @@ class BillView(MyModelView):
                 ]
         }
     }
+
+    def update_model(self, form, model):
+
+        del form.code
+        return super(MyModelView, self).update_model(form=form, model=model)
 
 entry_types = [
     "default",
@@ -139,7 +144,7 @@ entry_types = [
 
 related_doc_types = [
     "gazette", "memorandum", "greenpaper",
-    "whitepaper", "draft", "bill-version", "act",
+    "whitepaper", "draft", "bill-version", "act", "original-act",
     ]
 
 entry_type_choices = []
@@ -186,7 +191,7 @@ class EntryView(MyModelView):
         },
         "location":{
             "choices": [
-                ("null", "Unknown"),
+                ("", "Unknown"),
                 ("1", "National Assembly (NA)"),
                 ("2", "National Council of Provinces (NCOP)"),
                 ("3", "President's Office"),
@@ -286,7 +291,7 @@ class AgentView(MyModelView):
         # Pass the choices to the `SelectField`
         "location":{
             "choices": [
-                ("null", "Unknown"),
+                ("", "Unknown"),
                 ("1", "National Assembly (NA)"),
                 ("2", "National Council of Provinces (NCOP)"),
                 ("3", "President's Office"),

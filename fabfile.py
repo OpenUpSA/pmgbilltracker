@@ -40,9 +40,20 @@ def unschedule_scraper():
 
 def upload_db():
     put('instance/pmgbilltracker.db', '/tmp/pmgbilltracker.db')
+    with settings(warn_only=True):
+        sudo('service nginx stop')
+        sudo("supervisorctl stop pmg_backend")
     sudo('mv /tmp/pmgbilltracker.db %s/instance/pmgbilltracker.db' % env.project_dir)
     set_permissions()
     restart()
+    return
+
+
+def download_db():
+    tmp = get('%s/instance/pmgbilltracker.db' % env.project_dir, '/tmp/pmgbilltracker.db')
+    if tmp.succeeded:
+        print "Success"
+        local('mv /tmp/pmgbilltracker.db instance/pmgbilltracker.db')
     return
 
 
