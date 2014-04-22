@@ -1,7 +1,7 @@
 import logging
 import sys
 
-file_handler = logging.FileHandler(filename="debug.log")
+file_handler = logging.FileHandler(filename="scraper.log")
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s', datefmt='%H:%M:%S')
 file_handler.setFormatter(formatter)
 

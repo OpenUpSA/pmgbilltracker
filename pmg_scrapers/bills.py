@@ -53,7 +53,8 @@ class BillScraper(object):
             self.state_fn = self.start_state
             html = scrapertools.URLFetcher(url, self.session).html
             soup = BeautifulSoup(html, convertEntities=BeautifulSoup.HTML_ENTITIES)
-            rows = soup.findAll("tr")
+            table = soup.find("tbody")
+            rows = table.findAll("tr")
 
             # feed rows into state machine
             for row in rows:
@@ -128,7 +129,7 @@ class BillScraper(object):
         Inititialize State Machine for a particular page.
         """
         if not fragment.find("strong"):
-            return True
+            return True  # this skips the current row
 
         self.state_fn = self.header_state
         return False
@@ -145,9 +146,8 @@ class BillScraper(object):
             self.add_or_update()
             # commit to database
             db.session.commit()
-            
 
-        text = fragment.text
+        text = fragment.findAll("td")[0].text
         parts = text.split("-")
         tmp = "-".join(parts[1::]).strip()  # disregards the bill number, just use the rest of the text
         if "[" in tmp and "]" in tmp:
@@ -162,7 +162,8 @@ class BillScraper(object):
         Extract available versions from second row.
         """
         link = fragment.find("a")
-        if link:
+        # test whether the row contains a link to a bill version
+        if link and not ("bills.pmg.org.za" in link["href"] or "Bill Tracker" in link.text):
             versions = self.current_bill.setdefault("versions", [])
             url = link["href"]
             if not self.current_bill.get("code"):
@@ -173,12 +174,17 @@ class BillScraper(object):
                 else:
                     logger.error("No bill found in string: " + tmp)
 
-            version = {
-                "url": link["href"],
-                "title": link.text,
-                "date": date_parser.parse(fragment.findAll("td")[1].text).date(),
-                "entry_type": "bill-version",
-                }
+            try:
+                version = {
+                    "url": link["href"],
+                    "title": link.text,
+                    "date": date_parser.parse(fragment.findAll("td")[1].text).date(),
+                    "entry_type": "bill-version",
+                    }
+            except Exception as e:
+                logger.debug(str(fragment))
+                raise
+
             # set entry_type appropriately if this bill has already been enacted
             if "as enacted" in link.text:
                 version['entry_type'] = "act"
