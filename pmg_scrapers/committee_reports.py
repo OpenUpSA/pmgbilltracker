@@ -99,6 +99,17 @@ class ReportScraper(object):
                     "agent": self.current_committee,
                     }
 
+                # report URL may have changed after editing on pmg.org.za, check for this
+                possible_duplicates = Entry.query.filter(Agent==self.current_committee).filter(Entry.date==date).all()
+                for possible_duplicate in possible_duplicates:
+                    redirect_history = scrapertools.URLFetcher(possible_duplicate.url, self.session).redirect_history
+                    for request in redirect_history:
+                        if request.url == tmp_url:
+                            logger.info("Updating entry URL")
+                            # update the existing record's URL
+                            possible_duplicate.url = tmp_url
+                            db.session.add(possible_duplicate)
+
                 if self.current_committee.location:
                     self.current_report["location"] = self.current_committee.location
                 try:
@@ -117,7 +128,6 @@ class ReportScraper(object):
 
         committees = Agent.query.filter(Agent.type == "committee").all()
         shuffle(committees)  # randomize the order, just to keep things interesting
-        tmp_count = len(committees)
         for i, committee in enumerate(committees):
             self.current_committee = committee
             self.current_url = committee.url
@@ -126,7 +136,7 @@ class ReportScraper(object):
 
             self.scrape_committee()
             # give some progress feedback
-            logger.info(str(i + 1) + " out of " + str(tmp_count) + " committees' reports have been scraped.")
+            logger.info(str(i + 1) + " out of " + str(len(committees)) + " committees' reports have been scraped.")
             logger.info(json.dumps(self.stats, indent=4))
 
             # commit entries to database, once per committee
