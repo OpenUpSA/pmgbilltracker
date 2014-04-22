@@ -100,9 +100,11 @@ class ReportScraper(object):
                     }
 
                 # report URL may have changed after editing on pmg.org.za, check for this
-                possible_duplicates = Entry.query.filter(Agent==self.current_committee)\
+                possible_duplicates = Entry.query.filter(Agent == self.current_committee)\
                     .filter(not Entry.is_deleted)\
-                    .filter(Entry.date == date).all()
+                    .filter(Entry.date == date)\
+                    .order_by(Entry.entry_id).all()
+                deletion_flag = False
                 for possible_duplicate in possible_duplicates:
                     redirect_history = scrapertools.URLFetcher(possible_duplicate.url, self.session).redirect_history
                     for request in redirect_history:
@@ -110,7 +112,11 @@ class ReportScraper(object):
                             logger.info("Updating entry URL")
                             # update the existing record's URL
                             possible_duplicate.url = tmp_url
+                            # delete all but one entry, if there are multiple duplicates
+                            if deletion_flag:
+                                possible_duplicate.is_deleted = True
                             db.session.add(possible_duplicate)
+                            deletion_flag = True
 
                 if self.current_committee.location:
                     self.current_report["location"] = self.current_committee.location
