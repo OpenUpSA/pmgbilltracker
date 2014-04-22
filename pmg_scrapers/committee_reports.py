@@ -100,7 +100,9 @@ class ReportScraper(object):
                     }
 
                 # report URL may have changed after editing on pmg.org.za, check for this
-                possible_duplicates = Entry.query.filter(Agent==self.current_committee).filter(Entry.date==date).all()
+                possible_duplicates = Entry.query.filter(Agent==self.current_committee)\
+                    .filter(not Entry.is_deleted)\
+                    .filter(Entry.date == date).all()
                 for possible_duplicate in possible_duplicates:
                     redirect_history = scrapertools.URLFetcher(possible_duplicate.url, self.session).redirect_history
                     for request in redirect_history:
@@ -149,7 +151,8 @@ class ReportScraper(object):
         """
 
         report = Entry.query.filter(Entry.agent_id == self.current_committee.agent_id) \
-            .filter(Entry.url == self.current_report['url']).first()
+            .filter(Entry.url == self.current_report['url'])\
+            .filter(not Entry.is_deleted).first()
         if report is None:
             report = Entry()
             self.stats["new_committee_reports"] += 1
