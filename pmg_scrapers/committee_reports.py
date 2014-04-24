@@ -82,7 +82,7 @@ class ReportScraper(object):
         """
 
         for (j, (date, title, href_report)) in enumerate(self.next_report):
-            logger.debug("\t\t" + str(date) + " - " + title)
+            logger.debug("\t\t" + str(date) + " - " + (title[0:45]) if len(title) > 45 else title)
             tmp_url = href_report
             html = scrapertools.URLFetcher(tmp_url, self.session).html
             soup = BeautifulSoup(html)
@@ -100,23 +100,29 @@ class ReportScraper(object):
                     }
 
                 # report URL may have changed after editing on pmg.org.za, check for this
-                possible_duplicates = Entry.query.filter(Agent == self.current_committee)\
-                    .filter(not Entry.is_deleted)\
+                possible_duplicates = Entry.query.filter(Entry.agent == self.current_committee)\
+                    .filter(Entry.url != tmp_url)\
+                    .filter(Entry.type == "committee-meeting")\
+                    .filter(Entry.is_deleted == False)\
                     .filter(Entry.date == date)\
                     .order_by(Entry.entry_id).all()
                 deletion_flag = False
-                for possible_duplicate in possible_duplicates:
-                    redirect_history = scrapertools.URLFetcher(possible_duplicate.url, self.session).redirect_history
-                    for request in redirect_history:
-                        if request.url == tmp_url:
-                            logger.info("Updating entry URL")
-                            # update the existing record's URL
-                            possible_duplicate.url = tmp_url
-                            # delete all but one entry, if there are multiple duplicates
-                            if deletion_flag:
-                                possible_duplicate.is_deleted = True
-                            db.session.add(possible_duplicate)
-                            deletion_flag = True
+                if possible_duplicates:
+                    logger.debug(str(len(possible_duplicates)) + " possible duplicates found")
+                    for possible_duplicate in possible_duplicates:
+                        redirect_url = scrapertools.URLFetcher(possible_duplicate.url, self.session).follow_redirect()
+                        if possible_duplicate.url != redirect_url:
+                            logger.debug('redirect encountered')
+                            if redirect_url == tmp_url:
+                                logger.info("Updating entry URL")
+                                # update the existing record's URL
+                                possible_duplicate.url = tmp_url
+                                # # delete all but one entry, if there are multiple duplicates
+                                # if deletion_flag:
+                                #     logger.info('duplicate entry deleted')
+                                #     possible_duplicate.is_deleted = True
+                                db.session.add(possible_duplicate)
+                                deletion_flag = True
 
                 if self.current_committee.location:
                     self.current_report["location"] = self.current_committee.location
@@ -130,6 +136,8 @@ class ReportScraper(object):
                     logger.error(msg)
                     logger.exception(str(e))
                 self.current_report = {}
+            else:
+                logger.debug('no bills found in committee meeting report')
         return
 
     def run_scraper(self):
@@ -148,6 +156,7 @@ class ReportScraper(object):
             logger.info(json.dumps(self.stats, indent=4))
 
             # commit entries to database, once per committee
+            logger.debug("SAVING TO DATABASE")
             db.session.commit()
         return
 
@@ -158,7 +167,7 @@ class ReportScraper(object):
 
         report = Entry.query.filter(Entry.agent_id == self.current_committee.agent_id) \
             .filter(Entry.url == self.current_report['url'])\
-            .filter(not Entry.is_deleted).first()
+            .filter(Entry.is_deleted == False).first()
         if report is None:
             report = Entry()
             self.stats["new_committee_reports"] += 1

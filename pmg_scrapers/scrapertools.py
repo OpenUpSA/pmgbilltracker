@@ -50,14 +50,10 @@ class URLFetcher(object):
         r = self.session.get(self.url)
         return r.content
 
-    @property
-    def redirect_history(self):
+    def follow_redirect(self):
         time.sleep(self.delay)
         r = self.session.get(self.url)
-        return r.history
-
-
-
+        return r.url
 
 
 class FileFetcher(object):
