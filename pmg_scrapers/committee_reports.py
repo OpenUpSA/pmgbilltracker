@@ -147,17 +147,23 @@ class ReportScraper(object):
         for i, committee in enumerate(committees):
             self.current_committee = committee
             self.current_url = committee.url
-            self.current_page = scrapertools.URLFetcher(self.current_url, self.session).html
-            logger.debug("Committee: " + str(committee.name))
+            try:
+                self.current_page = scrapertools.URLFetcher(self.current_url, self.session).html
+                logger.debug("Committee: " + str(committee.name))
 
-            self.scrape_committee()
-            # give some progress feedback
-            logger.info(str(i + 1) + " out of " + str(len(committees)) + " committees' reports have been scraped.")
-            logger.info(json.dumps(self.stats, indent=4))
+                self.scrape_committee()
+                # give some progress feedback
+                logger.info(str(i + 1) + " out of " + str(len(committees)) + " committees' reports have been scraped.")
+                logger.info(json.dumps(self.stats, indent=4))
 
-            # commit entries to database, once per committee
-            logger.debug("SAVING TO DATABASE")
-            db.session.commit()
+                # commit entries to database, once per committee
+                logger.debug("SAVING TO DATABASE")
+                db.session.commit()
+            except Exception as e:
+                msg = "Error scraping committee's reports."
+                self.stats["errors"].append(msg)
+                logger.error(msg)
+                logger.exception(str(e))
         return
 
     def add_or_update(self):
