@@ -201,6 +201,7 @@ class EntryView(MyModelView):
                 ("1", "National Assembly (NA)"),
                 ("2", "National Council of Provinces (NCOP)"),
                 ("3", "President's Office"),
+                ("4", "Joint consideration (NA+NCOP)"),
                 ]
         },
     }
@@ -320,6 +321,7 @@ class AgentView(MyModelView):
                 ("1", "National Assembly (NA)"),
                 ("2", "National Council of Provinces (NCOP)"),
                 ("3", "President's Office"),
+                ("4", "Joint consideration (NA+NCOP)"),
                 ]
         },
         "type":{
