@@ -55,7 +55,13 @@
         <div class="icon-placeholder pull-left">
             <img class="stage-icon" src="/static/icons/{{ icons[agent.type] }}"/>
         </div>
-        <p class="stage-title"><a href="{{ agent.url }}" target="_blank">{{ agent.name }}</a></p>
+        <p class="stage-title">
+            {% if agent.url %}
+            <a href="{{ agent.url }}" target="_blank">{{ agent.name }}</a>
+            {% else %}
+            {{ agent.name }}
+            {% endif %}
+        </p>
     </div>
 
 {%- endmacro %}
