@@ -139,7 +139,7 @@ def handle_assent():
             tmp_entry.bills.append(bill)
         tmp_entry.date = assent_date
         tmp_entry.type = "assent"
-        tmp_entry.location = 4
+        tmp_entry.location = 3
         tmp_entry.title = "Signed into law by the President."
         tmp_entry.agent = president
         if act_no and gazette:
