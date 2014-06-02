@@ -55,14 +55,20 @@
         <div class="icon-placeholder pull-left">
             <img class="stage-icon" src="/static/icons/{{ icons[agent.type] }}"/>
         </div>
-        <p class="stage-title"><a href="{{ agent.url }}" target="_blank">{{ agent.name }}</a></p>
+        <p class="stage-title">
+            {% if agent.url %}
+            <a href="{{ agent.url }}" target="_blank">{{ agent.name }}</a>
+            {% else %}
+            {{ agent.name }}
+            {% endif %}
+        </p>
     </div>
 
 {%- endmacro %}
 
 
 {% macro start_location(location, current_location) -%}
-    {% set location_list = ["National Assembly (NA)", "National Council of Provinces (NCOP)", "Under joint consideration, NA + NCOP", "Office of the President"] %}
+    {% set location_list = ["National Assembly (NA)", "National Council of Provinces (NCOP)", "Office of the President", "Under joint consideration, NA + NCOP"] %}
     {% if current_location %}
         </div>
     {% endif %}

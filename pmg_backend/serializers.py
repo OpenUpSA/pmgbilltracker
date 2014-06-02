@@ -60,16 +60,16 @@ class BillSerializer(BaseSerializer):
         if include_related:
             latest_version_dict = {}
             for entry in obj.entries:
-                entry_dict = BaseSerializer.to_dict(self, entry)
-                if entry.type == "bill":
-                    latest_version_dict = entry_dict
-                if entry.agent:
-                    agent_dict = BaseSerializer.to_dict(self, entry.agent)
-                    entry_dict['agent'] = agent_dict
-                    entry_dict.pop('agent_id')
-
-                entries.append(entry_dict)
-                tmp_dict['entries'] = entries
+                if not entry.is_deleted:
+                    entry_dict = BaseSerializer.to_dict(self, entry)
+                    if entry.type == "bill":
+                        latest_version_dict = entry_dict
+                    if entry.agent:
+                        agent_dict = BaseSerializer.to_dict(self, entry.agent)
+                        entry_dict['agent'] = agent_dict
+                        entry_dict.pop('agent_id')
+                    entries.append(entry_dict)
+                    tmp_dict['entries'] = entries
             if latest_version_dict:
                 tmp_dict['latest_version'] = latest_version_dict
         else:

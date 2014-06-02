@@ -82,7 +82,7 @@ class ReportScraper(object):
         """
 
         for (j, (date, title, href_report)) in enumerate(self.next_report):
-            logger.debug("\t\t" + str(date) + " - " + title)
+            logger.debug("\t\t" + str(date) + " - " + (title[0:45]) if len(title) > 45 else title)
             tmp_url = href_report
             html = scrapertools.URLFetcher(tmp_url, self.session).html
             soup = BeautifulSoup(html)
@@ -99,6 +99,31 @@ class ReportScraper(object):
                     "agent": self.current_committee,
                     }
 
+                # report URL may have changed after editing on pmg.org.za, check for this
+                possible_duplicates = Entry.query.filter(Entry.agent == self.current_committee)\
+                    .filter(Entry.url != tmp_url)\
+                    .filter(Entry.type == "committee-meeting")\
+                    .filter(Entry.is_deleted == False)\
+                    .filter(Entry.date == date)\
+                    .order_by(Entry.entry_id).all()
+                deletion_flag = False
+                if possible_duplicates:
+                    logger.debug(str(len(possible_duplicates)) + " possible duplicates found")
+                    for possible_duplicate in possible_duplicates:
+                        redirect_url = scrapertools.URLFetcher(possible_duplicate.url, self.session).follow_redirect()
+                        if possible_duplicate.url != redirect_url:
+                            logger.debug('redirect encountered')
+                            if redirect_url == tmp_url:
+                                logger.info("Updating entry URL")
+                                # update the existing record's URL
+                                possible_duplicate.url = tmp_url
+                                # # delete all but one entry, if there are multiple duplicates
+                                # if deletion_flag:
+                                #     logger.info('duplicate entry deleted')
+                                #     possible_duplicate.is_deleted = True
+                                db.session.add(possible_duplicate)
+                                deletion_flag = True
+
                 if self.current_committee.location:
                     self.current_report["location"] = self.current_committee.location
                 try:
@@ -111,26 +136,34 @@ class ReportScraper(object):
                     logger.error(msg)
                     logger.exception(str(e))
                 self.current_report = {}
+            else:
+                logger.debug('no bills found in committee meeting report')
         return
 
     def run_scraper(self):
 
         committees = Agent.query.filter(Agent.type == "committee").all()
         shuffle(committees)  # randomize the order, just to keep things interesting
-        tmp_count = len(committees)
         for i, committee in enumerate(committees):
             self.current_committee = committee
             self.current_url = committee.url
-            self.current_page = scrapertools.URLFetcher(self.current_url, self.session).html
-            logger.debug("Committee: " + str(committee.name))
+            try:
+                self.current_page = scrapertools.URLFetcher(self.current_url, self.session).html
+                logger.debug("Committee: " + str(committee.name))
 
-            self.scrape_committee()
-            # give some progress feedback
-            logger.info(str(i + 1) + " out of " + str(tmp_count) + " committees' reports have been scraped.")
-            logger.info(json.dumps(self.stats, indent=4))
+                self.scrape_committee()
+                # give some progress feedback
+                logger.info(str(i + 1) + " out of " + str(len(committees)) + " committees' reports have been scraped.")
+                logger.info(json.dumps(self.stats, indent=4))
 
-            # commit entries to database, once per committee
-            db.session.commit()
+                # commit entries to database, once per committee
+                logger.debug("SAVING TO DATABASE")
+                db.session.commit()
+            except Exception as e:
+                msg = "Error scraping committee's reports."
+                self.stats["errors"].append(msg)
+                logger.error(msg)
+                logger.exception(str(e))
         return
 
     def add_or_update(self):
@@ -139,7 +172,8 @@ class ReportScraper(object):
         """
 
         report = Entry.query.filter(Entry.agent_id == self.current_committee.agent_id) \
-            .filter(Entry.url == self.current_report['url']).first()
+            .filter(Entry.url == self.current_report['url'])\
+            .filter(Entry.is_deleted == False).first()
         if report is None:
             report = Entry()
             self.stats["new_committee_reports"] += 1

@@ -31,6 +31,7 @@ def bill_list(year=None):
     logger.debug("Bill list endpoint called")
     bills = Bill.regular_bills\
         .filter(Bill.code.isnot(None))\
+        .filter(Bill.is_deleted==False)\
         .order_by(Bill.year.desc(), Bill.number.desc())
 
     if year:
@@ -42,7 +43,9 @@ def bill_list(year=None):
 @app.route('/pmb/year/<year>/')
 def pmb_list(year=None):
 
-    pmb = Bill.pmb.order_by(Bill.number.desc())
+    pmb = Bill.pmb\
+        .filter(Bill.is_deleted==False)\
+        .order_by(Bill.number.desc())
 
     logger.debug("PMB list endpoint called")
     if year:
@@ -54,7 +57,9 @@ def pmb_list(year=None):
 def draft_list(year=None):
 
     logger.debug("Draft list endpoint called")
-    bills = Bill.draft_bills.order_by(Bill.number.desc())
+    bills = Bill.draft_bills\
+        .filter(Bill.is_deleted==False)\
+        .order_by(Bill.number.desc())
 
     if year:
         bills = bills.filter(Bill.year==int(year))

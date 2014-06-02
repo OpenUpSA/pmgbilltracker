@@ -42,12 +42,18 @@ class URLFetcher(object):
     def __init__(self, url, session):
         self.url = url
         self.session = session
+        self.delay = 0.3
 
     @property
     def html(self):
-        time.sleep(0.3)  # avoid flooding the server with too many requests
+        time.sleep(self.delay)  # avoid flooding the server with too many requests
         r = self.session.get(self.url)
         return r.content
+
+    def follow_redirect(self):
+        time.sleep(self.delay)
+        r = self.session.get(self.url)
+        return r.url
 
 
 class FileFetcher(object):

@@ -26,8 +26,8 @@
     {% set locations = {
     "1": "NA",
     "2": "NCOP",
-    "3": "NA+NCOP",
-    "4": "President's Office"} %}
+    "3": "President's Office",
+    "4": "NA+NCOP"} %}
     {% if locations.get(model[column]|string) %}
         {{ locations[model[column]|string]}}
     {% else %}

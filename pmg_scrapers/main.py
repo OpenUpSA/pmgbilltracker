@@ -12,7 +12,7 @@ import bill_status
 from pmg_scrapers import logger
 from pmg_backend.models import Agent
 from pmg_backend import db
-from .scraper_config import config
+from scraper_config import config
 
 
 class PMGScraper(object):

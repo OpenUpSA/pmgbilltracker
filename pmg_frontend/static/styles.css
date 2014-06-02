@@ -69,12 +69,13 @@
 }
 
 .location.location-3{
-    border-color: lightgray;
+    border-color: greenyellow;
 }
 
 .location.location-4{
-    border-color: greenyellow;
+    border-color: lightgray;
 }
+
 
 .location-title{
     border-top-left-radius: 15px;
@@ -97,11 +98,11 @@
 }
 
 .location-title.location-3{
-    background-color: lightgray;
+    background-color: greenyellow;
 }
 
 .location-title.location-4{
-    background-color: greenyellow;
+    background-color: lightgray;
 }
 
 .location hr {
@@ -239,4 +240,10 @@ color: #999999;
 
 .bill-version a{
     color: #ffffff;
+}
+
+@media print {
+  a[href]:after {
+    content: none !important;
+  }
 }

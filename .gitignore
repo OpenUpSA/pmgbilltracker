@@ -35,6 +35,7 @@ nosetests.xml
 .pydevproject
 .idea
 debug.log
+scraper.log
 *.DS_Store
 pmg_backend/uploads/
 instance/pmgbilltracker.db
