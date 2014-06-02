@@ -102,6 +102,12 @@ class BillView(MyModelView):
     form_widget_args = {
         'code':{
             'disabled': True
+        },
+        'name': {
+            'class': 'input-xxlarge'
+        },
+        'objective': {
+            'class': 'input-xxlarge'
         }
     }
     form_args = {
@@ -197,7 +203,18 @@ class EntryView(MyModelView):
                 ("3", "President's Office"),
                 ]
         },
+    }
+    form_widget_args = {
+        'title': {
+            'class': 'input-xxlarge'
+        },
+        'description': {
+            'class': 'input-xxlarge'
+        },
+        'url': {
+            'class': 'input-xxlarge'
         }
+    }
 
     def get_query(self):
         """
@@ -242,7 +259,15 @@ class RelatedDocView(MyModelView):
         "type":{
             "choices": related_doc_choices
         },
+    }
+    form_widget_args = {
+        'title': {
+            'class': 'input-xxlarge'
+        },
+        'url': {
+            'class': 'input-xxlarge'
         }
+    }
 
     def get_query(self):
         """
@@ -305,7 +330,15 @@ class AgentView(MyModelView):
                 ("house", "House of Parliament"),
                 ]
         },
+    }
+    form_widget_args = {
+        'name': {
+            'class': 'input-xxlarge'
+        },
+        'url': {
+            'class': 'input-xxlarge'
         }
+    }
 
 
 # Customized index view that handles login & registration
