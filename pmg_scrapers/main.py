@@ -113,7 +113,7 @@ class PMGScraper(object):
 
         # scrape content, and add to db
         self.scrape_bills()
-        self.scrape_hansards()
+        # self.scrape_hansards()
         self.scrape_committees()
         self.scrape_committee_reports()
 
