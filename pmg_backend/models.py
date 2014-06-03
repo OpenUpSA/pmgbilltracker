@@ -65,20 +65,20 @@ class Bill(db.Model):
 
     @classproperty
     def regular_bills(cls):
-        return cls.query.filter(Bill.code.startswith("B"))
+        return cls.query.filter(Bill.code.startswith("B")).filter(Bill.is_deleted == False)
 
     @classproperty
     def pmb(cls):
-        return cls.query.filter(Bill.code.startswith("PMB"))
+        return cls.query.filter(Bill.code.startswith("PMB")).filter(Bill.is_deleted == False)
 
     @classproperty
     def draft_bills(cls):
-        return cls.query.filter(Bill.bill_type=="Draft")
+        return cls.query.filter(Bill.bill_type=="Draft").filter(Bill.is_deleted == False)
 
     @classproperty
     def current_bills(cls):
         return cls.query\
-            .filter(Bill.status.in_(["na", "ncop", "president"]))
+            .filter(Bill.status.in_(["na", "ncop", "president"])).filter(Bill.is_deleted == False)
 
     def __str__(self):
         return str(self.code) + " - " + self.name
