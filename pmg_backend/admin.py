@@ -130,6 +130,7 @@ class BillView(MyModelView):
                 ("returned-to-na", "Returned with amendments - NA"),
                 ("president", "Sent to the President"),
                 ("enacted", "Enacted"),
+                ("not-proceeded-with", "Not proceeded with"),
                 ("withdrawn", "Withdrawn"),
                 ("lapsed", "Lapsed"),
                 ]
