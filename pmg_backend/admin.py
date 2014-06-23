@@ -46,7 +46,7 @@ class MyModelView(ModelView):
     can_create = True
     can_edit = True
     can_delete = True
-    page_size = 50
+    page_size = 100
     column_exclude_list = ['is_deleted', ]
 
     def is_accessible(self):
@@ -130,6 +130,7 @@ class BillView(MyModelView):
                 ("returned-to-na", "Returned with amendments - NA"),
                 ("president", "Sent to the President"),
                 ("enacted", "Enacted"),
+                ("not-proceeded-with", "Not proceeded with"),
                 ("withdrawn", "Withdrawn"),
                 ("lapsed", "Lapsed"),
                 ]

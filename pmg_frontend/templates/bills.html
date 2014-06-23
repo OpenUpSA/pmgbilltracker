@@ -5,6 +5,22 @@
 {%  endblock %}
 
 {% block page %}
+    <hr>
+    <div class="row">
+        <div class="col-xs-7">
+            <div class="btn-group">
+                {% for i in year_list %}
+                    <a href="/bills/{% if bill_type %}{{ bill_type }}/{% endif %}{{ i }}/" role="button" class="btn btn-default{% if year == i %} active{% endif %}">{{ i }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-xs-5">
+            <div class="search-box-container input-group" style="width: 100%;">
+                <span class="input-group-addon glyphicon glyphicon-search" style="top: 0;"></span>
+                <input id="search-box" type="search" class="form-control">
+            </div>
+        </div>
+    </div>
 
     <div class="row" style="margin-top: 25px;">
         <div class="col-lg-2">
@@ -77,9 +93,47 @@
 {% endblock page %}
 
 {% block javascript %}
+    <script src="/static/bootstrap/js/typeahead.js"></script>
     <script type="text/javascript">
         $(function(){
 
+            autocomplete_data = []
+            $.get("{{ api_url }}", function(data){
+                autocomplete_data = data;
+            }).fail(function() {
+                $("#search-box").attr('disabled', "disabled").attr('placeholder', "Search is not available at present.")
+
+            });
+
+            var options = {
+                source: function(query, process) {
+                    objects = [];
+                    map = {};
+                    $.each(autocomplete_data, function(i, object) {
+                        var tmp_name = object.name
+                        var key = tmp_name
+                        var tmp_code = ""
+                        {% if bill_type != "draft" %}
+                            tmp_code = "(" + object.code + ")"
+                            key = tmp_name + " - " + tmp_code
+                        {% endif %}
+
+                        if (key.length > 56)
+                            key = object.name.substring(0, 50) + "..."
+
+                        map[key] = object;
+                        objects.push(key);
+                    });
+                    process(objects);
+                },
+                updater: function(item) {
+                    $('hiddenInputElement').val(map[item].bill_id);
+                    window.location = "/bill/" + map[item].bill_id + "/"
+                    console.log(map[item].bill_id)
+                    return item;
+                }
+            }
+            $("#search-box").typeahead(options)
         })
     </script>
 {% endblock %}

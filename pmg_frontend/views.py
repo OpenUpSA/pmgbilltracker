@@ -9,7 +9,7 @@ API_HOST = app.config['API_HOST']
 error_bad_request = 400
 
 def url(action, param=None):
-    u =  "http://{host}/{action}/".format(host=API_HOST, action=action)
+    u = "http://{host}/{action}/".format(host=API_HOST, action=action)
     if param:
         return u + param + "/"
     return u
@@ -93,7 +93,8 @@ def index(year=None, bill_type=None):
 @app.route('/bills/')
 def bills():
 
-    return render_template('bills.html')
+    api_url = url("bill")
+    return render_template('bills.html', api_url=api_url)
 
 
 @app.route('/bills/explained/')
