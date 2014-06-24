@@ -1,4 +1,5 @@
 from pmg_backend import db
+from sqlalchemy import desc
 from sqlalchemy.orm import backref
 
 class classproperty(object):
@@ -124,7 +125,7 @@ class Entry(db.Model):
 
     agent_id = db.Column(db.Integer, db.ForeignKey('agent.agent_id'), nullable=True)
     agent = db.relationship('Agent')
-    bills = db.relationship('Bill', secondary=entry_bills_table, backref=backref("entries", order_by=(date, title)))
+    bills = db.relationship('Bill', secondary=entry_bills_table, backref=backref("entries", order_by=(date, entry_id)))
 
     def delete(self):
         self.is_deleted = True
