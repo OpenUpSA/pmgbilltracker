@@ -75,6 +75,10 @@
                     <div class="c4sa-label label4"></div>
                     </div>
                     </div>
+                    {% elif bill.status == "act-commenced" %}
+                        This Act has commenced.
+                    {% elif bill.status == "act-partly-commenced" %}
+                        This Act has partly commenced.
                     {% elif bill.status == "not-proceeded-with" %}
                         This Bill was not proceeded with.
                     {% elif bill.status == "withdrawn" %}

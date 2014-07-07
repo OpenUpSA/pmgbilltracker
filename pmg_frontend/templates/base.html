@@ -12,7 +12,13 @@
 </head>
 <body>
 <div class="banner">
-        <a href="/"><img id="pmg-logo" src="/static/images/pmg_logo.png"></a>
+    <a href="/"><img id="pmg-logo" src="/static/images/pmg_logo.png"></a>
+    <div id="header-menu-container">
+        <ul class="list-unstyled">
+            <li><a href="http://www.pmg.org.za/"><strong>Home</strong></a></li>
+            <li><a href="/"><strong>Billtracker Home</strong></a></li>
+        </ul>
+    </div>
     <div id="banner-hr"></div>
 </div>
 {% block page_header %}
@@ -30,13 +36,13 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script src="/static/bootstrap/js/bootstrap.min.js"></script>
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-48399585-8', 'pmg.org.za');
-  ga('send', 'pageview');
+    ga('create', 'UA-48399585-8', 'pmg.org.za');
+    ga('send', 'pageview');
 
 </script>
 {% block javascript %}

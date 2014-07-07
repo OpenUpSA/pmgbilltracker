@@ -15,6 +15,26 @@
     background-color: #0178d8;
 }
 
+#header-menu-container{
+    display: inline-block;
+    position: relative;
+    top: -30px;
+    left: 15px;
+}
+
+#header-menu-container ul li{
+    display: inline-block;
+    margin-left: 5px;
+    padding-left: 10px;
+    font: Verdana,Arial,Helvetica,sans-serif;
+    border-left: 1px solid #ccc;
+}
+
+#header-menu-container ul li:last-child{
+    padding-right: 10px;
+    border-right: 1px solid #ccc;
+}
+
 #page-container{
     min-height: 500px;
 }
