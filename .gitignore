@@ -41,3 +41,4 @@ pmg_backend/uploads/
 instance/pmgbilltracker.db
 
 env/
+*/scraper_config.py
