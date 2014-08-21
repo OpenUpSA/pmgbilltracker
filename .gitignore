@@ -38,6 +38,7 @@ debug.log
 scraper.log
 *.DS_Store
 pmg_backend/uploads/
-instance/pmgbilltracker.db
+*pmgbilltracker.db
 
 env/
+*/scraper_config.py
