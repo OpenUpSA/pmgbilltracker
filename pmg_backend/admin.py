@@ -186,6 +186,7 @@ class EntryView(MyModelView):
         'title',
         'description',
         'location')
+    column_default_sort = ('date', True)
     column_formatters = dict(
         location=macro('render_location'),
         date=macro('render_date'),
