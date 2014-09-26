@@ -100,7 +100,7 @@ class ReportScraper(object):
                     }
 
                 # report URL may have changed after editing on pmg.org.za, check for this
-                possible_duplicates = Entry.query.filter(Entry.agent == self.current_committee)\
+                possible_duplicates = Entry.query.filter_by(Entry.agent == self.current_committee)\
                     .filter(Entry.url != tmp_url)\
                     .filter(Entry.type == "committee-meeting")\
                     .filter(Entry.is_deleted == False)\
@@ -142,7 +142,7 @@ class ReportScraper(object):
 
     def run_scraper(self):
 
-        committees = Agent.query.filter(Agent.type == "committee").all()
+        committees = Agent.query.filter(Agent.type == "committee").filter(Agent.url != None).all()
         shuffle(committees)  # randomize the order, just to keep things interesting
         for i, committee in enumerate(committees):
             self.current_committee = committee
@@ -171,9 +171,9 @@ class ReportScraper(object):
         Add current_report to database, or update the record if it already exists.
         """
 
-        report = Entry.query.filter(Entry.agent_id == self.current_committee.agent_id) \
-            .filter(Entry.url == self.current_report['url'])\
-            .filter(Entry.is_deleted == False).first()
+        report = Entry.query.filter_by(agent_id=self.current_committee.agent_id) \
+            .filter_by(url=self.current_report['url'])\
+            .filter_by(is_deleted=False).first()
         if report is None:
             report = Entry()
             self.stats["new_committee_reports"] += 1
