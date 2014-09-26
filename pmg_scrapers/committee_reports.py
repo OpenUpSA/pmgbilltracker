@@ -101,6 +101,7 @@ class ReportScraper(object):
 
                 # report URL may have changed after editing on pmg.org.za, check for this
                 possible_duplicates = Entry.query.filter_by(Entry.agent == self.current_committee)\
+                    .filter(Entry.url != None)\
                     .filter(Entry.url != tmp_url)\
                     .filter(Entry.type == "committee-meeting")\
                     .filter(Entry.is_deleted == False)\
