@@ -1,0 +1,63 @@
+-- clean out old tables
+drop table resolution;
+drop table supporting_content;
+drop table revision;
+drop table tag;
+drop table content;
+drop table event;
+drop table session;
+drop table content_type;
+drop table location;
+drop table stage;
+drop table version;
+
+-- delete old committees
+/*
+Water Affairs and Sanitation
+Water Affairs and Environmental Affairs
+Justice and Constitutional Development
+Correctional Services
+Women, Youth, Children and People with Disability
+NCOP Land and Environmental Affairs
+NCOP Security and Constitutional Development
+NCOP Economic Development
+Private Members' Legislative Proposals and Special Petitions
+NCOP Labour and Public Enterprises
+Mining
+*/
+
+delete from agent where agent_id in (
+172,
+39,
+19,
+9,
+40,
+47,
+51,
+43,
+23,
+46,
+21
+);
+
+delete from entry where agent_id in (
+172,
+39,
+19,
+9,
+40,
+47,
+51,
+43,
+23,
+46,
+21
+);
+
+-- delete erroneous agent records
+delete from agent where agent_id in (155, 158);
+-- fix agents who are ministers, not committees
+update agent set type = "minister" where agent_id in (156, 157, 161);
+
+-- delete existing duplicate entries
+update entry set is_deleted = 1 where entry_id not in (select max(entry_id) from entry group by date, type, url, title, location, agent_id, is_deleted);
