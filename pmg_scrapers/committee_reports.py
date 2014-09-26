@@ -123,6 +123,7 @@ class ReportScraper(object):
                                 #     logger.info('duplicate entry deleted')
                                 #     possible_duplicate.is_deleted = True
                                 db.session.add(possible_duplicate)
+                                db.session.commit()
                                 deletion_flag = True
 
                 if self.current_committee.location:
