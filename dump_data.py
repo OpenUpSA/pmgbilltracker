@@ -12,7 +12,7 @@ for bill in bills:
     tmp_bill = {
         'name': bill.name,
         'code': bill.code,
-        'bill_type': bill.bill_type,
+        'bill_type': 'Private Member Bill' if bill.code and "PMB" in bill.code else bill.bill_type,
         'year': bill.year,
         'number': bill.number,
         'status': bill.status,
