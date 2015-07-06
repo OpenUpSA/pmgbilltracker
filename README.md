@@ -1,3 +1,8 @@
+DEPRECATED
+==========
+
+This project has been deprecated. Its functionality has been rolled into [PMG.org.za](https://pmg.org.za), see https://github.com/Code4SA/pmg-cms-2
+
 pmgbilltracker
 ==============
 
